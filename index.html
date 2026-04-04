@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -599,9 +600,46 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 #qa-bg.open{display:block}
 
 #main::after{content:'';position:fixed;bottom:50%;right:50%;width:300px;height:240px;transform:translate(50%,50%);opacity:0.03;pointer-events:none;z-index:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 90C90 70 50 50 15 35C25 42 55 55 80 72C85 76 92 82 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C88 65 40 55 10 55C22 58 52 65 78 78C84 81 93 86 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C92 75 55 68 25 72C38 70 62 72 82 82C88 85 95 88 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C110 70 150 50 185 35C175 42 145 55 120 72C115 76 108 82 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C112 65 160 55 190 55C178 58 148 65 122 78C116 81 107 86 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C108 75 145 68 175 72C162 70 138 72 118 82C112 85 105 88 100 90Z' fill='%23D0B868'/%3E%3Cellipse cx='100' cy='18' rx='12' ry='5' fill='none' stroke='%23D0B868' stroke-width='3'/%3E%3C/svg%3E") no-repeat center/contain}
+
+#login-screen{position:fixed;inset:0;background:#0C0A10;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#login-screen.hidden{display:none}
+.login-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:36px 32px;width:340px;max-width:90vw;text-align:center}
+.login-logo{margin-bottom:20px}
+.login-title{font-size:18px;color:var(--gold);letter-spacing:0.15em;font-weight:500;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--dim);margin-bottom:24px}
+.login-field{width:100%;padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:10px;outline:none;box-sizing:border-box}
+.login-field:focus{border-color:var(--gdim)}
+.login-field::placeholder{color:var(--dim)}
+.login-btn{width:100%;padding:11px;background:rgba(208,184,104,0.1);border:1px solid var(--gdim);color:var(--gold);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all 0.15s}
+.login-btn:hover{background:rgba(208,184,104,0.18)}
+.login-toggle{font-size:11px;color:var(--dim);margin-top:16px;cursor:pointer}
+.login-toggle span{color:var(--gold);cursor:pointer}
+.login-toggle span:hover{text-decoration:underline}
+.login-error{font-size:11px;color:var(--red);margin-top:8px;min-height:16px}
+.login-user-bar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.logout-btn{background:none;border:1px solid var(--b1);color:var(--dim);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+.nav-badge{position:absolute;top:-2px;right:-2px;min-width:14px;height:14px;border-radius:7px;background:var(--red);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.nav-item{position:relative}
 </style>
 </head>
 <body>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="40" height="34" viewBox="0 0 200 160"><path d="M100 90C90 70 50 50 15 35C25 42 55 55 80 72C85 76 92 82 100 90Z" fill="#D0B868"/><path d="M100 90C88 65 40 55 10 55C22 58 52 65 78 78C84 81 93 86 100 90Z" fill="#D0B868"/><path d="M100 90C92 75 55 68 25 72C38 70 62 72 82 82C88 85 95 88 100 90Z" fill="#D0B868"/><path d="M100 90C110 70 150 50 185 35C175 42 145 55 120 72C115 76 108 82 100 90Z" fill="#D0B868"/><path d="M100 90C112 65 160 55 190 55C178 58 148 65 122 78C116 81 107 86 100 90Z" fill="#D0B868"/><path d="M100 90C108 75 145 68 175 72C162 70 138 72 118 82C112 85 105 88 100 90Z" fill="#D0B868"/><ellipse cx="100" cy="18" rx="12" ry="5" fill="none" stroke="#D0B868" stroke-width="3"/></svg>
+    </div>
+    <div class="login-title">SERAPHIM</div>
+    <div class="login-sub" id="login-sub">Sign in to your dashboard</div>
+    <input class="login-field" id="login-email" type="email" placeholder="Email address">
+    <input class="login-field" id="login-pass" type="password" placeholder="Password">
+    <input class="login-field" id="login-name" type="text" placeholder="Display name (Sharon or Shon)" style="display:none">
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-toggle" id="login-toggle">No account? <span onclick="toggleAuthMode()">Create one</span></div>
+  </div>
+</div>
 <div id="hdr">
   <span class="brand">Seraphim</span><span style="font-size:8px;color:var(--dim);margin-left:4px">v2.0</span><span class="brand-sep">/</span>
   <span id="hdr-month">Dashboard</span>
@@ -622,6 +660,10 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <button id="sync-refresh-btn" onclick="manualSync()" style="background:none;border:1px solid var(--b1);border-radius:50%;width:22px;height:22px;display:none;align-items:center;justify-content:center;cursor:pointer;color:var(--dim);font-size:11px;padding:0;transition:all 0.15s" title="Force sync">&#x21BB;</button>
   </div>
   <span id="hdr-user" style="font-size:11px;cursor:pointer" onclick="openSettings()"></span>
+  <div class="login-user-bar" id="auth-user-bar" style="display:none">
+    <span id="auth-email-display"></span>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </div>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="topnav">
@@ -972,6 +1014,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   <input id="qa-input" placeholder="e.g. IG Ads 200 Shon Software" onkeydown="if(event.key==='Enter')submitQuickAdd();if(event.key==='Escape')closeQuickAdd();">
   <div class="qa-hint"><strong style="color:var(--muted)">description amount who [category]</strong> — Enter to add, Esc to close</div>
 </div>
+<div style="text-align:center;padding:12px;font-size:10px;color:var(--dim)">Seraphim Management v<span id="version-display">2.1.0</span></div>
 <div id="lightbox">
   <button id="lb-close" onclick="closeLightbox()">&times;</button>
   <button id="lb-del" onclick="deleteLightboxImage()">Remove image</button>
@@ -987,6 +1030,19 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   <div style="display:flex;gap:2px;border-bottom:1px solid var(--b1);margin-bottom:14px" id="exp-tabs"></div>
   <div style="max-height:55vh;overflow:auto;border:1px solid var(--b1);border-radius:6px" id="exp-table-wrap"></div>
   <div class="ma" style="margin-top:18px"><button class="bc" onclick="closeModal('m-export-preview')">Cancel</button><button class="bs" onclick="doExportXLSX()">Download .xlsx</button></div>
+</div></div>
+<div class="overlay" id="m-changelog"><div class="modal wide">
+  <div class="modal-title">What's new in v2.1.0</div>
+  <div class="modal-sub">Seraphim Management Dashboard</div>
+  <div style="max-height:50vh;overflow-y:auto;font-size:12px;color:var(--muted);line-height:1.8;padding:8px 0">
+    <div style="color:var(--gold);font-weight:500;margin-bottom:4px">Security</div>
+    <div style="padding-left:12px;margin-bottom:12px">Login screen with email/password authentication<br>Session timeout after 30 min of inactivity<br>Login tracking in activity log</div>
+    <div style="color:var(--gold);font-weight:500;margin-bottom:4px">New layout</div>
+    <div style="padding-left:12px;margin-bottom:12px">Top navigation replaces sidebar<br>Command center hero card<br>Partner balance cards always visible<br>Horizontal timeline month cards<br>Recent transactions feed with date grouping</div>
+    <div style="color:var(--gold);font-weight:500;margin-bottom:4px">Features</div>
+    <div style="padding-left:12px;margin-bottom:12px">Smart search on transactions<br>Undo/redo (Ctrl+Z / Ctrl+Shift+Z)<br>Keyboard shortcuts (Ctrl+N, Ctrl+E, Ctrl+1-9)<br>Export preview before download<br>Image attachments with lightbox gallery<br>Touch swipe on mobile lightbox<br>Firebase live sync with manual refresh<br>Monthly backup reminders</div>
+  </div>
+  <div class="ma"><button class="bs" onclick="closeModal('m-changelog');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION)">Got it</button></div>
 </div></div>
 <div class="overlay" id="m-confirm"><div class="modal" style="max-width:400px;text-align:center">
   <div style="font-size:28px;margin-bottom:12px;opacity:0.5" id="confirm-icon">&#x26A0;</div>
@@ -1031,243 +1087,14 @@ function load(){
 }
 
 function loadDefaults(){
-  state.months=['May-2025','Jun-2025','Jul-2025','Aug-2025','Sep-2025','Oct-2025','Nov-2025','Dec-2025','Jan-2026','Feb-2026','Mar-2026','Apr-2026','May-2026','Jun-2026','Jul-2026','Aug-2026','Sep-2026','Oct-2026','Nov-2026'];
-  state.monthlyEarnings={'May-2025':3463,'Jun-2025':17800,'Jul-2025':23450,'Aug-2025':20056,'Sep-2025':17075,'Oct-2025':35957,'Nov-2025':28170,'Dec-2025':16985,'Jan-2026':20615,'Feb-2026':20599.89,'Mar-2026':27258.75,'Apr-2026':9951.01};
-  state.modelEarnings={'May-2025':{akira:1800,mila:1663},'Jun-2025':{akira:9000,mila:8800},'Jul-2025':{akira:12000,mila:11450},'Aug-2025':{akira:10200,mila:9856},'Sep-2025':{akira:8500,mila:8575},'Oct-2025':{akira:18000,mila:17957},'Nov-2025':{akira:14000,mila:14170},'Dec-2025':{akira:8500,mila:8485},'Jan-2026':{akira:10300,mila:10315},'Feb-2026':{akira:10300,mila:10299.89},'Mar-2026':{},'Apr-2026':{}};
-  state.staffMembers=[
-    {id:'sm1',name:'Milk & Honey Chatting Agency',type:'agency',role:'Chatting agency — 25% of gross',who:'Sharon',notes:'Started Feb 2026'},
-    {id:'sm2',name:'Threads VA',type:'va',role:'Threads management',who:'Sharon',notes:''},
-    {id:'sm3',name:'Atlanta Chatters',type:'va',role:'Chatting VA',who:'Sharon',notes:''},
-    {id:'sm4',name:'X VA',type:'va',role:'X platform VA',who:'Sharon',notes:''},
-    {id:'sm5',name:'May',type:'va',role:'Chatter',who:'Sharon',notes:'Inactive',inactive:true}
-  ];
-  state.workers=[
-    {id:'wk1',name:'Mike',role:'General VA',expectedMonthly:0,startMonth:'Feb-2026',who:'Sharon',notes:'Variable rate — salary TBD',active:true}
-  ];
-  state.subscriptions=[
-    {id:'sub1',name:'Kling AI',amount:180,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:31,paused:false,notes:'$180 fixed sub. Credits are separate.'},
-    {id:'sub2',name:'Notion',amount:68,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:5,paused:false,notes:'Price varies — update if changed'},
-    {id:'sub3',name:'Higgsfield Team',amount:150,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:18,paused:false,notes:'Team plan. Credits separate.'},
-    {id:'sub4',name:'Bouncy',amount:140,who:'Shon',freq:1,cat:'Marketing',startMonth:'Apr-2026',endMonth:'',day:16,paused:false,notes:'Upgraded plan $140'},
-    {id:'sub5',name:'ChatGPT (Sharon)',amount:20,who:'Sharon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:10,paused:false,notes:''},
-    {id:'sub6',name:'ChatGPT (Shon)',amount:20,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:10,paused:false,notes:''},
-    {id:'sub7',name:'Mint Mobile (per line)',amount:140,who:'Shon',freq:3,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:1,paused:false,notes:'3 lines x $140 quarterly. International data separate.'},
-    {id:'sub8',name:'CapCut',amount:20,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:3,paused:false,notes:''},
-    {id:'sub9',name:'LinkMe',amount:20,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:3,paused:false,notes:''},
-    {id:'sub10',name:'Pixelcut',amount:10,who:'Shon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:16,paused:false,notes:'Shon only'},
-    {id:'sub11',name:'Airtable Team',amount:24,who:'Sharon',freq:1,cat:'Software',startMonth:'Apr-2026',endMonth:'',day:9,paused:false,notes:''}
-  ];
-  state.transactions=function(){
-    var keys=['id','date','desc','type','amount','who','month','cat','notes','sId','transferTo'];
-    var d=[
-      ['t1','2025-05-01','Kling AI Credits','Expense',156,'Shon','May-2025','Software'],
-      ['t2','2025-05-14','Payout','Withdrawal',400,'Shon','May-2025'],
-      ['t3','2025-05-14','UK (Personal)','Expense',160,'Shon','May-2025','Personal','Personal expense'],
-      ['t4','2025-05-14','GAML','Expense',50,'Shon','May-2025','Software'],
-      ['t5','2025-05-15','IG Ads','Expense',350,'Shon','May-2025','Marketing'],
-      ['t6','2025-05-21','Payout','Withdrawal',400,'Shon','May-2025'],
-      ['t7','2025-05-28','Payout','Withdrawal',233,'Shon','May-2025'],
-      ['t8','2025-05-31','Payout','Withdrawal',1277,'Shon','May-2025'],
-      ['t9','2025-05-30','Payout','Withdrawal',1594,'Sharon','May-2025'],
-      ['t10','2025-06-03','IG Ads','Expense',500,'Shon','Jun-2025','Marketing'],
-      ['t11','2025-06-08','Payout','Withdrawal',2687,'Shon','Jun-2025'],
-      ['t12','2025-06-10','Payout','Withdrawal',1642,'Shon','Jun-2025'],
-      ['t13','2025-06-14','Payout','Withdrawal',200,'Shon','Jun-2025','','Fixing Jun balance — withdrawal was Jul 14'],
-      ['t14','2025-06-18','Runpod Credits','Expense',150,'Shon','Jun-2025','Software'],
-      ['t15','2025-06-25','IG Ads','Expense',200,'Shon','Jun-2025','Marketing'],
-      ['t16','2025-06-26','Shon owes for Greece','Expense',6000,'Sharon','Jun-2025','Travel','Personal travel'],
-      ['t17','2025-06-26','Kling AI Credits','Expense',120,'Shon','Jun-2025','Software'],
-      ['t18','2025-06-28','May (Chatter)','Expense',200,'Sharon','Jun-2025','VA','','sm5'],
-      ['t19','2025-06-28','Payout','Withdrawal',1756,'Shon','Jun-2025'],
-      ['t20','2025-06-29','Payout','Withdrawal',8300,'Sharon','Jun-2025'],
-      ['t21','2025-06-30','Payout','Withdrawal',2910,'Sharon','Jun-2025'],
-      ['t22','2025-07-01','GAML','Expense',50,'Shon','Jul-2025','Software'],
-      ['t23','2025-07-06','Kling AI Credits','Expense',89,'Shon','Jul-2025','Software'],
-      ['t24','2025-07-07','Notion','Expense',30,'Shon','Jul-2025','Software'],
-      ['t25','2025-07-14','Payout','Withdrawal',6000,'Shon','Jul-2025'],
-      ['t26','2025-07-16','OnlyMonster','Expense',30,'Shon','Jul-2025','Software','One-off'],
-      ['t27','2025-07-30','May (Chatter)','Expense',144,'Sharon','Jul-2025','VA','','sm5'],
-      ['t28','2025-07-30','Payout','Withdrawal',5762,'Shon','Jul-2025'],
-      ['t29','2025-07-30','Kling AI Credits','Expense',20,'Shon','Jul-2025','Software'],
-      ['t30','2025-08-01','Kling AI Credits','Expense',20,'Shon','Aug-2025','Software'],
-      ['t31','2025-08-02','Payout','Withdrawal',2238,'Shon','Aug-2025'],
-      ['t32','2025-08-02','Runpod Credits','Expense',200,'Sharon','Aug-2025','Software'],
-      ['t33','2025-08-03','CapCut','Expense',99,'Shon','Aug-2025','Software','One-off higher tier'],
-      ['t34','2025-08-03','LinkMe','Expense',10,'Shon','Aug-2025','Software'],
-      ['t35','2025-08-06','Notion','Expense',48,'Shon','Aug-2025','Software'],
-      ['t36','2025-08-07','Payout','Withdrawal',1900,'Sharon','Aug-2025','','Done 07/09 — moved to fix balance'],
-      ['t37','2025-08-09','Kling AI Credits','Expense',8,'Sharon','Aug-2025','Software'],
-      ['t38','2025-08-10','Threads VA','Expense',276,'Sharon','Aug-2025','VA','','sm2'],
-      ['t39','2025-08-10','Higgsfield Credits','Expense',29,'Sharon','Aug-2025','Software'],
-      ['t40','2025-08-11','ChatGPT','Expense',20,'Sharon','Aug-2025','Software'],
-      ['t41','2025-08-16','Pixelcut','Expense',20,'Sharon','Aug-2025','Software'],
-      ['t42','2025-08-17','Bouncy','Expense',75,'Shon','Aug-2025','Marketing','Old plan — upgraded to $140'],
-      ['t43','2025-08-17','X Premium+ VA Accounts','Expense',80,'Shon','Aug-2025','Marketing','Now inactive'],
-      ['t44','2025-08-18','Runpod Credits','Expense',100,'Sharon','Aug-2025','Software'],
-      ['t45','2025-08-19','Threads VA','Expense',50,'Sharon','Aug-2025','VA','','sm2'],
-      ['t46','2025-08-24','Fal AI','Expense',10,'Sharon','Aug-2025','Software','One-off'],
-      ['t47','2025-08-24','Midjourney','Expense',30,'Sharon','Aug-2025','Software','Now inactive'],
-      ['t48','2025-08-25','iPhone 12','Expense',200,'Shon','Aug-2025','Equipment'],
-      ['t49','2025-08-25','CapCut','Expense',20,'Shon','Aug-2025','Software'],
-      ['t50','2025-08-25','Kling AI Credits','Expense',50,'Shon','Aug-2025','Software'],
-      ['t51','2025-08-25','IG Ads','Expense',180,'Shon','Aug-2025','Marketing'],
-      ['t52','2025-08-30','Runpod Credits','Expense',100,'Sharon','Aug-2025','Software'],
-      ['t53','2025-08-30','Payout','Withdrawal',7222,'Shon','Aug-2025'],
-      ['t54','2025-08-31','X VA Payment','Expense',1100,'Sharon','Aug-2025','VA','','sm4'],
-      ['t55','2025-08-31','Threads VA','Expense',30,'Shon','Aug-2025','VA','','sm2'],
-      ['t56','2025-09-02','Kling AI Credits','Expense',130,'Shon','Sep-2025','Software'],
-      ['t57','2025-09-02','IG Ads','Expense',200,'Shon','Sep-2025','Marketing'],
-      ['t58','2025-09-02','LinkMe','Expense',20,'Shon','Sep-2025','Software'],
-      ['t59','2025-09-03','ChatGPT','Expense',25,'Sharon','Sep-2025','Software'],
-      ['t60','2025-09-06','Notion','Expense',68,'Shon','Sep-2025','Software'],
-      ['t61','2025-09-06','Crypto Payout','Withdrawal',50,'Sharon','Sep-2025','','Crypto payout'],
-      ['t62','2025-09-06','Payout','Withdrawal',778,'Shon','Sep-2025'],
-      ['t63','2025-09-06','IG x2 Accounts','Expense',250,'Shon','Sep-2025','Marketing'],
-      ['t64','2025-09-08','Threads VA','Expense',80,'Sharon','Sep-2025','VA','','sm2'],
-      ['t65','2025-09-12','Payout','Withdrawal',20000,'Sharon','Sep-2025','','Large payout — includes prior months accumulation'],
-      ['t66','2025-09-12','Payout','Withdrawal',3408,'Sharon','Sep-2025'],
-      ['t67','2025-09-15','Threads VA','Expense',20,'Sharon','Sep-2025','VA','','sm2'],
-      ['t68','2025-09-15','Runpod Credits','Expense',100,'Sharon','Sep-2025','Software'],
-      ['t69','2025-09-16','IG Ads','Expense',200,'Shon','Sep-2025','Marketing'],
-      ['t70','2025-09-16','Atlanta Chatters','Expense',628.5,'Sharon','Sep-2025','VA','','sm3'],
-      ['t71','2025-09-16','Atlanta Chatters','Expense',104,'Sharon','Sep-2025','VA','','sm3'],
-      ['t72','2025-09-17','Atlanta Chatters','Expense',78,'Sharon','Sep-2025','VA','','sm3'],
-      ['t73','2025-09-19','Higgsfield Credits','Expense',80,'Shon','Sep-2025','Software'],
-      ['t74','2025-09-19','Pixelcut','Expense',10,'Shon','Sep-2025','Software'],
-      ['t75','2025-09-19','Kling AI Credits','Expense',80,'Shon','Sep-2025','Software'],
-      ['t76','2025-09-20','Runpod Credits','Expense',100,'Sharon','Sep-2025','Software'],
-      ['t77','2025-09-23','Payout','Withdrawal',3046,'Sharon','Sep-2025'],
-      ['t78','2025-09-23','Payout','Withdrawal',2802,'Shon','Sep-2025'],
-      ['t79','2025-09-27','IG Ads','Expense',200,'Shon','Sep-2025','Marketing'],
-      ['t80','2025-09-29','Payout','Withdrawal',2181.61,'Sharon','Sep-2025'],
-      ['t81','2025-10-04','IG Ads (Akira)','Expense',200,'Shon','Oct-2025','Marketing'],
-      ['t82','2025-10-04','LinkMe','Expense',20,'Shon','Oct-2025','Software'],
-      ['t83','2025-10-04','Notion','Expense',68,'Shon','Oct-2025','Software'],
-      ['t84','2025-10-05','Kling AI Credits','Expense',160,'Shon','Oct-2025','Software','Credits'],
-      ['t85','2025-10-05','Payout Mila','Withdrawal',3146.81,'Shon','Oct-2025'],
-      ['t86','2025-10-05','Payout Akira','Withdrawal',558.95,'Shon','Oct-2025'],
-      ['t87','2025-10-06','IG Promo','Expense',300,'Sharon','Oct-2025','Marketing'],
-      ['t88','2025-10-07','Runpod Credits','Expense',100,'Sharon','Oct-2025','Software'],
-      ['t89','2025-10-09','Universal Studios','Expense',975.52,'Shon','Oct-2025','Travel'],
-      ['t90','2025-10-09','Royal Caribbean','Expense',1100,'Shon','Oct-2025','Travel'],
-      ['t91','2025-10-12','Runpod Credits','Expense',100,'Sharon','Oct-2025','Software'],
-      ['t92','2025-10-13','Payout Mila','Withdrawal',3799.02,'Shon','Oct-2025'],
-      ['t93','2025-10-13','Payout Akira','Withdrawal',1847.47,'Shon','Oct-2025'],
-      ['t94','2025-10-15','iPhone for Blonduu','Expense',300,'Shon','Oct-2025','Equipment','Hardware'],
-      ['t95','2025-10-16','IG Ads','Expense',100,'Shon','Oct-2025','Marketing'],
-      ['t96','2025-10-16','Bouncy','Expense',140,'Shon','Oct-2025','Marketing'],
-      ['t97','2025-10-16','Stealthcreator','Expense',40,'Shon','Oct-2025','Software','One-off'],
-      ['t98','2025-10-16','Custom Domains Akira/Mila','Expense',48,'Shon','Oct-2025','Software'],
-      ['t99','2025-10-19','Payout Mila (Sharon)','Withdrawal',2674.55,'Sharon','Oct-2025'],
-      ['t100','2025-10-20','Payout Akira (Shon)','Withdrawal',7162.69,'Shon','Oct-2025'],
-      ['t101','2025-10-20','Disney Parks','Expense',1119,'Shon','Oct-2025','Travel'],
-      ['t102','2025-10-20','Higgsfield Credits','Expense',50,'Shon','Oct-2025','Software'],
-      ['t103','2025-10-20','ChatGPT','Expense',20,'Shon','Oct-2025','Software'],
-      ['t104','2025-10-22','IG Ads','Expense',400,'Shon','Oct-2025','Marketing'],
-      ['t105','2025-10-26','Runpod Credits','Expense',100,'Sharon','Oct-2025','Software'],
-      ['t106','2025-10-26','Higgsfield Credits','Expense',130,'Sharon','Oct-2025','Software'],
-      ['t107','2025-10-26','X Platform','Expense',160,'Shon','Oct-2025','Marketing','Now inactive'],
-      ['t108','2025-10-27','Payout','Withdrawal',6090,'Shon','Oct-2025'],
-      ['t109','2025-10-27','Payout','Withdrawal',2800,'Sharon','Oct-2025','','Shaz logged'],
-      ['t110','2025-10-27','Royal Caribbean Extras','Expense',950,'Shon','Oct-2025','Travel'],
-      ['t111','2025-10-27','Payout','Withdrawal',1725,'Shon','Oct-2025'],
-      ['t112','2025-11-16','Hotels + Royal Caribbean','Expense',1700,'Shon','Nov-2025','Travel'],
-      ['t113','2025-11-16','LinkMe','Expense',20,'Shon','Nov-2025','Software'],
-      ['t114','2025-11-16','Payout','Withdrawal',11000,'Shon','Nov-2025'],
-      ['t115','2025-11-16','Trip Expenses','Expense',4000,'Shon','Nov-2025','Travel'],
-      ['t116','2025-11-24','Wonder Extra Charges','Expense',2000,'Shon','Nov-2025','Travel'],
-      ['t117','2025-11-25','Notion','Expense',41,'Shon','Nov-2025','Software'],
-      ['t118','2025-11-25','Bouncy','Expense',140,'Shon','Nov-2025','Marketing'],
-      ['t119','2025-11-25','Mint Mobile Quarterly','Expense',159,'Shon','Nov-2025','Software','Akira line'],
-      ['t120','2025-11-27','Payout','Withdrawal',12790,'Shon','Nov-2025'],
-      ['t121','2025-11-27','Payout','Withdrawal',8229,'Sharon','Nov-2025','','-3990 flight -2100 MacBook. 400 on Shon bank needs transfer.'],
-      ['t122','2025-11-28','Chatter Payments','Expense',1015,'Sharon','Nov-2025','VA','','sm1'],
-      ['t123','2025-12-05','IG Ads','Expense',400,'Shon','Dec-2025','Marketing'],
-      ['t124','2025-12-05','Notion','Expense',180,'Shon','Dec-2025','Software'],
-      ['t125','2025-12-08','Runpod Credits','Expense',100,'Sharon','Dec-2025','Software'],
-      ['t126','2025-12-18','Payout','Withdrawal',6289.61,'Sharon','Dec-2025'],
-      ['t127','2025-12-19','Payout','Withdrawal',7122,'Sharon','Dec-2025'],
-      ['t128','2025-12-24','IG Ads','Expense',500,'Shon','Dec-2025','Marketing'],
-      ['t129','2025-12-24','X Platform','Expense',30,'Shon','Dec-2025','Marketing','Now inactive'],
-      ['t130','2025-12-24','Kling AI Credits','Expense',160,'Shon','Dec-2025','Software','Credits'],
-      ['t131','2025-12-24','LinkMe','Expense',20,'Shon','Dec-2025','Software'],
-      ['t132','2025-12-27','Higgsfield Credits','Expense',80,'Sharon','Dec-2025','Software'],
-      ['t133','2025-12-27','Chatter Payments','Expense',487,'Sharon','Dec-2025','VA','','sm1'],
-      ['t134','2026-01-03','Payout','Withdrawal',2759,'Shon','Jan-2026'],
-      ['t135','2026-01-03','Payout','Withdrawal',2742,'Shon','Jan-2026'],
-      ['t136','2026-01-11','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t137','2026-01-13','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t138','2026-01-13','Transfer to Shon','Transfer',1300,'Sharon','Jan-2026','','Rent payment','','Shon'],
-      ['t139','2026-01-13','Payout','Withdrawal',1800,'Shon','Jan-2026'],
-      ['t140','2026-01-17','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t141','2026-01-17','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t142','2026-01-20','Runpod Credits','Expense',100,'Sharon','Jan-2026','Software'],
-      ['t143','2026-01-20','Higgsfield Credits','Expense',60,'Sharon','Jan-2026','Software'],
-      ['t144','2026-01-20','Runcomfy','Expense',35,'Sharon','Jan-2026','Software','One-off'],
-      ['t145','2026-01-20','Pixelcut','Expense',10,'Sharon','Jan-2026','Software'],
-      ['t146','2026-01-20','Chatter Payments','Expense',128,'Sharon','Jan-2026','VA','','sm1'],
-      ['t147','2026-01-20','ChatGPT','Expense',20,'Sharon','Jan-2026','Software'],
-      ['t148','2026-01-20','Vast.ai','Expense',25,'Sharon','Jan-2026','Software','One-off'],
-      ['t149','2026-01-24','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t150','2026-01-25','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t151','2026-01-26','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t152','2026-01-26','IG Ads','Expense',200,'Shon','Jan-2026','Marketing'],
-      ['t153','2026-01-26','Payout','Withdrawal',5141,'Shon','Jan-2026'],
-      ['t154','2026-01-31','Payout','Withdrawal',2378,'Shon','Jan-2026'],
-      ['t155','2026-02-02','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t156','2026-02-07','IG Promo','Expense',300,'Sharon','Feb-2026','Marketing'],
-      ['t157','2026-02-08','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t158','2026-02-08','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t159','2026-02-09','Payout','Withdrawal',3551.96,'Shon','Feb-2026'],
-      ['t160','2026-02-09','Airtable Team','Expense',24,'Sharon','Feb-2026','Software'],
-      ['t161','2026-02-10','Photoshop','Expense',50,'Sharon','Feb-2026','Software','Now inactive'],
-      ['t162','2026-02-10','ChatGPT','Expense',25,'Sharon','Feb-2026','Software'],
-      ['t163','2026-02-12','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t164','2026-02-12','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t165','2026-02-15','Mint Mobile Mila','Expense',124,'Shon','Feb-2026','Software','Mila line quarterly'],
-      ['t166','2026-02-15','Mint Mobile International x6','Expense',120,'Shon','Feb-2026','Software','6x $20 international data'],
-      ['t167','2026-02-16','Milk & Honey Chatting Agency','Expense',2000,'Sharon','Feb-2026','VA','First official M&H payment','sm1'],
-      ['t168','2026-02-17','Higgsfield Credits','Expense',68,'Shon','Feb-2026','Software','Credits top-up'],
-      ['t169','2026-02-18','Higgsfield Team Plan','Expense',150,'Shon','Feb-2026','Software','Team plan sub'],
-      ['t170','2026-02-20','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t171','2026-02-20','IG Ads','Expense',200,'Shon','Feb-2026','Marketing'],
-      ['t172','2026-02-21','Payout','Withdrawal',5013,'Shon','Feb-2026'],
-      ['t173','2026-02-21','Payout','Withdrawal',12522,'Sharon','Feb-2026','','Via Shon account — Sent to Sharon'],
-      ['t174','2026-02-27','Mike VA','Expense',315,'Sharon','Feb-2026','VA','','wk1'],
-      ['t175','2026-03-02','Payout','Withdrawal',3561.03,'Sharon','Mar-2026','','Via Shon account — Sent'],
-      ['t176','2026-03-02','Payout','Withdrawal',6190.76,'Sharon','Mar-2026','','Via Shon account — Sent. -$260 Arabian oud.'],
-      ['t177','2026-03-02','Runpod Credits','Expense',150,'Sharon','Mar-2026','Software'],
-      ['t178','2026-03-02','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t179','2026-03-02','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t180','2026-03-02','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t181','2026-03-02','Mint Mobile Line 1','Expense',140,'Shon','Mar-2026','Software','Quarterly'],
-      ['t182','2026-03-02','Mint Mobile Line 2','Expense',140,'Shon','Mar-2026','Software','Quarterly'],
-      ['t183','2026-03-02','Mint Mobile Line 3','Expense',100,'Shon','Mar-2026','Software','Quarterly'],
-      ['t184','2026-03-04','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t185','2026-03-04','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t186','2026-03-05','Higgsfield Credits','Expense',200,'Sharon','Mar-2026','Software','Credits'],
-      ['t187','2026-03-09','IG Ads','Expense',600,'Shon','Mar-2026','Marketing'],
-      ['t188','2026-03-10','Payout Akira','Withdrawal',2002.19,'Shon','Mar-2026'],
-      ['t189','2026-03-10','Payout Mila','Withdrawal',1289,'Shon','Mar-2026'],
-      ['t190','2026-03-10','Payout Mila','Withdrawal',563.37,'Shon','Mar-2026','','Second Mila payout'],
-      ['t191','2026-03-11','Mint Mobile International','Expense',40,'Shon','Mar-2026','Software','Extra data'],
-      ['t192','2026-03-11','IG Ads','Expense',350,'Shon','Mar-2026','Marketing'],
-      ['t193','2026-03-11','Popmart','Expense',465,'Shon','Mar-2026','Personal','Personal'],
-      ['t194','2026-03-16','Payout','Withdrawal',1111,'Shon','Mar-2026'],
-      ['t195','2026-03-21','IG Ads','Expense',300,'Shon','Mar-2026','Marketing'],
-      ['t196','2026-03-27','Mike VA','Expense',150,'Sharon','Mar-2026','VA','','wk1'],
-      ['t197','2026-03-31','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t198','2026-03-31','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t199','2026-03-31','IG Ads','Expense',200,'Shon','Mar-2026','Marketing'],
-      ['t200','2026-03-31','Kling AI Sub','Expense',180,'Shon','Mar-2026','Software','Fixed monthly sub'],
-      ['t201','2026-03-31','Mint Mobile','Expense',140,'Shon','Mar-2026','Software'],
-      ['t202','2026-03-31','IG Ads','Expense',243,'Shon','Mar-2026','Marketing'],
-      ['t203','2026-04-02','Payout Akira','Withdrawal',8907.82,'Shon','Apr-2026'],
-      ['t204','2026-04-03','Mike VA','Expense',300,'Sharon','Apr-2026','VA','','wk1']
-    ];
-    return d.map(function(r){var o={};keys.forEach(function(k,i){if(r[i]!==undefined&&r[i]!=='')o[k]=i===4?Number(r[i]):r[i];});return o;});
-  }()
-  save();
+  state.months=['Jan-2026','Feb-2026','Mar-2026','Apr-2026'];
+  state.monthlyEarnings={};
+  state.modelEarnings={};
+  state.staffMembers=[];
+  state.workers=[];
+  state.subscriptions=[];
+  state.transactions=[];
+  state.todos=[{id:'td_1',text:'Set up monthly earnings',done:false},{id:'td_2',text:'Add first transaction',done:false},{id:'td_3',text:'Connect Firebase for live sync',done:false}];
 }
 
 // CALCS
@@ -1351,6 +1178,7 @@ function upcomingSubs(n){
 // NAV
 function switchTab(tab,el,forceLatest){
   try{localStorage.setItem('seraphim_lastTab',tab);}catch(e){}
+  clearUnseenBadge(tab);
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.si').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
@@ -1802,7 +1630,7 @@ function staffCardHtml(sm){
     '<div class="sc-stat"><span>Managed by</span><span>'+sm.who+'</span></div>'+
     '<div class="sc-stat"><span>Total paid</span><span>'+fmt(paid)+'</span></div>'+
     '<div class="sc-stat"><span>Last payment</span><span>'+(last?last.month:'--')+'</span></div>'+
-    '<div class="sc-actions"><button class="btn sm primary" onclick="openStaffPaymentModal('+qid(sm.id)+')">+ Pay</button><button class="btn sm" onclick="editStaffMember('+qid(sm.id)+')">Edit</button><button class="btn sm danger" onclick="delStaffMember('+qid(sm.id)+')">Del</button></div></div>';
+    '<div class="sc-actions"><button class="btn sm primary" onclick="openStaffPaymentModal('+qid(sm.id)+')">+ Pay</button><button class="btn sm'+(sm.inactive?' danger':'')+'" onclick="toggleStaffActive('+qid(sm.id)+')">'+(sm.inactive?'Inactive':'Active')+'</button><button class="btn sm" onclick="editStaffMember('+qid(sm.id)+')">Edit</button><button class="btn sm danger" onclick="delStaffMember('+qid(sm.id)+')">Del</button></div></div>';
 }
 
 // WORKERS INLINE (in Team tab)
@@ -1854,8 +1682,8 @@ function renderWorkers(){
       '<div class="sc-stat"><span>Avg / month</span><span>'+fmt(avgMo)+'</span></div>'+
       '<div class="sc-stat"><span>Months active</span><span>'+mths.length+'</span></div>'+
       '<div class="sc-stat"><span>Last payment</span><span>'+(lastPay?lastPay.month:'--')+'</span></div>'+
-      '<div class="sc-stat"><span>Managed by</span><span>'+wk.who+'</span></div>'+
-      '<div class="sc-actions" style="margin-top:10px"><button class="btn sm primary" onclick="openWorkerPaymentModal('+qid(wk.id)+')">+ Pay</button><button class="btn sm" onclick="openAddWorker('+qid(wk.id)+')">Edit</button><button class="btn sm danger" onclick="delWorker('+qid(wk.id)+')">Del</button></div></div>';
+      '<div class="sc-stat"><span>Status</span><span style="color:'+(wk.inactive?'var(--red)':'var(--green)')+'">'+(wk.inactive?'Inactive':'Active')+'</span></div><div class="sc-stat"><span>Managed by</span><span>'+wk.who+'</span></div>'+
+      '<div class="sc-actions" style="margin-top:10px"><button class="btn sm primary" onclick="openWorkerPaymentModal('+qid(wk.id)+')">+ Pay</button><button class="btn sm'+(wk.inactive?' danger':'')+'" onclick="toggleWorkerActive('+qid(wk.id)+')">'+(wk.inactive?'Inactive':'Active')+'</button><button class="btn sm" onclick="openAddWorker('+qid(wk.id)+')">Edit</button><button class="btn sm danger" onclick="delWorker('+qid(wk.id)+')">Del</button></div></div>';
   }).join(''):'<div class="empty"><div class="empty-icon">&#x1F4BC;</div>No workers yet</div>';
 
   const filteredTxns=allWkrTxns.filter(t=>(!wf||t.sId===wf)&&(!mf||t.month===mf)).sort((a,b)=>b.date.localeCompare(a.date));
@@ -2124,6 +1952,15 @@ function delSub(id){var s=state.subscriptions.find(function(x){return x.id===id;
 
 // CRUD - STAFF
 function openAddStaffMember(type){document.getElementById('sm-title').textContent='Add '+(type==='agency'?'Agency':'VA');document.getElementById('sm-id').value='';document.getElementById('sm-type').value=type;document.getElementById('sm-name').value='';document.getElementById('sm-role').value='';document.getElementById('sm-who').value='Sharon';document.getElementById('sm-notes').value='';openModal('m-staff-member');}
+function toggleStaffActive(id){
+  pushUndo();
+  var sm=state.staffMembers.find(function(s){return s.id===id;});
+  if(!sm) return;
+  sm.inactive=!sm.inactive;
+  logActivity('edit',(sm.inactive?'Deactivated':'Activated')+': '+sm.name,{by:state.currentUser});
+  save();refreshCurrent();
+  toast(sm.name+' is now '+(sm.inactive?'inactive':'active'),'success');
+}
 function editStaffMember(id){const sm=state.staffMembers.find(s=>s.id===id);if(!sm) return;document.getElementById('sm-title').textContent='Edit '+(sm.type==='agency'?'Agency':'VA');document.getElementById('sm-id').value=id;document.getElementById('sm-type').value=sm.type;document.getElementById('sm-name').value=sm.name;document.getElementById('sm-role').value=sm.role||'';document.getElementById('sm-who').value=sm.who;document.getElementById('sm-notes').value=sm.notes||'';openModal('m-staff-member');}
 function saveStaffMember(){
   const id=document.getElementById('sm-id').value;
@@ -2152,6 +1989,15 @@ function saveStaffPayment(){
 }
 
 // CRUD - WORKERS
+function toggleWorkerActive(id){
+  pushUndo();
+  var wk=state.workers.find(function(w){return w.id===id;});
+  if(!wk) return;
+  wk.inactive=!wk.inactive;
+  logActivity('edit',(wk.inactive?'Deactivated':'Activated')+': '+wk.name,{by:state.currentUser});
+  save();refreshCurrent();
+  toast(wk.name+' is now '+(wk.inactive?'inactive':'active'),'success');
+}
 function openAddWorker(id){
   const wk=id?state.workers.find(w=>w.id===id):null;
   document.getElementById('wk-title').textContent=wk?'Edit Worker':'Add Worker';
@@ -2803,6 +2649,7 @@ function mergeRemoteState(remote){
       var diff=Math.abs(remoteTxnCount-localTxnCount);
       var detail=diff>0?(' — '+diff+' transaction'+(diff>1?'s':'')+' changed'):'';
       toast(who+' synced changes'+detail,'info',4000);
+      ['transactions','payouts','partners','staff','subscriptions'].forEach(function(t){addUnseenBadge(t);});
     }
     updateSyncUI('on','Connected');
     updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
@@ -2947,6 +2794,156 @@ function updateFirebaseUI(){
     }
   }
   updateSyncUI(state.firebaseConnected?'on':'off',state.firebaseConnected?'Connected':'Offline');
+}
+
+// AUTH
+var _authApp=null;
+var _authMode='login';
+var _authUser=null;
+var _sessionTimer=null;
+var _sessionWarnTimer=null;
+var _SESSION_TIMEOUT=30*60*1000;
+var _SESSION_WARN=25*60*1000;
+
+function initAuth(){
+  if(typeof firebase==='undefined') {showDashboard();return;}
+  var cfg=state.firebaseConfig;
+  if(!cfg||!cfg.apiKey){showDashboard();return;}
+  try{
+    _authApp=firebase.initializeApp({apiKey:cfg.apiKey,authDomain:cfg.authDomain||'',projectId:cfg.projectId||''},'auth_'+Date.now());
+    _authApp.auth().onAuthStateChanged(function(user){
+      if(user){
+        _authUser=user;
+        showDashboard();
+        updateAuthUI();
+        logLoginEvent(user);
+        resetSessionTimer();
+      } else {
+        _authUser=null;
+        showLoginScreen();
+      }
+    });
+  }catch(e){
+    console.error('Auth init error:',e);
+    showDashboard();
+  }
+}
+
+function showLoginScreen(){
+  document.getElementById('login-screen').classList.remove('hidden');
+}
+
+function showDashboard(){
+  document.getElementById('login-screen').classList.add('hidden');
+  init();
+}
+
+function toggleAuthMode(){
+  _authMode=_authMode==='login'?'register':'login';
+  document.getElementById('login-sub').textContent=_authMode==='login'?'Sign in to your dashboard':'Create your account';
+  document.getElementById('login-btn').textContent=_authMode==='login'?'Sign in':'Create account';
+  document.getElementById('login-name').style.display=_authMode==='register'?'block':'none';
+  document.getElementById('login-toggle').innerHTML=_authMode==='login'?'No account? <span onclick="toggleAuthMode()">Create one</span>':'Already have an account? <span onclick="toggleAuthMode()">Sign in</span>';
+  document.getElementById('login-error').textContent='';
+}
+
+function doLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var pass=document.getElementById('login-pass').value;
+  var errEl=document.getElementById('login-error');
+  if(!email||!pass){errEl.textContent='Enter email and password';return;}
+  errEl.textContent='';
+  document.getElementById('login-btn').textContent='...';
+  if(_authMode==='register'){
+    var name=document.getElementById('login-name').value.trim();
+    _authApp.auth().createUserWithEmailAndPassword(email,pass).then(function(cred){
+      if(name) return cred.user.updateProfile({displayName:name});
+    }).then(function(){
+      document.getElementById('login-btn').textContent='Create account';
+    }).catch(function(err){
+      errEl.textContent=err.message.replace('Firebase: ','');
+      document.getElementById('login-btn').textContent='Create account';
+    });
+  } else {
+    _authApp.auth().signInWithEmailAndPassword(email,pass).then(function(){
+      document.getElementById('login-btn').textContent='Sign in';
+    }).catch(function(err){
+      errEl.textContent=err.message.replace('Firebase: ','');
+      document.getElementById('login-btn').textContent='Sign in';
+    });
+  }
+}
+
+function doLogout(){
+  if(_authApp){
+    _authApp.auth().signOut();
+  }
+  clearTimeout(_sessionTimer);
+  clearTimeout(_sessionWarnTimer);
+  _authUser=null;
+}
+
+function updateAuthUI(){
+  var bar=document.getElementById('auth-user-bar');
+  var emailDisp=document.getElementById('auth-email-display');
+  if(bar&&_authUser){
+    bar.style.display='flex';
+    var name=_authUser.displayName||_authUser.email;
+    emailDisp.textContent=name;
+    if(name==='Sharon'||name==='sharon') setProfile('Sharon');
+    else if(name==='Shon'||name==='shon') setProfile('Shon');
+  }
+}
+
+function resetSessionTimer(){
+  clearTimeout(_sessionTimer);
+  clearTimeout(_sessionWarnTimer);
+  _sessionWarnTimer=setTimeout(function(){
+    toast('Session expires in 5 minutes — move your mouse to stay logged in','info',8000);
+  },_SESSION_WARN);
+  _sessionTimer=setTimeout(function(){
+    toast('Session expired — logging out','info',3000);
+    setTimeout(doLogout,2000);
+  },_SESSION_TIMEOUT);
+}
+
+function logLoginEvent(user){
+  var entry={
+    id:'login_'+Date.now(),
+    timestamp:new Date().toISOString(),
+    action:'login',
+    desc:'Logged in: '+(user.displayName||user.email),
+    meta:{by:user.displayName||user.email,device:navigator.userAgent.indexOf('Mobile')>=0?'Mobile':'Desktop'}
+  };
+  state.activityLog.unshift(entry);
+  if(state.activityLog.length>500) state.activityLog=state.activityLog.slice(0,500);
+}
+
+document.addEventListener('mousemove',function(){if(_authUser)resetSessionTimer();});
+document.addEventListener('keydown',function(){if(_authUser)resetSessionTimer();});
+document.addEventListener('touchstart',function(){if(_authUser)resetSessionTimer();});
+document.getElementById('login-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+
+var _unseenChanges={};
+function addUnseenBadge(tab){
+  if(tab===state.currentTab) return;
+  _unseenChanges[tab]=(_unseenChanges[tab]||0)+1;
+  renderBadges();
+}
+function clearUnseenBadge(tab){
+  _unseenChanges[tab]=0;
+  renderBadges();
+}
+function renderBadges(){
+  document.querySelectorAll('.nav-item').forEach(function(el){
+    var t=el.dataset.tab;
+    var badge=el.querySelector('.nav-badge');
+    var count=_unseenChanges[t]||0;
+    if(count>0){
+      if(!badge){badge=document.createElement('span');badge.className='nav-badge';el.appendChild(badge);}
+      badge.textContent=count>9?'9+':count;
+    } else if(badge){badge.remove();}
+  });
 }
 
 // ZOOM
@@ -3206,17 +3203,14 @@ function confirmAction(title,msg,btnText,callback){
 
 // ACTIVITY LOG
 function logActivity(action,desc,meta){
-  if(meta) meta.tab=state.currentTab||'overview';
-  var m=meta||{};
-  if(state.currentUser) m.by=state.currentUser;
-  state.activityLog.unshift({
-    id:'al_'+Date.now()+'_'+Math.random().toString(36).substr(2,4),
-    action:action,
-    desc:desc,
-    meta:m,
-    timestamp:new Date().toISOString()
-  });
+  meta=meta||{};
+  meta.by=meta.by||state.currentUser||'Unknown';
+  var entry={id:'log_'+Date.now()+'_'+Math.random().toString(36).substr(2,4),timestamp:new Date().toISOString(),action:action,desc:desc,meta:meta};
+  state.activityLog.unshift(entry);
   if(state.activityLog.length>500) state.activityLog=state.activityLog.slice(0,500);
+  if(_fb&&state.firebaseConnected){
+    try{_fb.database().ref('seraphim/audit/'+entry.id).set(entry);}catch(e){}
+  }
 }
 function renderActivityLog(){
   var tf=document.getElementById('al-type').value;
@@ -3380,7 +3374,11 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
+var SERAPHIM_VERSION='2.1.0';
+var _initDone=false;
 function init(){
+  if(_initDone) return;
+  _initDone=true;
   try{
     load();
     if(!state.currentMonth&&state.months.length) state.currentMonth=activeMths().slice(-1)[0]||state.months[state.months.length-1];
@@ -3404,6 +3402,8 @@ function init(){
     switchTab(lastTab,null,false);
     if(!state.currentUser) setTimeout(function(){openSettings();},600);
     checkBackupReminder();checkStorageSize();
+    var lastV=localStorage.getItem('seraphim_lastVersion');
+    if(lastV!==SERAPHIM_VERSION) openModal('m-changelog');
     if(typeof firebase!=='undefined'&&state.firebaseConfig&&state.firebaseConfig.databaseURL&&state.firebaseConfig.apiKey){
       setTimeout(function(){initFirebase();},1000);
     }
@@ -3419,7 +3419,7 @@ setInterval(function(){
   });
 },30000);
 
-init();
+initAuth();
 </script>
 </body>
 </html>
