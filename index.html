@@ -924,8 +924,14 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
       <div class="ph"><div class="ph-top"><span class="pg-title">Workers</span><div class="pg-actions"><button class="btn sm" onclick="openAddWorker()">+ Add Worker</button><button class="btn sm primary" onclick="openWorkerPaymentModal()">+ Log Payment</button></div></div><div class="pg-sub">Regular workers &mdash; salary tracking, YTD payouts, payment history</div></div>
       <div class="kpis" id="worker-kpis"></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:14px" id="worker-cards"></div>
-      <div class="team-section-title" id="inactive-workers-title" style="display:none">Inactive</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:14px" id="inactive-worker-cards"></div>
+      <div id="inactive-workers-wrap" style="display:none;margin-top:12px">
+        <button onclick="var el=document.getElementById('inactive-worker-cards');var a=document.getElementById('inactive-arrow');if(el.style.display==='none'){el.style.display='grid';a.textContent='▾';}else{el.style.display='none';a.textContent='▸';}" style="background:none;border:1px solid var(--b1);border-radius:6px;padding:6px 14px;color:var(--dim);font-size:11px;cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:6px">
+          <span id="inactive-arrow" style="font-size:10px">▸</span>
+          <span>Inactive workers</span>
+          <span id="inactive-count" style="font-size:10px;opacity:0.5"></span>
+        </button>
+        <div style="display:none;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:10px" id="inactive-worker-cards"></div>
+      </div>
       <div class="filters">
         <select class="fsel" id="wf-worker" onchange="renderWorkers()"><option value="">All Workers</option></select>
         <select class="fsel" id="wf-month" onchange="renderWorkers()"><option value="">All Months</option></select>
@@ -1192,6 +1198,16 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <button class="btn" onclick="exportMonthPDF('Shon')" style="width:100%;border-color:var(--amber);color:var(--amber)">Shon only</button>
   </div>
   <button class="bc" onclick="closeModal('m-pdf-export')" style="width:100%">Cancel</button>
+</div></div>
+<div class="overlay" id="m-pdf-preview"><div class="modal" style="max-width:700px;width:95vw;height:85vh;display:flex;flex-direction:column;padding:0">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--b1)">
+    <div class="modal-title" style="margin:0" id="pdf-preview-title">PDF preview</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn sm" onclick="closeModal('m-pdf-preview')">Cancel</button>
+      <button class="bs" onclick="downloadPreviewPDF()">Download PDF</button>
+    </div>
+  </div>
+  <iframe id="pdf-preview-frame" style="flex:1;border:none;background:#fff;border-radius:0 0 8px 8px"></iframe>
 </div></div>
 <div id="lightbox">
   <button id="lb-close" onclick="closeLightbox()">&times;</button>
@@ -1884,9 +1900,11 @@ function renderWorkers(){
       '<div class="sc-actions" style="margin-top:10px">'+(wk.inactive?'':'<button class="btn sm primary" onclick="openWorkerPaymentModal('+qid(wk.id)+')">+ Pay</button>')+'<button class="btn sm '+(wk.inactive?'inactive-btn':'active-btn')+'" onclick="toggleWorkerActive('+qid(wk.id)+')">'+(wk.inactive?'Reactivate':'Active')+'</button><button class="btn sm" onclick="openAddWorker('+qid(wk.id)+')">Edit</button><button class="btn sm danger" onclick="delWorker('+qid(wk.id)+')">Del</button></div></div>';
   }
   document.getElementById('worker-cards').innerHTML=activeWorkers.length?activeWorkers.map(workerCard).join(''):'<div class="empty">No active workers</div>';
-  var iwTitle=document.getElementById('inactive-workers-title');
+  var iwWrap=document.getElementById('inactive-workers-wrap');
   var iwCards=document.getElementById('inactive-worker-cards');
-  if(iwTitle) iwTitle.style.display=inactiveWorkers.length?'flex':'none';
+  var iwCount=document.getElementById('inactive-count');
+  if(iwWrap) iwWrap.style.display=inactiveWorkers.length?'block':'none';
+  if(iwCount) iwCount.textContent='('+inactiveWorkers.length+')';
   if(iwCards) iwCards.innerHTML=inactiveWorkers.map(workerCard).join('');
 
   const filteredTxns=allWkrTxns.filter(t=>(!wf||t.sId===wf)&&(!mf||t.month===mf)).sort((a,b)=>b.date.localeCompare(a.date));
@@ -2448,7 +2466,21 @@ function openPdfExportModal(){
   openModal('m-pdf-export');
 }
 function exportMonthPDF(filter){
-  if(typeof jspdf==='undefined'&&typeof window.jspdf==='undefined'){toast('PDF library loading...','error');return;}
+  if(!window.jspdf||!window.jspdf.jsPDF){
+    toast('Loading PDF library...','info');
+    var s1=document.createElement('script');
+    s1.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s1.onload=function(){
+      var s2=document.createElement('script');
+      s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+      s2.onload=function(){toast('Ready — click export again','success');};
+      document.head.appendChild(s2);
+    };
+    s1.onerror=function(){toast('Failed to load PDF library — check internet','error');};
+    document.head.appendChild(s1);
+    closeModal('m-pdf-export');
+    return;
+  }
   var jsPDF=window.jspdf.jsPDF;
   var month=state.currentMonth;
   if(!month){toast('Select a month first','error');return;}
@@ -2503,9 +2535,23 @@ function exportMonthPDF(filter){
     doc.text('Seraphim Management — Generated '+new Date().toLocaleDateString(),105,285,{align:'center'});
     doc.text('Page '+i+' of '+pageCount,190,285,{align:'right'});
   }
-  doc.save('Seraphim_'+month+(filter!=='combined'?'_'+filter:'')+'.pdf');
+  // Preview instead of save
+  var pdfBlob=doc.output('blob');
+  var url=URL.createObjectURL(pdfBlob);
+  window._pdfDoc=doc;
+  window._pdfName='Seraphim_'+month+(filter!=='combined'?'_'+filter:'')+'.pdf';
+  document.getElementById('pdf-preview-title').textContent='Preview — '+month+(filter!=='combined'?' ('+filter+')':'');
+  document.getElementById('pdf-preview-frame').src=url;
   closeModal('m-pdf-export');
-  toast('PDF exported','success');
+  openModal('m-pdf-preview');
+}
+
+function downloadPreviewPDF(){
+  if(window._pdfDoc&&window._pdfName){
+    window._pdfDoc.save(window._pdfName);
+    toast('PDF downloaded','success');
+    closeModal('m-pdf-preview');
+  }
 }
 
 function exportMonthCSV(){const m=state.currentMonth;if(!m) return;const txns=state.transactions.filter(t=>t.month===m);const rows=[['Date','Description','Type','Amount','Who','Notes'],...txns.map(t=>[t.date,t.desc,t.type,t.amount,t.who,t.notes||''])];dlCSV(rows,'Seraphim_'+m+'.csv');}
