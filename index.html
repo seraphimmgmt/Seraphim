@@ -3166,16 +3166,31 @@ function mergeRemoteState(remote){
   var changed=false;
   var mergeArray=function(local,remote,key){
     if(!Array.isArray(remote)) return local;
-    var map={};
-    local.forEach(function(item){if(item&&(item.id||item.text)) map[item.id||item.text]=item;});
-    remote.forEach(function(item){if(item&&(item.id||item.text)) map[item.id||item.text]=item;});
-    var merged=Object.values(map);
-    if(merged.length!==local.length) changed=true;
-    else{
-      var localIds=local.map(function(i){return i.id||i.text;}).sort().join(',');
-      var mergedIds=merged.map(function(i){return i.id||i.text;}).sort().join(',');
-      if(localIds!==mergedIds) changed=true;
-    }
+    // Remote is source of truth — use remote array but preserve local-only items
+    // that were created AFTER the last push (unsaved local changes)
+    var remoteIds={};
+    remote.forEach(function(item){if(item&&(item.id||item.text)) remoteIds[item.id||item.text]=true;});
+    var localIds={};
+    local.forEach(function(item){if(item&&(item.id||item.text)) localIds[item.id||item.text]=true;});
+    // Start with remote items (includes edits + new items from partner)
+    var merged=remote.slice();
+    // Add local items created AFTER last push (not in remote yet)
+    // These are items we created locally that haven't been synced
+    local.forEach(function(item){
+      if(!item) return;
+      var id=item.id||item.text;
+      if(!remoteIds[id]){
+        // Item exists locally but not remotely
+        // If it was created after last push, keep it (local new item)
+        // If it existed before last push, it was deleted remotely — remove it
+        var createdAfterPush=item._localNew||false;
+        if(createdAfterPush){
+          merged.push(item);
+        }
+        // Otherwise: deleted remotely — don't add back
+      }
+    });
+    if(merged.length!==local.length||JSON.stringify(merged.map(function(i){return i.id||i.text;}).sort())!==JSON.stringify(local.map(function(i){return i.id||i.text;}).sort())) changed=true;
     return merged;
   };
   state.transactions=mergeArray(state.transactions,remote.transactions||[],'id');
