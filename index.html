@@ -723,7 +723,6 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
             <div class="hero-stat"><div class="hero-stat-label">Each 50%</div><div class="hero-stat-val" id="hero2-each" style="color:var(--muted)"></div></div>
           </div>
         </div>
-        <div class="hero-settle" id="hero2-settle"></div>
       </div>
       <div class="partner-row" id="partner-row"></div>
       <div class="section-label" style="margin-bottom:8px">Monthly timeline</div>
@@ -876,7 +875,14 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 <div id="toast"><span id="ti" style="font-size:15px"></span><span id="tm"></span></div>
 <!-- MODALS -->
 <div class="overlay" id="m-settings"><div class="modal wide">
-  <div class="modal-title">Settings</div><div class="modal-sub">Profile &amp; data management</div>
+  <div class="modal-title">Settings</div>
+  <div style="display:flex;gap:2px;border-bottom:1px solid var(--b1);margin-bottom:16px">
+    <button class="pill-filter active" onclick="showSettingsTab(0)" id="stab-0">Profile</button>
+    <button class="pill-filter" onclick="showSettingsTab(1)" id="stab-1">Firebase</button>
+    <button class="pill-filter" onclick="showSettingsTab(2)" id="stab-2">Data &amp; backup</button>
+  </div>
+  <div id="settings-pages">
+  <div class="settings-page" id="spage-0">
   <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Profile</div>
     <div class="fg" style="margin-bottom:0"><label class="fl">Who are you?</label>
@@ -887,6 +893,12 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     </div>
     <div id="profile-status" style="font-size:11px;color:var(--dim);margin-top:8px;text-align:center"></div>
   </div>
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Notifications</div>
+    <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="notif-partner" style="accent-color:var(--gold)"> Alert when partner makes changes</label>
+    <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="notif-sync" style="accent-color:var(--gold)"> Show sync status toasts</label>
+  </div>
+  </div><div class="settings-page" id="spage-1" style="display:none">
   <div class="fb-section">
     <div class="fb-section-title"><span class="sync-dot off" id="fb-dot-settings" style="width:6px;height:6px"></span> Live Sync (Firebase)</div>
     <div class="fg"><label class="fl">Database URL</label><input class="fi" id="fb-url" placeholder="https://your-project-default-rtdb.firebaseio.com"></div>
@@ -899,12 +911,28 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     </div>
     <div class="fb-status" id="fb-status" style="display:none"></div>
     <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm" onclick="testConnection()" id="fb-test-btn" style="display:none">Test Connection</button><button class="btn sm" onclick="manualSync()" id="fb-sync-btn" style="display:none">Force Sync Now</button></div>
+    <div style="margin-top:14px"><div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Sync log</div>
+    <div id="sync-log-list" style="max-height:160px;overflow-y:auto;border:1px solid var(--b1);border-radius:6px;font-size:11px"></div></div>
     <div style="font-size:10px;color:var(--dim);margin-top:10px;line-height:1.6">
       <strong style="color:var(--muted)">Setup:</strong> Firebase Console &rarr; Create project &rarr; Realtime Database &rarr; Create database &rarr; Start in <strong style="color:var(--muted)">test mode</strong> &rarr; Copy the database URL and API key from Project Settings.
     </div>
   </div>
+  </div><div class="settings-page" id="spage-2" style="display:none">
   <div class="fg"><label class="fl">Models (comma-separated)</label><input class="fi" id="cfg-models" placeholder="Akira, Mila"></div>
-  <div class="ma" style="justify-content:space-between"><button class="btn danger" onclick="confirmClear()">&#x26A0; Clear All Data</button><div style="display:flex;gap:8px"><button class="bc" onclick="closeModal('m-settings')">Cancel</button><button class="bs" onclick="saveSettings()">Save</button></div></div>
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Import data</div>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:12px">Upload an XLSX file to import transactions, earnings, and team data. This merges with existing data.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm primary" onclick="document.getElementById('import-file').click()">Upload XLSX</button><button class="btn sm" onclick="restoreFromFirebase()">Pull from Firebase</button><button class="btn sm" onclick="restoreLocalBackup()">Restore local backup</button></div>
+    <input type="file" id="import-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleImportFile(this)">
+    <div id="import-status" style="font-size:11px;color:var(--dim);margin-top:8px"></div>
+  </div>
+  <div style="background:var(--s1);border:1px solid rgba(235,88,88,0.15);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--red);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Danger zone</div>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:12px">Permanently delete all data. This cannot be undone.</div>
+    <button class="btn danger" onclick="confirmClear()">Factory reset</button>
+  </div>
+  </div></div>
+  <div class="ma" style="justify-content:space-between"><div></div><div style="display:flex;gap:8px"><button class="bc" onclick="closeModal('m-settings')">Cancel</button><button class="bs" onclick="saveSettings()">Save</button></div></div>
 </div></div>
 <div class="overlay" id="m-txn"><div class="modal">
   <div class="modal-title" id="txn-title">Add Transaction</div><div class="modal-sub">Log expense, payout or partner transfer</div>
@@ -1273,13 +1301,7 @@ function renderOverview(){
   var _hx=document.getElementById('hero2-expenses');_hx.textContent=fmt(r.totalExp);animateValue(_hx,r.totalExp);
   var netEl=document.getElementById('hero2-net');netEl.textContent=fmt(r.meb);netEl.style.color=r.meb>=0?'var(--green)':'var(--red)';
   document.getElementById('hero2-each').textContent=fmt(r.split);
-  var sB=r.split-(r.sharonW-r.sharonE),nB=r.split-(r.shonW-r.shonE);
-  var settleText='';
-  if(Math.abs(sB-nB)>1){
-    if(sB>nB) settleText='Sharon is owed <strong style="font-family:DM Mono,monospace;color:var(--gold)">'+fmt(Math.abs(sB-nB)/2)+'</strong> more than Shon this month';
-    else settleText='Shon is owed <strong style="font-family:DM Mono,monospace;color:var(--gold)">'+fmt(Math.abs(nB-sB)/2)+'</strong> more than Sharon this month';
-  } else settleText='Partners are even this month';
-  document.getElementById('hero2-settle').innerHTML=settleText;
+
 
   // PARTNER CARDS — all-time balances
   var allTime=active.reduce(function(acc,r){
@@ -1305,8 +1327,8 @@ function renderOverview(){
   var _st=sBall>_psb?'&#x25B2;':sBall<_psb?'&#x25BC;':'',_nt=nBall>_pnb?'&#x25B2;':nBall<_pnb?'&#x25BC;':'';
   var _stc=sBall>=_psb?'var(--green)':'var(--red)',_ntc=nBall>=_pnb?'var(--green)':'var(--red)';
   document.getElementById('partner-row').innerHTML=
-    '<div class="p-card p-card-sharon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(200,128,184,0.1);color:var(--purple)">S</div><div class="p-card-name" style="color:var(--purple)">Sharon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--purple)">'+fmt(allTime.sW)+'</div></div><div><div class="p-card-stat-label">Expenses</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.sE)+'</div></div></div><div class="p-card-balance">Owed: <strong style="color:var(--purple)">'+fmt(sBall)+'</strong>'+_sArrow+''+sTrend+'</div></div>'+
-    '<div class="p-card p-card-shon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(242,201,76,0.1);color:var(--amber)">S</div><div class="p-card-name" style="color:var(--amber)">Shon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--amber)">'+fmt(allTime.nW)+'</div></div><div><div class="p-card-stat-label">Expenses</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.nE)+'</div></div></div><div class="p-card-balance">Owed: <strong style="color:var(--amber)">'+fmt(nBall)+'</strong>'+_nArrow+''+nTrend+'</div></div>';
+    '<div class="p-card p-card-sharon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(200,128,184,0.1);color:var(--purple)">S</div><div class="p-card-name" style="color:var(--purple)">Sharon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--purple)">'+fmt(allTime.sW)+'</div></div><div><div class="p-card-stat-label">Expenses</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.sE)+'</div></div></div><div class="p-card-balance">Remaining: <strong style="color:var(--purple)">'+fmt(sBall)+'</strong>'+_sArrow+''+sTrend+'</div></div>'+
+    '<div class="p-card p-card-shon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(242,201,76,0.1);color:var(--amber)">S</div><div class="p-card-name" style="color:var(--amber)">Shon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--amber)">'+fmt(allTime.nW)+'</div></div><div><div class="p-card-stat-label">Expenses</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.nE)+'</div></div></div><div class="p-card-balance">Remaining: <strong style="color:var(--amber)">'+fmt(nBall)+'</strong>'+_nArrow+''+nTrend+'</div></div>';
 
   // TIMELINE CARDS
   var withData=active.filter(function(r){return r.earnings>0||r.totalExp>0;});
@@ -1316,22 +1338,21 @@ function renderOverview(){
     return '<div class="t-card'+(isCur?' current':'')+'" onclick="editMonthFromOverview('+qid(r.month)+')"><div class="t-card-month">'+r.month+'</div><div class="t-card-earn">'+fmt(r.earnings)+'</div><div class="t-card-exp">-'+fmt(r.totalExp)+'</div><div class="t-card-net" style="color:'+(net>=0?'var(--green)':'var(--red)')+'">'+fmt(net)+'</div></div>';
   }).join('');
 
-  // RECENT TRANSACTIONS — last 15
-  var recent=state.transactions.filter(function(t){return t.date;}).sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,20);
-  var today=new Date().toISOString().split('T')[0];
-  var yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
-  var lastDateGroup='';
+  // RECENT TRANSACTIONS — compact, 8 max, no future subs
+  var _now=new Date().toISOString().split('T')[0];
+  var recent=state.transactions.filter(function(t){return t.date&&t.date<=_now&&!t.isRecurring;}).sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,8);
   document.getElementById('recent-list').innerHTML=recent.map(function(t){
-    var dateGroup=t.date===today?'Today':t.date===yesterday?'Yesterday':t.date>new Date(Date.now()-7*86400000).toISOString().split('T')[0]?'This week':'Earlier';
-    var header='';
-    if(dateGroup!==lastDateGroup){lastDateGroup=dateGroup;header='<div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;padding:8px 10px 4px">'+dateGroup+'</div>';}
     var isIncome=t.type==='Withdrawal';
     var dotColor=isIncome?'var(--green)':'var(--red)';
+    if(t.type==='Transfer') dotColor='var(--gold)';
     var amtColor=isIncome?'var(--green)':'var(--red)';
+    if(t.type==='Transfer') amtColor='var(--gold)';
     var sign=isIncome?'+':'-';
+    if(t.type==='Transfer') sign='';
     var whoColor=t.who==='Sharon'?'var(--purple)':'var(--amber)';
-    return header+'<div class="recent-row"><div class="recent-dot" style="background:'+dotColor+'"></div><span class="recent-desc">'+t.desc+'</span><span class="recent-amt" style="color:'+amtColor+'">'+sign+fmt(t.amount)+'</span><span class="recent-who" style="color:'+whoColor+'">'+t.who+'</span><span class="recent-date">'+fmtD(t.date)+'</span></div>';
-  }).join('');
+    var catTag=t.cat&&t.cat!=='Other'?'<span style="font-size:8px;color:var(--dim);opacity:0.6;margin-left:4px">'+t.cat+'</span>':'';
+    return '<div class="recent-row"><div class="recent-dot" style="background:'+dotColor+'"></div><span class="recent-desc">'+t.desc+catTag+'</span><span class="recent-amt" style="color:'+amtColor+'">'+sign+fmt(t.amount)+'</span><span class="recent-who" style="color:'+whoColor+'">'+t.who+'</span><span class="recent-date">'+fmtD(t.date)+'</span></div>';
+  }).join('')+'<div style="text-align:center;padding:8px"><button class="btn sm" onclick="switchTab(\x27transactions\x27,null)" style="font-size:10px;color:var(--dim)">View all transactions &rarr;</button></div>';
 
   // CHARTS
   var months8=activeMths().slice(-8);
@@ -2066,8 +2087,35 @@ function saveWorkerPayment(){
 }
 
 // SETTINGS
+function showSettingsTab(n){
+  for(var i=0;i<3;i++){
+    var pg=document.getElementById('spage-'+i);
+    var tb=document.getElementById('stab-'+i);
+    if(pg) pg.style.display=i===n?'block':'none';
+    if(tb) tb.className='pill-filter'+(i===n?' active':'');
+  }
+}
+
+function renderSyncLog(){
+  var el=document.getElementById('sync-log-list');
+  if(!el) return;
+  var log=state.syncLog||[];
+  if(!log.length){el.innerHTML='<div style="padding:10px;color:var(--dim)">No sync events yet</div>';return;}
+  el.innerHTML=log.slice(0,20).map(function(e){
+    var icon=e.type==='push'?'&#x2191;':e.type==='merge'?'&#x2193;':e.type==='error'?'&#x2717;':'&#x2022;';
+    var color=e.type==='error'?'var(--red)':e.type==='push'?'var(--green)':'var(--gold)';
+    var time=new Date(e.time);
+    var ts=time.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    return '<div style="padding:6px 10px;border-bottom:1px solid var(--b1);display:flex;gap:8px;align-items:center"><span style="color:'+color+';font-size:13px">'+icon+'</span><span style="flex:1">'+e.detail+'</span><span style="color:var(--dim);font-size:9px">'+ts+'</span></div>';
+  }).join('');
+}
+
 function openSettings(){
+  renderSyncLog();
   document.getElementById('cfg-models').value=(state.models||['Akira','Mila']).join(', ');
+  var np=state.notifyPrefs||{partnerChanges:true,syncEvents:true};
+  var npc=document.getElementById('notif-partner');if(npc)npc.checked=np.partnerChanges!==false;
+  var nsc=document.getElementById('notif-sync');if(nsc)nsc.checked=np.syncEvents!==false;
   var fc=state.firebaseConfig||{};
   document.getElementById('fb-url').value=fc.databaseURL||'';
   document.getElementById('fb-pid').value=fc.projectId||'';
@@ -2078,6 +2126,9 @@ function openSettings(){
 function saveSettings(){
   var mraw=document.getElementById('cfg-models').value;
   if(mraw.trim()) state.models=mraw.split(',').map(function(m){return m.trim();}).filter(Boolean);
+  var npc=document.getElementById('notif-partner');
+  var nsc=document.getElementById('notif-sync');
+  state.notifyPrefs={partnerChanges:npc?npc.checked:true,syncEvents:nsc?nsc.checked:true};
   var url=document.getElementById('fb-url').value.trim().replace(/\/+$/,'');
   var key=document.getElementById('fb-key').value.trim();
   var pid=document.getElementById('fb-pid').value.trim();
@@ -2085,7 +2136,7 @@ function saveSettings(){
   else if(!url&&!key) state.firebaseConfig=null;
   save();closeModal('m-settings');toast('Settings saved','success');updateHeaderUser();
 }
-function confirmClear(){closeModal('m-settings');confirmAction('Delete All Data','<strong>Every transaction, subscription, worker, and setting will be erased.</strong><br><span style="font-size:11px;color:var(--red)">This cannot be undone. The page will reload with default data.</span>','Delete Everything',function(){localStorage.removeItem('seraphim_v3');toast('Cleared — reloading...','info',2000);setTimeout(function(){location.reload();},2000);});}
+function confirmClear(){closeModal('m-settings');confirmAction('Factory Reset','<strong>This will delete ALL data — transactions, subscriptions, workers, earnings, everything.</strong><br><span style="font-size:11px;color:var(--red)">This cannot be undone. The page will reload with default data.</span>','Delete Everything',function(){localStorage.removeItem('seraphim_v3');toast('Cleared — reloading...','info',2000);setTimeout(function(){location.reload();},2000);});}
 
 
 var _exportSheets=null;
@@ -2631,6 +2682,12 @@ function startListener(){
   });
 }
 
+function logSync(type,detail){
+  if(!state.syncLog) state.syncLog=[];
+  state.syncLog.unshift({id:'sl_'+Date.now(),type:type,detail:detail,time:new Date().toISOString(),by:state.currentUser||'System'});
+  if(state.syncLog.length>50) state.syncLog=state.syncLog.slice(0,50);
+}
+
 function mergeRemoteState(remote){
   try{localStorage.setItem('seraphim_premerge',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   try{localStorage.setItem('seraphim_backup',localStorage.getItem('seraphim_v3')||'');}catch(e){}
@@ -2675,12 +2732,13 @@ function mergeRemoteState(remote){
     saveLocal();
     reapplyAllSubs();refreshCurrent();
     var who=remote._by||'Someone';
+    logSync('merge','Received changes from '+who);
     if(who!==state.currentUser){
       var remoteTxnCount=(remote.transactions||[]).length;
       var localTxnCount=state.transactions.length;
       var diff=Math.abs(remoteTxnCount-localTxnCount);
       var detail=diff>0?(' — '+diff+' transaction'+(diff>1?'s':'')+' changed'):'';
-      toast(who+' synced changes'+detail,'info',4000);
+      if(!state.notifyPrefs||state.notifyPrefs.partnerChanges!==false) toast(who+' synced changes'+detail,'info',4000);
       ['transactions','payouts','partners','staff','subscriptions'].forEach(function(t){addUnseenBadge(t);});
     }
     updateSyncUI('on','Connected');
@@ -2696,8 +2754,10 @@ function pushToFirebase(){
   var resolved=false;
   _fbRef.set(payload).then(function(){
     resolved=true;
+    logSync('push','Data pushed successfully');
     updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }).catch(function(err){
+    logSync('error','Push failed: '+err.message);
     resolved=true;
     _ignoreWindow=0;
     updateSyncUI('off','Push failed');
@@ -2720,12 +2780,15 @@ function debouncedPush(){
 }
 
 function disconnectFirebase(){
-  if(_fbRef&&_fbListener){_fbRef.off('value',_fbListener);_fbListener=null;}
-  if(_fb){try{_fb.delete();}catch(e){}}
-  _fb=null;_fbRef=null;
-  state.firebaseConnected=false;
-  updateSyncUI('off','Disconnected');
-  toast('Firebase disconnected','info');
+  confirmAction('Go Offline','<strong>Disconnect from Firebase?</strong><br><span style="font-size:11px;color:var(--dim)">Changes will only save locally until you reconnect. Your partner won\x27t see your updates.</span>','Disconnect',function(){
+    if(_fbRef&&_fbListener){_fbRef.off('value',_fbListener);_fbListener=null;}
+    _fbRef=null;
+    state.firebaseConnected=false;
+    localStorage.setItem('seraphim_fb_manual_off','true');
+    updateSyncUI('off','Offline (manual)');
+    updateFirebaseUI();
+    toast('Firebase disconnected — changes save locally only','info');
+  });
 }
 
 function manualSync(){
@@ -2770,6 +2833,7 @@ function testConnection(){
 }
 
 function toggleFirebase(){
+  localStorage.removeItem('seraphim_fb_manual_off');
   if(state.firebaseConnected){
     disconnectFirebase();
   } else {
@@ -2889,6 +2953,13 @@ function showDashboard(){
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('profile-screen').classList.add('hidden');
   init();
+  if(typeof firebase!=='undefined'&&state.firebaseConfig&&state.firebaseConfig.databaseURL){
+    if(localStorage.getItem('seraphim_fb_manual_off')!=='true'){
+      setTimeout(initFirebase,500);
+    } else {
+      updateSyncUI('off','Offline (manual)');
+    }
+  }
 }
 
 function fadeToScreen(target){
@@ -3276,6 +3347,117 @@ function submitQuickAdd(){
   toast(txn.desc+' '+fmt(txn.amount)+' ('+txn.who+')','success');
 }
 
+function handleImportFile(input){
+  if(!input.files||!input.files[0]) return;
+  var file=input.files[0];
+  var status=document.getElementById('import-status');
+  if(status) status.textContent='Reading '+file.name+'...';
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      if(typeof XLSX==='undefined'){toast('XLSX library not loaded','error');return;}
+      var wb=XLSX.read(e.target.result,{type:'array'});
+      pushUndo();
+      var imported={txns:0,earnings:0,staff:0,workers:0,subs:0};
+      // Sheet 1: Summary — import monthly earnings
+      if(wb.SheetNames.indexOf('Summary')>=0){
+        var sum=XLSX.utils.sheet_to_json(wb.Sheets['Summary'],{header:1});
+        sum.forEach(function(row){
+          if(!row[0]||row[0]==='Month-Year'||row[0]==='Total'||!row[1]) return;
+          var month=String(row[0]).trim();
+          if(month&&row[1]){
+            state.monthlyEarnings[month]=Number(row[1])||0;
+            if(state.months.indexOf(month)<0) state.months.push(month);
+            imported.earnings++;
+          }
+        });
+      }
+      // Sheet 2: Transactions
+      if(wb.SheetNames.indexOf('Transactions')>=0){
+        var txns=XLSX.utils.sheet_to_json(wb.Sheets['Transactions']);
+        txns.forEach(function(row){
+          var id='imp_'+Date.now()+'_'+Math.random().toString(36).substr(2,4);
+          var txn={id:id,date:String(row.Date||''),desc:String(row.Description||''),type:String(row.Type||'Expense'),amount:Number(row.Amount)||0,who:String(row.Who||'Shon'),month:String(row.Month||''),cat:String(row.Category||''),notes:String(row.Notes||'')};
+          if(txn.date&&txn.desc&&txn.amount){
+            var exists=state.transactions.find(function(t){return t.date===txn.date&&t.desc===txn.desc&&t.amount===txn.amount;});
+            if(!exists){state.transactions.push(txn);imported.txns++;}
+          }
+        });
+      }
+      // Sheet 3: Model Earnings
+      if(wb.SheetNames.indexOf('Model Earnings')>=0){
+        var me=XLSX.utils.sheet_to_json(wb.Sheets['Model Earnings']);
+        me.forEach(function(row){
+          if(!row.Month) return;
+          var month=String(row.Month);
+          if(!state.modelEarnings[month]) state.modelEarnings[month]={};
+          (state.models||['Akira','Mila']).forEach(function(m){
+            if(row[m]!==undefined) state.modelEarnings[month][m.toLowerCase()]=Number(row[m])||0;
+          });
+        });
+      }
+      // Sheet 4: Subscriptions
+      if(wb.SheetNames.indexOf('Subscriptions')>=0){
+        var subs=XLSX.utils.sheet_to_json(wb.Sheets['Subscriptions']);
+        subs.forEach(function(row){
+          if(!row.Name) return;
+          var exists=state.subscriptions.find(function(s){return s.name===row.Name;});
+          if(!exists){
+            state.subscriptions.push({id:'sub_'+Date.now()+'_'+Math.random().toString(36).substr(2,4),name:String(row.Name),amount:Number(row.Amount)||0,who:String(row.Who||'Shon'),freq:Number(row.Frequency)||1,cat:String(row.Category||''),startMonth:String(row.Start||''),endMonth:String(row.End||''),day:Number(row.Day)||1,paused:row.Status==='Paused'});
+            imported.subs++;
+          }
+        });
+      }
+      // Sheet 5: Workers
+      if(wb.SheetNames.indexOf('Workers')>=0){
+        var wks=XLSX.utils.sheet_to_json(wb.Sheets['Workers']);
+        wks.forEach(function(row){
+          if(!row.Name) return;
+          var exists=state.workers.find(function(w){return w.name===row.Name;});
+          if(!exists){
+            state.workers.push({id:'wk_'+Date.now()+'_'+Math.random().toString(36).substr(2,4),name:String(row.Name),role:String(row.Role||''),who:'Sharon',expectedMonthly:Number(row['Expected Monthly'])||0,startMonth:String(row['Start Month']||''),active:true});
+            imported.workers++;
+          }
+        });
+      }
+      save();refreshCurrent();
+      var msg='Imported: '+imported.txns+' transactions, '+imported.earnings+' months earnings, '+imported.subs+' subscriptions, '+imported.workers+' workers';
+      logActivity('add','XLSX import: '+msg,{by:state.currentUser});
+      if(status) status.textContent=msg;
+      toast('Import complete!','success',5000);
+    }catch(err){
+      toast('Import failed: '+err.message,'error');
+      if(status) status.textContent='Error: '+err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  input.value='';
+}
+
+function restoreFromFirebase(){
+  if(!_fbRef){toast('Not connected to Firebase','error');return;}
+  confirmAction('Restore from Firebase','<strong>Pull all data from Firebase?</strong><br><span style="font-size:11px;color:var(--dim)">This will overwrite your local data with whatever is in the cloud.</span>','Restore',function(){
+    pushUndo();
+    manualSync();
+    closeModal('m-settings');
+  });
+}
+
+function restoreLocalBackup(){
+  var backup=localStorage.getItem('seraphim_backup');
+  if(!backup){toast('No local backup found','error');return;}
+  confirmAction('Restore Local Backup','<strong>Restore from last local backup?</strong><br><span style="font-size:11px;color:var(--dim)">Saved before the last Firebase merge.</span>','Restore',function(){
+    try{
+      pushUndo();
+      var d=JSON.parse(backup);
+      Object.keys(d).forEach(function(k){if(k in state) state[k]=d[k];});
+      save();refreshCurrent();
+      toast('Restored from local backup','success');
+      closeModal('m-settings');
+    }catch(e){toast('Restore failed: '+e.message,'error');}
+  });
+}
+
 // CONFIRM MODAL
 var _confirmCallback=null;
 function confirmAction(title,msg,btnText,callback){
@@ -3493,9 +3675,7 @@ function init(){
     checkBackupReminder();checkStorageSize();
     var lastV=localStorage.getItem('seraphim_lastVersion');
     if(lastV!==SERAPHIM_VERSION) openModal('m-changelog');
-    if(typeof firebase!=='undefined'&&state.firebaseConfig&&state.firebaseConfig.databaseURL&&state.firebaseConfig.apiKey){
-      setTimeout(function(){initFirebase();},1000);
-    }
+
   }catch(e){console.error('Init error:',e);}
 }
 setInterval(function(){
