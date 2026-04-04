@@ -779,6 +779,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.2</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="topnav">
@@ -906,8 +907,12 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <div class="panel" id="panel-staff">
       <div class="ph"><div class="ph-top"><span class="pg-title">Team</span><div class="pg-actions"><button class="btn sm" onclick="openAddStaffMember('agency')">+ Agency</button><button class="btn sm" onclick="openAddStaffMember('va')">+ VA</button><button class="btn sm primary" onclick="openStaffPaymentModal()">+ Log Payment</button></div></div><div class="pg-sub">Agencies, VAs, and workers — everyone on the Seraphim payroll</div></div>
       <div class="kpis" id="staff-kpis"></div>
-      <div style="margin-bottom:20px"><div class="section-label">Agencies</div><div class="staff-grid" id="agency-cards"></div></div>
-      <div style="margin-bottom:20px"><div class="section-label">Virtual Assistants</div><div class="staff-grid" id="va-cards"></div></div>
+      <div style="margin-bottom:20px"><div class="section-label">Agencies</div><div class="staff-grid" id="agency-cards"></div>
+        <div id="inactive-agencies-wrap" style="display:none;margin-top:8px"><button onclick="var el=document.getElementById('inactive-agency-cards');var a=document.getElementById('ia-arrow');if(el.style.display==='none'){el.style.display='grid';a.textContent='▾';}else{el.style.display='none';a.textContent='▸';}" style="background:none;border:1px solid var(--b1);border-radius:6px;padding:5px 12px;color:var(--dim);font-size:10px;cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif"><span id="ia-arrow" style="font-size:9px">▸</span> Inactive agencies <span id="ia-count" style="opacity:0.5"></span></button><div class="staff-grid" style="display:none;margin-top:8px" id="inactive-agency-cards"></div></div>
+      </div>
+      <div style="margin-bottom:20px"><div class="section-label">Virtual Assistants</div><div class="staff-grid" id="va-cards"></div>
+        <div id="inactive-vas-wrap" style="display:none;margin-top:8px"><button onclick="var el=document.getElementById('inactive-va-cards');var a=document.getElementById('iv-arrow');if(el.style.display==='none'){el.style.display='grid';a.textContent='▾';}else{el.style.display='none';a.textContent='▸';}" style="background:none;border:1px solid var(--b1);border-radius:6px;padding:5px 12px;color:var(--dim);font-size:10px;cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif"><span id="iv-arrow" style="font-size:9px">▸</span> Inactive VAs <span id="iv-count" style="opacity:0.5"></span></button><div class="staff-grid" style="display:none;margin-top:8px" id="inactive-va-cards"></div></div>
+      </div>
       <div class="filters">
         <select class="fsel" id="sf-month" onchange="renderStaff()"><option value="">All Months</option></select>
         <select class="fsel" id="sf-who" onchange="renderStaff()"><option value="">All People</option><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select>
@@ -1043,11 +1048,11 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   <div class="frow"><div class="fg"><label class="fl">Month</label><select class="fi" id="txn-month"></select></div><div class="fg"><label class="fl">Category</label><select class="fi" id="txn-cat"><option value="">None</option><option value="Marketing">Marketing</option><option value="Software">Software</option><option value="VA">VA / Staff</option><option value="Travel">Travel</option><option value="Equipment">Equipment</option><option value="Personal">Personal</option><option value="Other">Other</option></select></div></div>
   <div id="txn-transfer-fields"><div class="fg" style="margin-bottom:0"><label class="fl">Transfer To</label><select class="fi" id="txn-transfer-to"><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select></div></div>
   <div class="fg"><label class="fl">Notes</label><input class="fi" id="txn-notes" placeholder="Optional"></div>
-  <div class="fg"><label class="fl">Screenshots</label>
+  <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="txn-att-zone" onclick="document.getElementById('txn-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'txn')">
-      <span class="att-placeholder" id="txn-att-placeholder">Drop images here or click to browse</span>
+      <span class="att-placeholder" id="txn-att-placeholder">Drop files here — images, PDFs, invoices</span>
     </div>
-    <input type="file" id="txn-att-input" accept="image/*" multiple style="display:none" onchange="handleModalFiles(this,'txn')">
+    <input type="file" id="txn-att-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none" onchange="handleModalFiles(this,'txn')">
   </div>
   <div class="ma"><button class="bc" onclick="closeModal('m-txn')">Cancel</button><button class="bs" onclick="saveTxn()">Save</button></div>
 </div></div>
@@ -1097,14 +1102,15 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 <div class="overlay" id="m-staff-pay"><div class="modal">
   <div class="modal-title">Log Staff Payment</div><div class="modal-sub">Agency or VA payment</div>
   <div class="fg"><label class="fl">Staff Member</label><select class="fi" id="sp-member"></select></div>
-  <div class="frow"><div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="sp-amt" placeholder="0.00" step="0.01"></div><div class="fg"><label class="fl">Paid By</label><select class="fi" id="sp-who"><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select></div></div>
+  <div class="frow"><div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="sp-amt" placeholder="0.00" step="0.01"></div><div class="fg"><label class="fl">Paid by</label><select class="fi" id="sp-who"><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select></div></div>
+  <div class="fg"><label class="fl">Through</label><select class="fi" id="sp-through"><option value="Bank">Bank account (Fanvue → Partner → Staff)</option><option value="Fanvue">Fanvue direct (Fanvue → Staff)</option></select></div>
   <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="sp-date"></div>
   <div class="fg"><label class="fl">Notes</label><input class="fi" id="sp-notes" placeholder="e.g. April chats"></div>
-  <div class="fg"><label class="fl">Screenshots</label>
+  <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="sp-att-zone" onclick="document.getElementById('sp-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'sp')">
-      <span class="att-placeholder" id="sp-att-placeholder">Drop images here or click to browse</span>
+      <span class="att-placeholder" id="sp-att-placeholder">Drop files here — images, PDFs, invoices</span>
     </div>
-    <input type="file" id="sp-att-input" accept="image/*" multiple style="display:none" onchange="handleModalFiles(this,'sp')">
+    <input type="file" id="sp-att-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none" onchange="handleModalFiles(this,'sp')">
   </div>
   <div class="ma"><button class="bc" onclick="closeModal('m-staff-pay')">Cancel</button><button class="bs" onclick="saveStaffPayment()">Save</button></div>
 </div></div>
@@ -1121,14 +1127,15 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 <div class="overlay" id="m-worker-pay"><div class="modal">
   <div class="modal-title">Log Worker Payment</div><div class="modal-sub">Salary or ad-hoc payment</div>
   <div class="fg"><label class="fl">Worker</label><select class="fi" id="wp-worker"></select></div>
-  <div class="frow"><div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="wp-amt" placeholder="0.00" step="0.01"></div><div class="fg"><label class="fl">Paid By</label><select class="fi" id="wp-who"><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select></div></div>
+  <div class="frow"><div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="wp-amt" placeholder="0.00" step="0.01"></div><div class="fg"><label class="fl">Paid by</label><select class="fi" id="wp-who"><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select></div></div>
+  <div class="fg"><label class="fl">Through</label><select class="fi" id="wp-through"><option value="Bank">Bank account</option><option value="Fanvue">Fanvue direct</option></select></div>
   <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="wp-date"></div>
   <div class="fg"><label class="fl">Notes</label><input class="fi" id="wp-notes" placeholder="e.g. March tasks"></div>
-  <div class="fg"><label class="fl">Screenshots</label>
+  <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="wp-att-zone" onclick="document.getElementById('wp-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'wp')">
-      <span class="att-placeholder" id="wp-att-placeholder">Drop images here or click to browse</span>
+      <span class="att-placeholder" id="wp-att-placeholder">Drop files here — images, PDFs, invoices</span>
     </div>
-    <input type="file" id="wp-att-input" accept="image/*" multiple style="display:none" onchange="handleModalFiles(this,'wp')">
+    <input type="file" id="wp-att-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none" onchange="handleModalFiles(this,'wp')">
   </div>
   <div class="ma"><button class="bc" onclick="closeModal('m-worker-pay')">Cancel</button><button class="bs" onclick="saveWorkerPayment()">Save</button></div>
 </div></div>
@@ -1154,11 +1161,11 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   </div>
   <div class="fg"><label class="fl">Month</label><select class="fi" id="tr-month"></select></div>
   <div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div>
-  <div class="fg"><label class="fl">Screenshots</label>
+  <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="tr-att-zone" onclick="document.getElementById('tr-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'tr')">
-      <span class="att-placeholder" id="tr-att-placeholder">Drop images here or click to browse</span>
+      <span class="att-placeholder" id="tr-att-placeholder">Drop files here — images, PDFs, invoices</span>
     </div>
-    <input type="file" id="tr-att-input" accept="image/*" multiple style="display:none" onchange="handleModalFiles(this,'tr')">
+    <input type="file" id="tr-att-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none" onchange="handleModalFiles(this,'tr')">
   </div>
   <div style="background:rgba(208,184,104,0.04);border:1px solid rgba(208,184,104,0.15);border-radius:7px;padding:10px 14px;font-size:11.5px;color:var(--teal);margin-bottom:18px">
     This transfer will appear in Partner Split under <strong>Partner Transfers</strong>. It does <strong>not</strong> affect earnings, expenses, or the 50/50 split calculation.
@@ -1218,25 +1225,29 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   <div id="lb-caption"></div>
   <div id="lb-counter"></div>
 </div>
-<input type="file" id="att-file-input" accept="image/*" multiple style="display:none">
+<input type="file" id="att-file-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none">
 <div class="overlay" id="m-export-preview"><div class="modal" style="max-width:900px;width:95vw">
   <div class="modal-title">Export Preview</div><div class="modal-sub">Review all sheets before downloading</div>
   <div style="display:flex;gap:2px;border-bottom:1px solid var(--b1);margin-bottom:14px" id="exp-tabs"></div>
   <div style="max-height:55vh;overflow:auto;border:1px solid var(--b1);border-radius:6px" id="exp-table-wrap"></div>
   <div class="ma" style="margin-top:18px"><button class="bc" onclick="closeModal('m-export-preview')">Cancel</button><button class="bs" onclick="doExportXLSX()">Download .xlsx</button></div>
 </div></div>
-<div class="overlay" id="m-changelog"><div class="modal wide">
-  <div class="modal-title">What's new in v2.1.0</div>
-  <div class="modal-sub">Seraphim Management Dashboard</div>
-  <div style="max-height:50vh;overflow-y:auto;font-size:12px;color:var(--muted);line-height:1.8;padding:8px 0">
-    <div style="color:var(--gold);font-weight:500;margin-bottom:4px">Security</div>
-    <div style="padding-left:12px;margin-bottom:12px">Login screen with email/password authentication<br>Session timeout after 30 min of inactivity<br>Login tracking in activity log</div>
-    <div style="color:var(--gold);font-weight:500;margin-bottom:4px">New layout</div>
-    <div style="padding-left:12px;margin-bottom:12px">Top navigation replaces sidebar<br>Command center hero card<br>Partner balance cards always visible<br>Horizontal timeline month cards<br>Recent transactions feed with date grouping</div>
-    <div style="color:var(--gold);font-weight:500;margin-bottom:4px">Features</div>
-    <div style="padding-left:12px;margin-bottom:12px">Smart search on transactions<br>Undo/redo (Ctrl+Z / Ctrl+Shift+Z)<br>Keyboard shortcuts (Ctrl+N, Ctrl+E, Ctrl+1-9)<br>Export preview before download<br>Image attachments with lightbox gallery<br>Touch swipe on mobile lightbox<br>Firebase live sync with manual refresh<br>Monthly backup reminders</div>
+<div class="overlay" id="m-changelog"><div class="modal wide" style="max-width:620px;max-height:85vh;display:flex;flex-direction:column;padding:0">
+  <div style="padding:18px 22px 0;flex-shrink:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="modal-title" style="margin:0">Patch notes</div>
+      <button class="bc" onclick="closeModal('m-changelog')" style="padding:4px 12px;font-size:11px">Close</button>
+    </div>
+    <input class="fi" id="changelog-search" placeholder="Search changes..." oninput="filterChangelog()" style="width:100%;margin-bottom:12px;font-size:12px">
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px" id="changelog-tags">
+      <button class="pill-filter active" onclick="filterChangelogTag(this,'all')">All</button>
+      <button class="pill-filter" onclick="filterChangelogTag(this,'feature')">Features</button>
+      <button class="pill-filter" onclick="filterChangelogTag(this,'fix')">Fixes</button>
+      <button class="pill-filter" onclick="filterChangelogTag(this,'security')">Security</button>
+      <button class="pill-filter" onclick="filterChangelogTag(this,'ui')">UI/UX</button>
+    </div>
   </div>
-  <div class="ma"><button class="bs" onclick="closeModal('m-changelog');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION)">Got it</button></div>
+  <div style="flex:1;overflow-y:auto;padding:0 22px 22px" id="changelog-body"></div>
 </div></div>
 <div class="overlay" id="m-confirm"><div class="modal" style="max-width:400px;text-align:center">
   <div style="font-size:28px;margin-bottom:12px;opacity:0.5" id="confirm-icon">&#x26A0;</div>
@@ -1570,6 +1581,18 @@ function openNewMonthModal(){
   } else toast(next+' already exists','info');
 }
 function renderMonthly(){
+  // Preload PDF library in background
+  if(!window.jspdf&&!window._pdfLoading){
+    window._pdfLoading=true;
+    var s1=document.createElement('script');
+    s1.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s1.onload=function(){
+      var s2=document.createElement('script');
+      s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  }
   var mpEl=document.getElementById('month-picker');
   if(mpEl){
     mpEl.innerHTML='<div class="t-card" onclick="openNewMonthModal()" style="min-width:60px;padding:8px 12px;border-style:dashed;text-align:center"><div class="t-card-month" style="font-size:14px;color:var(--gdim)">+</div></div>'+activeMths().slice().reverse().map(function(m){
@@ -1825,18 +1848,31 @@ function renderStaff(){
   const curM=activeMths().slice(-1)[0]||'';
   const curMTotal=state.transactions.filter(t=>t.cat==='VA'&&t.month===curM&&!state.workers.find(w=>w.id===t.sId)).reduce((s,t)=>s+Number(t.amount),0);
   document.getElementById('staff-kpis').innerHTML=kpi('Total Staff Cost',fmt(total),'r','All time')+kpi('Agencies',agencies.length.toString(),'gold','')+kpi('VAs',vas.length.toString(),'g','')+kpi('This Month',fmt(curMTotal),'am',curM);
-  document.getElementById('agency-cards').innerHTML=agencies.length?agencies.map(sm=>staffCardHtml(sm)).join(''):'<div class="empty" style="padding:20px">No agencies</div>';
-  document.getElementById('va-cards').innerHTML=vas.length?vas.map(sm=>staffCardHtml(sm)).join(''):'<div class="empty" style="padding:20px">No VAs</div>';
+  var activeAgencies=agencies.filter(function(s){return !s.inactive;});
+  var inactiveAgencies=agencies.filter(function(s){return s.inactive;});
+  var activeVAs=vas.filter(function(s){return !s.inactive;});
+  var inactiveVAs=vas.filter(function(s){return s.inactive;});
+  document.getElementById('agency-cards').innerHTML=activeAgencies.length?activeAgencies.map(sm=>staffCardHtml(sm)).join(''):'<div class="empty" style="padding:20px">No active agencies</div>';
+  document.getElementById('va-cards').innerHTML=activeVAs.length?activeVAs.map(sm=>staffCardHtml(sm)).join(''):'<div class="empty" style="padding:20px">No active VAs</div>';
+  var iaWrap=document.getElementById('inactive-agencies-wrap');
+  if(iaWrap){iaWrap.style.display=inactiveAgencies.length?'block':'none';document.getElementById('ia-count').textContent='('+inactiveAgencies.length+')';}
+  var iaCards=document.getElementById('inactive-agency-cards');
+  if(iaCards) iaCards.innerHTML=inactiveAgencies.map(sm=>staffCardHtml(sm)).join('');
+  var ivWrap=document.getElementById('inactive-vas-wrap');
+  if(ivWrap){ivWrap.style.display=inactiveVAs.length?'block':'none';document.getElementById('iv-count').textContent='('+inactiveVAs.length+')';}
+  var ivCards=document.getElementById('inactive-va-cards');
+  if(ivCards) ivCards.innerHTML=inactiveVAs.map(sm=>staffCardHtml(sm)).join('');
   renderWorkersInline();
   document.getElementById('staff-tbody').innerHTML=staffTxns.length?staffTxns.map(t=>{
     const sm=t.sId?state.staffMembers.find(s=>s.id===t.sId):null;
-    return '<tr'+rowDragAttrs(t.id)+'><td class="td-muted">'+fmtD(t.date)+'</td><td><strong>'+t.desc+'</strong><div class="att-thumbs">'+attachmentThumbs(t)+'</div>'+(sm&&sm.inactive?'&nbsp;<span class="pill inactive">inactive</span>':'')+'</td><td><span class="pill '+(sm?sm.type:'va')+'">'+( sm?sm.type:'VA')+'</span></td><td class="amt neg">'+fmt(t.amount)+'</td><td><span class="pill '+t.who.toLowerCase()+'">'+t.who+'</span></td><td class="td-muted">'+t.month+'</td><td class="td-muted" style="font-size:11px">'+( t.notes||'')+'</td><td class="flex-actions"><button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td></tr>';
+    var pipeline=t.through==='Fanvue'?'<span style="font-size:8px;color:var(--amber);background:rgba(242,201,76,0.08);padding:1px 5px;border-radius:3px;margin-left:4px">via Fanvue</span>':'';
+    return '<tr'+rowDragAttrs(t.id)+'><td class="td-muted">'+fmtD(t.date)+'</td><td><strong>'+t.desc+'</strong>'+pipeline+'<div class="att-thumbs">'+attachmentThumbs(t)+'</div>'+(sm&&sm.inactive?'&nbsp;<span class="pill inactive">inactive</span>':'')+'</td><td><span class="pill '+(sm?sm.type:'va')+'">'+( sm?sm.type:'VA')+'</span></td><td class="amt neg">'+fmt(t.amount)+'</td><td><span class="pill '+t.who.toLowerCase()+'">'+t.who+'</span></td><td class="td-muted">'+t.month+'</td><td class="td-muted" style="font-size:11px">'+( t.notes||'')+'</td><td class="flex-actions"><button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td></tr>';
   }).join(''):'<tr><td colspan="8"><div class="empty">No staff payments found</div></td></tr>';
 }
 function staffCardHtml(sm){
   const paid=state.transactions.filter(t=>t.sId===sm.id&&t.type==='Expense').reduce((s,t)=>s+Number(t.amount),0);
   const last=state.transactions.filter(t=>t.sId===sm.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
-  return '<div class="staff-card '+sm.type+(sm.inactive?' paused':'')+'">'+
+  return '<div class="staff-card '+sm.type+(sm.inactive?' inactive paused':'')+'">'+
     '<div class="sc-type">'+sm.type+(sm.inactive?' &middot; inactive':'')+'</div><div class="sc-name">'+sm.name+'</div>'+
     '<div class="sc-stat"><span>Role</span><span>'+( sm.role||'--')+'</span></div>'+
     '<div class="sc-stat"><span>Managed by</span><span>'+sm.who+'</span></div>'+
@@ -2236,7 +2272,8 @@ function saveStaffPayment(){
   if(!amount) return;
   var spAtts=getAndClearPendingAtts('sp');
   var spAtts=_paymentAttachments.sp.map(function(a){return{id:a.id,data:a.data,name:a.name};});
-  const txn={id:'sp_'+Date.now(),date:document.getElementById('sp-date').value,desc:sm?sm.name:'Staff Payment',type:'Expense',amount,who:document.getElementById('sp-who').value,month:dateToMonth(document.getElementById('sp-date').value),notes:document.getElementById('sp-notes').value,cat:'VA',sId:smId};
+  var spThrough=document.getElementById('sp-through').value;
+  const txn={id:'sp_'+Date.now(),date:document.getElementById('sp-date').value,desc:sm?sm.name:'Staff Payment',type:'Expense',amount,who:document.getElementById('sp-who').value,month:dateToMonth(document.getElementById('sp-date').value),notes:document.getElementById('sp-notes').value,cat:'VA',sId:smId,through:(document.getElementById('sp-through')||{}).value||'Bank'};
   if(spAtts.length) txn.attachments=spAtts;
   state.transactions.push(txn);logActivity('add','Staff payment: '+(sm?sm.name:'Staff')+' — '+fmt(amount),{who:txn.who,month:txn.month});save();closeModal('m-staff-pay');toast('Payment of '+fmt(amount)+' logged','success');renderStaff();
 }
@@ -2285,7 +2322,8 @@ function saveWorkerPayment(){
   const wkId=document.getElementById('wp-worker').value,wk=state.workers.find(w=>w.id===wkId),amount=parseFloat(document.getElementById('wp-amt').value)||0;
   if(!amount) return;
   var wpAtts=getAndClearPendingAtts('wp');
-  const txn={id:'wp_'+Date.now(),date:document.getElementById('wp-date').value,desc:(wk?wk.name:'Worker')+' Payment',type:'Expense',amount,who:document.getElementById('wp-who').value,month:dateToMonth(document.getElementById('wp-date').value),notes:document.getElementById('wp-notes').value,cat:'VA',sId:wkId};
+  var wpThrough=document.getElementById('wp-through').value;
+  const txn={id:'wp_'+Date.now(),date:document.getElementById('wp-date').value,desc:(wk?wk.name:'Worker')+' Payment',type:'Expense',amount,who:document.getElementById('wp-who').value,month:dateToMonth(document.getElementById('wp-date').value),notes:document.getElementById('wp-notes').value,cat:'VA',sId:wkId,through:wpThrough};
   if(wpAtts.length) txn.attachments=wpAtts;
   state.transactions.push(txn);logActivity('add','Worker payment: '+(wk?wk.name:'Worker')+' — '+fmt(amount),{who:txn.who,month:txn.month});save();closeModal('m-worker-pay');toast('Payment of '+fmt(amount)+' logged','success');renderWorkers();
 }
@@ -2312,6 +2350,130 @@ function renderSyncLog(){
     var ts=time.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     return '<div style="padding:6px 10px;border-bottom:1px solid var(--b1);display:flex;gap:8px;align-items:center"><span style="color:'+color+';font-size:13px">'+icon+'</span><span style="flex:1">'+e.detail+'</span><span style="color:var(--dim);font-size:9px">'+ts+'</span></div>';
   }).join('');
+}
+
+var CHANGELOG=[
+{v:'2.2.0',date:'Apr 2026',title:'Security & polish',items:[
+  {t:'feature',text:'Firebase Auth login — email/password required to access dashboard'},
+  {t:'feature',text:'Profile picker — "Who is managing today?" with Sharon/Shon selection after login'},
+  {t:'feature',text:'Session timeout — auto-logout after 30 min inactivity with 25 min warning'},
+  {t:'feature',text:'PDF export on Monthly tab — multi-page bank statement with Combined/Sharon/Shon options'},
+  {t:'feature',text:'PDF preview modal — review before downloading'},
+  {t:'feature',text:'Patch notes logger with search and tag filters'},
+  {t:'feature',text:'Sync conflict log in Firebase settings tab'},
+  {t:'feature',text:'Notification preferences — toggle partner change and sync alerts'},
+  {t:'feature',text:'XLSX import — upload spreadsheet to populate dashboard'},
+  {t:'feature',text:'Reset & restore — factory reset, pull from Firebase, restore local backup'},
+  {t:'feature',text:'Invoice/receipt drag-and-drop on team payment modals'},
+  {t:'feature',text:'Backup snooze — remind me later with 6 time options'},
+  {t:'feature',text:'Context-aware + button — different action per tab'},
+  {t:'security',text:'Removed all default financial data from source code'},
+  {t:'security',text:'Database rules require authentication (auth != null)'},
+  {t:'security',text:'No account creation from UI — admin only via Firebase Console'},
+  {t:'security',text:'Disconnect confirmation modal with manual offline flag'},
+  {t:'ui',text:'Inactive staff/workers hidden in collapsible sections'},
+  {t:'ui',text:'Settings split into Profile / Firebase / Data tabs'},
+  {t:'ui',text:'Logout button in Settings with email display'},
+  {t:'ui',text:'Firebase status click opens Firebase settings tab directly'},
+  {t:'fix',text:'Firebase auto-connects and force syncs on every login and refresh'},
+  {t:'fix',text:'Shared Firebase app instance — auth token carries to database'},
+  {t:'fix',text:'Removed "Owed" terminology — now "Remaining to withdraw"'},
+]},
+{v:'2.1.0',date:'Apr 2026',title:'Guardian overhaul',items:[
+  {t:'feature',text:'Command center hero card — current month earnings at a glance'},
+  {t:'feature',text:'Partner cards always visible on Overview — Sharon and Shon balances'},
+  {t:'feature',text:'Timeline cards replace monthly table — horizontal scrollable months'},
+  {t:'feature',text:'Top navigation bar replaces sidebar — full viewport width'},
+  {t:'feature',text:'Month picker in Monthly tab — horizontal cards for month selection'},
+  {t:'feature',text:'Smart search filter on Transactions — natural text parsing'},
+  {t:'feature',text:'Manual sync button (refresh icon) in header'},
+  {t:'feature',text:'Test Connection button in Firebase settings'},
+  {t:'feature',text:'Active/Inactive toggle for staff and workers'},
+  {t:'ui',text:'Zebra striping on all tables'},
+  {t:'ui',text:'Custom gold scrollbar matching theme'},
+  {t:'ui',text:'Wings watermark in background'},
+  {t:'ui',text:'Chart.js rounded bars and themed tooltips'},
+  {t:'ui',text:'Tab fade transitions (150ms)'},
+  {t:'ui',text:'Recent transactions compact feed with category labels'},
+  {t:'ui',text:'KPIs collapsed to 3 essential cards'},
+  {t:'fix',text:'Future months removed from Overview — only months with data'},
+  {t:'fix',text:'Future subscription transactions no longer generated'},
+  {t:'fix',text:'Category column removed from transaction tables'},
+  {t:'fix',text:'Date grouping fixed — no more duplicate headers'},
+]},
+{v:'2.0.0',date:'Mar 2026',title:'Firebase & live sync',items:[
+  {t:'feature',text:'Firebase Realtime Database integration — live sync between partners'},
+  {t:'feature',text:'Image attachments on transactions with drag-and-drop'},
+  {t:'feature',text:'Lightbox gallery with arrow key and touch swipe navigation'},
+  {t:'feature',text:'XLSX export with preview modal — 5 sheets matching original format'},
+  {t:'feature',text:'Undo/Redo (Ctrl+Z / Ctrl+Shift+Z) with 10-step history'},
+  {t:'feature',text:'Keyboard shortcuts — Ctrl+N, Ctrl+E, Ctrl+/, Ctrl+1-9'},
+  {t:'feature',text:'Activity log with clickable entries'},
+  {t:'feature',text:'Archive with restore capability'},
+  {t:'feature',text:'Todo widget on Overview'},
+  {t:'feature',text:'Zoom slider (50%-200%)'},
+  {t:'ui',text:'Guardian + Throne Room theme — dark mode with gold accents'},
+  {t:'ui',text:'Light mode with 90+ CSS rules'},
+  {t:'ui',text:'Auto/Light/Dark theme toggle'},
+  {t:'fix',text:'Firebase sync ping-pong loop eliminated with saveLocal()'},
+  {t:'fix',text:'Trailing slash on database URL auto-stripped'},
+]},
+{v:'1.5.0',date:'Feb 2026',title:'Team & subscriptions',items:[
+  {t:'feature',text:'Staff management — agencies and VAs with payment tracking'},
+  {t:'feature',text:'Worker cards with YTD totals and avg per month'},
+  {t:'feature',text:'Subscription auto-generation with manual edit preservation'},
+  {t:'feature',text:'Partner Split tab with 50/50 calculations'},
+  {t:'feature',text:'Fanvue Payout tracking with model earnings breakdown'},
+  {t:'feature',text:'Transfer system between partners'},
+  {t:'ui',text:'Partner color coding — Sharon purple, Shon amber'},
+]},
+{v:'1.0.0',date:'Jan 2026',title:'Initial release',items:[
+  {t:'feature',text:'Standalone HTML financial dashboard'},
+  {t:'feature',text:'Transaction CRUD with categories'},
+  {t:'feature',text:'Monthly earnings tracking'},
+  {t:'feature',text:'CSV export for tax reporting'},
+  {t:'feature',text:'localStorage persistence'},
+  {t:'ui',text:'Seraphim Management branding'},
+]},
+];
+
+var _clTag='all';
+function filterChangelog(){
+  var q=(document.getElementById('changelog-search').value||'').toLowerCase();
+  renderChangelog(q,_clTag);
+}
+function filterChangelogTag(btn,tag){
+  _clTag=tag;
+  document.querySelectorAll('#changelog-tags .pill-filter').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  filterChangelog();
+}
+function renderChangelog(q,tag){
+  q=q||'';tag=tag||'all';
+  var body=document.getElementById('changelog-body');
+  if(!body) return;
+  var tagColors={feature:'var(--green)',fix:'var(--amber)',security:'var(--red)',ui:'var(--purple)'};
+  var tagLabels={feature:'Feature',fix:'Fix',security:'Security',ui:'UI/UX'};
+  body.innerHTML=CHANGELOG.map(function(ver){
+    var items=ver.items.filter(function(it){
+      if(tag!=='all'&&it.t!==tag) return false;
+      if(q&&it.text.toLowerCase().indexOf(q)<0&&ver.title.toLowerCase().indexOf(q)<0) return false;
+      return true;
+    });
+    if(!items.length) return '';
+    return '<div style="margin-bottom:20px">'+
+      '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">'+
+        '<span style="font-size:16px;font-weight:500;color:var(--gold);font-family:DM Mono,monospace">v'+ver.v+'</span>'+
+        '<span style="font-size:11px;color:var(--dim)">'+ver.date+'</span>'+
+        '<span style="font-size:12px;color:var(--muted)">— '+ver.title+'</span>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:4px">'+items.map(function(it){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0">'+
+          '<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,0.15);color:'+tagColors[it.t]+';white-space:nowrap;margin-top:2px">'+tagLabels[it.t]+'</span>'+
+          '<span style="font-size:12px;color:var(--text);line-height:1.5">'+it.text+'</span>'+
+        '</div>';
+      }).join('')+'</div></div>';
+  }).filter(Boolean).join('')||'<div style="color:var(--dim);text-align:center;padding:40px">No matching changes found</div>';
 }
 
 function openSettings(){
@@ -2467,18 +2629,15 @@ function openPdfExportModal(){
 }
 function exportMonthPDF(filter){
   if(!window.jspdf||!window.jspdf.jsPDF){
-    toast('Loading PDF library...','info');
-    var s1=document.createElement('script');
-    s1.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    s1.onload=function(){
-      var s2=document.createElement('script');
-      s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';
-      s2.onload=function(){toast('Ready — click export again','success');};
-      document.head.appendChild(s2);
-    };
-    s1.onerror=function(){toast('Failed to load PDF library — check internet','error');};
-    document.head.appendChild(s1);
+    toast('PDF library loading — please wait a moment and try again','info',3000);
     closeModal('m-pdf-export');
+    if(!window._pdfLoading){
+      window._pdfLoading=true;
+      var s1=document.createElement('script');
+      s1.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      s1.onload=function(){var s2=document.createElement('script');s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js';document.head.appendChild(s2);};
+      document.head.appendChild(s1);
+    }
     return;
   }
   var jsPDF=window.jspdf.jsPDF;
@@ -2871,7 +3030,7 @@ function renderModalAttPreviews(prefix){
       zone.insertBefore(wrap,ph);
     });
   } else {
-    if(ph) ph.textContent='Drop images here or click to browse';
+    if(ph) ph.textContent='Drop files here — images, PDFs, invoices';
   }
 }
 
@@ -3959,7 +4118,7 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.1.0';
+var SERAPHIM_VERSION='2.2.0';
 var _initDone=false;
 function init(){
   if(_initDone) return;
@@ -4005,7 +4164,7 @@ function init(){
       }
     }
     var lastV=localStorage.getItem('seraphim_lastVersion');
-    if(lastV!==SERAPHIM_VERSION) openModal('m-changelog');
+    if(lastV!==SERAPHIM_VERSION) openModal('m-changelog');renderChangelog();
 
   }catch(e){console.error('Init error:',e);}
 }
