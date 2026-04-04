@@ -1490,36 +1490,28 @@ function renderOverview(){
   var _he=document.getElementById('hero2-earnings');_he.textContent=fmt(r.earnings);animateValue(_he,r.earnings);
   document.getElementById('hero2-sub').textContent='earned this month';
   var _hx=document.getElementById('hero2-expenses');_hx.textContent=fmt(r.totalExp);animateValue(_hx,r.totalExp);
+  // Show Fanvue vs bank breakdown if there are Fanvue expenses
+  if(r.fanvueExp>0){
+    var heroSub=document.getElementById('hero2-sub');
+    heroSub.textContent='Fanvue paid: '+fmt(r.fanvueExp)+' · Bank: '+fmt(r.totalExp-r.fanvueExp);
+  }
   var netEl=document.getElementById('hero2-net');netEl.textContent=fmt(r.meb);netEl.style.color=r.meb>=0?'var(--green)':'var(--red)';
   document.getElementById('hero2-each').textContent=fmt(r.split);
 
 
-  // PARTNER CARDS — all-time balances
+  // PARTNER CARDS — all-time balances (Fanvue-aware)
   var allTime=active.reduce(function(acc,r){
-    acc.sW+=r.sharonW;acc.nW+=r.shonW;acc.sE+=r.sharonE;acc.nE+=r.shonE;acc.split+=r.split;return acc;
-  },{sW:0,nW:0,sE:0,nE:0,split:0});
-  var sBall=allTime.split-(allTime.sW-allTime.sE),nBall=allTime.split-(allTime.nW-allTime.nE);
-  var prevM=activeMths().slice(-2)[0]||'';
-  var prevR=prevM?calcMonth(prevM):{split:0,sharonW:0,shonW:0,sharonE:0,shonE:0};
-  var sBprev=prevR.split-(prevR.sharonW-prevR.sharonE);
-  var nBprev=prevR.split-(prevR.shonW-prevR.shonE);
-  var sTrend=sBall>sBprev?' <span style="color:var(--green);font-size:10px">&#x25B2;</span>':sBall<sBprev?' <span style="color:var(--red);font-size:10px">&#x25BC;</span>':'';
-  var nTrend=nBall>nBprev?' <span style="color:var(--green);font-size:10px">&#x25B2;</span>':nBall<nBprev?' <span style="color:var(--red);font-size:10px">&#x25BC;</span>':'';
-  var _prevMs=activeMths();
-  var _prevMi=_prevMs.indexOf(curM)-1;
-  var _prevR=_prevMi>=0?calcMonth(_prevMs[_prevMi]):{split:0,sharonW:0,shonW:0,sharonE:0,shonE:0};
-  var _sBp=_prevR.split-(_prevR.sharonW-_prevR.sharonE);
-  var _nBp=_prevR.split-(_prevR.shonW-_prevR.shonE);
-  var _sArrow=sBall>_sBp?' <span style="color:var(--green);font-size:9px">&#x25B2;</span>':sBall<_sBp?' <span style="color:var(--red);font-size:9px">&#x25BC;</span>':'';
-  var _nArrow=nBall>_nBp?' <span style="color:var(--green);font-size:9px">&#x25B2;</span>':nBall<_nBp?' <span style="color:var(--red);font-size:9px">&#x25BC;</span>':'';
-  var _pm=activeMths().length>=2?activeMths().slice(-2)[0]:'';
-  var _pr=_pm?calcMonth(_pm):{split:0,sharonW:0,shonW:0,sharonE:0,shonE:0};
-  var _psb=_pr.split-(_pr.sharonW-_pr.sharonE),_pnb=_pr.split-(_pr.shonW-_pr.shonE);
-  var _st=sBall>_psb?'&#x25B2;':sBall<_psb?'&#x25BC;':'',_nt=nBall>_pnb?'&#x25B2;':nBall<_pnb?'&#x25BC;':'';
-  var _stc=sBall>=_psb?'var(--green)':'var(--red)',_ntc=nBall>=_pnb?'var(--green)':'var(--red)';
+    acc.sW+=r.sharonW;acc.nW+=r.shonW;
+    acc.sE_bank+=(r.sharonE_bank||0);acc.nE_bank+=(r.shonE_bank||0);
+    acc.fvExp+=(r.fanvueExp||0);
+    acc.split+=r.split;
+    acc.sharonOwed+=(r.sharonOwed||0);acc.shonOwed+=(r.shonOwed||0);
+    return acc;
+  },{sW:0,nW:0,sE_bank:0,nE_bank:0,fvExp:0,split:0,sharonOwed:0,shonOwed:0});
+  var sBall=allTime.sharonOwed,nBall=allTime.shonOwed;
   document.getElementById('partner-row').innerHTML=
-    '<div class="p-card p-card-sharon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(200,128,184,0.1);color:var(--purple)">S</div><div class="p-card-name" style="color:var(--purple)">Sharon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--purple)">'+fmt(allTime.sW)+'</div></div><div><div class="p-card-stat-label">Expenses</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.sE)+'</div></div></div><div class="p-card-balance">Remaining: <strong style="color:var(--purple)">'+fmt(sBall)+'</strong>'+_sArrow+''+sTrend+'</div></div>'+
-    '<div class="p-card p-card-shon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(242,201,76,0.1);color:var(--amber)">S</div><div class="p-card-name" style="color:var(--amber)">Shon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--amber)">'+fmt(allTime.nW)+'</div></div><div><div class="p-card-stat-label">Expenses</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.nE)+'</div></div></div><div class="p-card-balance">Remaining: <strong style="color:var(--amber)">'+fmt(nBall)+'</strong>'+_nArrow+''+nTrend+'</div></div>';
+    '<div class="p-card p-card-sharon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(200,128,184,0.1);color:var(--purple)">S</div><div class="p-card-name" style="color:var(--purple)">Sharon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--purple)">'+fmt(allTime.sW)+'</div></div><div><div class="p-card-stat-label">Paid from bank</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.sE_bank)+'</div></div></div>'+(allTime.fvExp?'<div style="font-size:9px;color:var(--dim);padding:4px 0">Fanvue-direct expenses: '+fmt(allTime.fvExp/2)+' (your share)</div>':'')+'<div class="p-card-balance">Remaining: <strong style="color:var(--purple)">'+fmt(sBall)+'</strong></div></div>'+
+    '<div class="p-card p-card-shon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(242,201,76,0.1);color:var(--amber)">S</div><div class="p-card-name" style="color:var(--amber)">Shon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--amber)">'+fmt(allTime.nW)+'</div></div><div><div class="p-card-stat-label">Paid from bank</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.nE_bank)+'</div></div></div>'+(allTime.fvExp?'<div style="font-size:9px;color:var(--dim);padding:4px 0">Fanvue-direct expenses: '+fmt(allTime.fvExp/2)+' (your share)</div>':'')+'<div class="p-card-balance">Remaining: <strong style="color:var(--amber)">'+fmt(nBall)+'</strong></div></div>';
 
   // TIMELINE CARDS
   var withData=active.filter(function(r){return r.earnings>0||r.totalExp>0;});
