@@ -2592,16 +2592,16 @@ function initFirebase(){
     if(_authApp){
       _fb=_authApp;
     } else {
-      if(_fb){try{_fb.delete();}catch(e){}}
-      var dbUrl=state.firebaseConfig.databaseURL.replace(/\/+$/,'');
-      var config={
-        apiKey:state.firebaseConfig.apiKey,
-        databaseURL:dbUrl,
-        authDomain:state.firebaseConfig.authDomain||'',
-        projectId:state.firebaseConfig.projectId||'',
-        storageBucket:state.firebaseConfig.storageBucket||''
-      };
-      _fb=firebase.initializeApp(config,'seraphim_'+Date.now());
+      try{_fb=firebase.app('seraphim_shared');}catch(e){
+        var dbUrl=state.firebaseConfig.databaseURL.replace(/\/+$/,'');
+        _fb=firebase.initializeApp({
+          apiKey:state.firebaseConfig.apiKey,
+          databaseURL:dbUrl,
+          authDomain:state.firebaseConfig.authDomain||'',
+          projectId:state.firebaseConfig.projectId||'',
+          storageBucket:state.firebaseConfig.storageBucket||''
+        },'seraphim_shared');
+      }
     }
     _fbRef=_fb.database().ref('seraphim/data');
     startListener();
@@ -2839,11 +2839,10 @@ function initAuth(){
   var cfg=state.firebaseConfig;
   if(!cfg||!cfg.apiKey){showDashboard();return;}
   try{
-    _authApp=firebase.app('seraphim_shared');
-  }catch(e){
-    var dbUrl=(cfg.databaseURL||'').replace(/\/+$/,'');
-    _authApp=firebase.initializeApp({apiKey:cfg.apiKey,authDomain:cfg.authDomain||'',databaseURL:dbUrl,projectId:cfg.projectId||'',storageBucket:cfg.storageBucket||''},'seraphim_shared');
-  }
+    try{_authApp=firebase.app('seraphim_shared');}catch(e){
+      var dbUrl=(cfg.databaseURL||'').replace(/\/+$/,'');
+      _authApp=firebase.initializeApp({apiKey:cfg.apiKey,authDomain:cfg.authDomain||'',databaseURL:dbUrl,projectId:cfg.projectId||'',storageBucket:cfg.storageBucket||''},'seraphim_shared');
+    }
   _authApp.auth().onAuthStateChanged(function(user){
     if(user){
       _authUser=user;
@@ -2861,6 +2860,7 @@ function initAuth(){
       fadeToScreen('login');
     }
   });
+  }catch(e){console.error('Auth init error:',e);showDashboard();}
 }
 
 function doLogin(){
@@ -2888,6 +2888,7 @@ function doLogin(){
 function showDashboard(){
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('profile-screen').classList.add('hidden');
+  init();
 }
 
 function fadeToScreen(target){
@@ -2924,11 +2925,14 @@ function fadeToScreen(target){
 function pickProfile(name){
   state.currentUser=name;
   sessionStorage.setItem('seraphim_profile',name);
-  updateHeaderUser();
-  logActivity('login','Signed in as '+name+': '+(_authUser?_authUser.email:''),{by:name,device:navigator.userAgent.indexOf('Mobile')>=0?'Mobile':'Desktop'});
-  save();
   fadeToScreen('dashboard');
-  resetSessionTimer();
+  setTimeout(function(){
+    init();
+    updateHeaderUser();
+    logActivity('login','Signed in as '+name+': '+(_authUser?_authUser.email:''),{by:name,device:navigator.userAgent.indexOf('Mobile')>=0?'Mobile':'Desktop'});
+    saveLocal();
+    resetSessionTimer();
+  },400);
 }
 
 function fadeToScreen(target){
