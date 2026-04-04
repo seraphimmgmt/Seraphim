@@ -622,6 +622,17 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 
 .nav-badge{position:absolute;top:-2px;right:-2px;min-width:14px;height:14px;border-radius:7px;background:var(--red);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
 .nav-item{position:relative}
+
+#profile-screen{position:fixed;inset:0;background:#0C0A10;z-index:998;display:flex;align-items:center;justify-content:center}
+#profile-screen.hidden{display:none}
+.profile-pick{cursor:pointer;text-align:center;padding:20px 24px;border-radius:12px;border:1px solid var(--b1);transition:all 0.2s;min-width:120px}
+.profile-pick:hover{border-color:var(--gdim);background:rgba(208,184,104,0.03);transform:translateY(-2px)}
+.profile-pick-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;margin:0 auto 10px}
+.profile-pick-name{font-size:15px;font-weight:500}
+.screen-fade-out{animation:screenFadeOut 0.4s ease forwards}
+.screen-fade-in{animation:screenFadeIn 0.4s ease forwards}
+@keyframes screenFadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(0.96)}}
+@keyframes screenFadeIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -634,10 +645,27 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <div class="login-sub" id="login-sub">Sign in to your dashboard</div>
     <input class="login-field" id="login-email" type="email" placeholder="Email address">
     <input class="login-field" id="login-pass" type="password" placeholder="Password">
-    <input class="login-field" id="login-name" type="text" placeholder="Display name (Sharon or Shon)" style="display:none">
     <button class="login-btn" id="login-btn" onclick="doLogin()">Sign in</button>
     <div class="login-error" id="login-error"></div>
-    <div class="login-toggle" id="login-toggle">No account? <span onclick="toggleAuthMode()">Create one</span></div>
+  </div>
+</div>
+<div id="profile-screen" class="hidden">
+  <div class="login-card" style="width:400px">
+    <div class="login-logo">
+      <svg width="48" height="40" viewBox="0 0 200 160"><path d="M100 90C90 70 50 50 15 35C25 42 55 55 80 72C85 76 92 82 100 90Z" fill="#D0B868"/><path d="M100 90C88 65 40 55 10 55C22 58 52 65 78 78C84 81 93 86 100 90Z" fill="#D0B868"/><path d="M100 90C92 75 55 68 25 72C38 70 62 72 82 82C88 85 95 88 100 90Z" fill="#D0B868"/><path d="M100 90C110 70 150 50 185 35C175 42 145 55 120 72C115 76 108 82 100 90Z" fill="#D0B868"/><path d="M100 90C112 65 160 55 190 55C178 58 148 65 122 78C116 81 107 86 100 90Z" fill="#D0B868"/><path d="M100 90C108 75 145 68 175 72C162 70 138 72 118 82C112 85 105 88 100 90Z" fill="#D0B868"/><ellipse cx="100" cy="18" rx="12" ry="5" fill="none" stroke="#D0B868" stroke-width="3"/></svg>
+    </div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Who is managing today?</div>
+    <div style="display:flex;gap:16px;justify-content:center;margin-top:20px">
+      <div class="profile-pick" onclick="pickProfile('Sharon')">
+        <div class="profile-pick-avatar" style="background:rgba(200,128,184,0.12);color:#C880B8">S</div>
+        <div class="profile-pick-name" style="color:#C880B8">Sharon</div>
+      </div>
+      <div class="profile-pick" onclick="pickProfile('Shon')">
+        <div class="profile-pick-avatar" style="background:rgba(242,201,76,0.12);color:#F2C94C">S</div>
+        <div class="profile-pick-name" style="color:#F2C94C">Shon</div>
+      </div>
+    </div>
   </div>
 </div>
 <div id="hdr">
@@ -2561,16 +2589,20 @@ function initFirebase(){
   if(!state.firebaseConfig||!state.firebaseConfig.databaseURL||!state.firebaseConfig.apiKey) return;
   updateSyncUI('syncing','Connecting...');
   try{
-    if(_fb){try{_fb.delete();}catch(e){}}
-    var dbUrl=state.firebaseConfig.databaseURL.replace(/\/+$/,'');
-    var config={
-      apiKey:state.firebaseConfig.apiKey,
-      databaseURL:dbUrl,
-      authDomain:state.firebaseConfig.authDomain||'',
-      projectId:state.firebaseConfig.projectId||'',
-      storageBucket:state.firebaseConfig.storageBucket||''
-    };
-    _fb=firebase.initializeApp(config,'seraphim_'+Date.now());
+    if(_authApp){
+      _fb=_authApp;
+    } else {
+      if(_fb){try{_fb.delete();}catch(e){}}
+      var dbUrl=state.firebaseConfig.databaseURL.replace(/\/+$/,'');
+      var config={
+        apiKey:state.firebaseConfig.apiKey,
+        databaseURL:dbUrl,
+        authDomain:state.firebaseConfig.authDomain||'',
+        projectId:state.firebaseConfig.projectId||'',
+        storageBucket:state.firebaseConfig.storageBucket||''
+      };
+      _fb=firebase.initializeApp(config,'seraphim_'+Date.now());
+    }
     _fbRef=_fb.database().ref('seraphim/data');
     startListener();
     state.firebaseConnected=true;
@@ -2798,53 +2830,37 @@ function updateFirebaseUI(){
 
 // AUTH
 var _authApp=null;
-var _authMode='login';
 var _authUser=null;
 var _sessionTimer=null;
 var _sessionWarnTimer=null;
-var _SESSION_TIMEOUT=30*60*1000;
-var _SESSION_WARN=25*60*1000;
 
 function initAuth(){
-  if(typeof firebase==='undefined') {showDashboard();return;}
+  if(typeof firebase==='undefined'){showDashboard();return;}
   var cfg=state.firebaseConfig;
   if(!cfg||!cfg.apiKey){showDashboard();return;}
   try{
-    _authApp=firebase.initializeApp({apiKey:cfg.apiKey,authDomain:cfg.authDomain||'',projectId:cfg.projectId||''},'auth_'+Date.now());
-    _authApp.auth().onAuthStateChanged(function(user){
-      if(user){
-        _authUser=user;
+    _authApp=firebase.app('seraphim_shared');
+  }catch(e){
+    var dbUrl=(cfg.databaseURL||'').replace(/\/+$/,'');
+    _authApp=firebase.initializeApp({apiKey:cfg.apiKey,authDomain:cfg.authDomain||'',databaseURL:dbUrl,projectId:cfg.projectId||'',storageBucket:cfg.storageBucket||''},'seraphim_shared');
+  }
+  _authApp.auth().onAuthStateChanged(function(user){
+    if(user){
+      _authUser=user;
+      var savedProfile=sessionStorage.getItem('seraphim_profile');
+      if(savedProfile){
+        state.currentUser=savedProfile;
+        updateHeaderUser();
         showDashboard();
-        updateAuthUI();
-        logLoginEvent(user);
         resetSessionTimer();
       } else {
-        _authUser=null;
-        showLoginScreen();
+        fadeToScreen('profile');
       }
-    });
-  }catch(e){
-    console.error('Auth init error:',e);
-    showDashboard();
-  }
-}
-
-function showLoginScreen(){
-  document.getElementById('login-screen').classList.remove('hidden');
-}
-
-function showDashboard(){
-  document.getElementById('login-screen').classList.add('hidden');
-  init();
-}
-
-function toggleAuthMode(){
-  _authMode=_authMode==='login'?'register':'login';
-  document.getElementById('login-sub').textContent=_authMode==='login'?'Sign in to your dashboard':'Create your account';
-  document.getElementById('login-btn').textContent=_authMode==='login'?'Sign in':'Create account';
-  document.getElementById('login-name').style.display=_authMode==='register'?'block':'none';
-  document.getElementById('login-toggle').innerHTML=_authMode==='login'?'No account? <span onclick="toggleAuthMode()">Create one</span>':'Already have an account? <span onclick="toggleAuthMode()">Sign in</span>';
-  document.getElementById('login-error').textContent='';
+    } else {
+      _authUser=null;
+      fadeToScreen('login');
+    }
+  });
 }
 
 function doLogin(){
@@ -2852,35 +2868,104 @@ function doLogin(){
   var pass=document.getElementById('login-pass').value;
   var errEl=document.getElementById('login-error');
   if(!email||!pass){errEl.textContent='Enter email and password';return;}
-  errEl.textContent='';
-  document.getElementById('login-btn').textContent='...';
-  if(_authMode==='register'){
-    var name=document.getElementById('login-name').value.trim();
-    _authApp.auth().createUserWithEmailAndPassword(email,pass).then(function(cred){
-      if(name) return cred.user.updateProfile({displayName:name});
-    }).then(function(){
-      document.getElementById('login-btn').textContent='Create account';
-    }).catch(function(err){
-      errEl.textContent=err.message.replace('Firebase: ','');
-      document.getElementById('login-btn').textContent='Create account';
-    });
+  errEl.textContent='Signing in...';
+  document.getElementById('login-btn').disabled=true;
+  _authApp.auth().signInWithEmailAndPassword(email,pass).then(function(){
+    errEl.textContent='';
+    document.getElementById('login-btn').disabled=false;
+  }).catch(function(err){
+    var msg='Login failed';
+    if(err.code==='auth/user-not-found') msg='No account found';
+    else if(err.code==='auth/wrong-password'||err.code==='auth/invalid-credential') msg='Wrong password';
+    else if(err.code==='auth/invalid-email') msg='Invalid email';
+    else if(err.code==='auth/too-many-requests') msg='Too many attempts — wait a moment';
+    else msg=err.message.replace('Firebase: ','');
+    errEl.textContent=msg;
+    document.getElementById('login-btn').disabled=false;
+  });
+}
+
+function showDashboard(){
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('profile-screen').classList.add('hidden');
+}
+
+function fadeToScreen(target){
+  var login=document.getElementById('login-screen');
+  var profile=document.getElementById('profile-screen');
+  if(target==='login'){
+    profile.classList.add('hidden');
+    login.classList.remove('hidden');
+    login.classList.add('screen-fade-in');
+    setTimeout(function(){login.classList.remove('screen-fade-in');},400);
+    setTimeout(function(){document.getElementById('login-email').focus();},450);
+  } else if(target==='profile'){
+    login.classList.add('screen-fade-out');
+    setTimeout(function(){
+      login.classList.add('hidden');
+      login.classList.remove('screen-fade-out');
+      profile.classList.remove('hidden');
+      profile.classList.add('screen-fade-in');
+      setTimeout(function(){profile.classList.remove('screen-fade-in');},400);
+    },350);
   } else {
-    _authApp.auth().signInWithEmailAndPassword(email,pass).then(function(){
-      document.getElementById('login-btn').textContent='Sign in';
-    }).catch(function(err){
-      errEl.textContent=err.message.replace('Firebase: ','');
-      document.getElementById('login-btn').textContent='Sign in';
-    });
+    var visible=!login.classList.contains('hidden')?login:!profile.classList.contains('hidden')?profile:null;
+    if(visible){
+      visible.classList.add('screen-fade-out');
+      setTimeout(function(){
+        visible.classList.add('hidden');
+        visible.classList.remove('screen-fade-out');
+      },350);
+    }
   }
 }
 
+
+function pickProfile(name){
+  state.currentUser=name;
+  sessionStorage.setItem('seraphim_profile',name);
+  updateHeaderUser();
+  logActivity('login','Signed in as '+name+': '+(_authUser?_authUser.email:''),{by:name,device:navigator.userAgent.indexOf('Mobile')>=0?'Mobile':'Desktop'});
+  save();
+  fadeToScreen('dashboard');
+  resetSessionTimer();
+}
+
+function fadeToScreen(target){
+  var login=document.getElementById('login-screen');
+  var profile=document.getElementById('profile-screen');
+  var screens=[login,profile];
+  // Fade out all visible screens
+  screens.forEach(function(s){
+    if(s&&!s.classList.contains('hidden')){
+      s.classList.add('screen-fade-out');
+      setTimeout(function(){
+        s.classList.add('hidden');
+        s.classList.remove('screen-fade-out');
+      },400);
+    }
+  });
+  setTimeout(function(){
+    if(target==='login'){
+      login.classList.remove('hidden');
+      login.classList.add('screen-fade-in');
+      setTimeout(function(){login.classList.remove('screen-fade-in');},400);
+    } else if(target==='profile'){
+      profile.classList.remove('hidden');
+      profile.classList.add('screen-fade-in');
+      setTimeout(function(){profile.classList.remove('screen-fade-in');},400);
+    }
+    // dashboard = just hide the overlays (already done above)
+  },target==='login'||target==='profile'?420:0);
+}
+
+
+
+
+
 function doLogout(){
-  if(_authApp){
-    _authApp.auth().signOut();
-  }
-  clearTimeout(_sessionTimer);
-  clearTimeout(_sessionWarnTimer);
-  _authUser=null;
+  sessionStorage.removeItem('seraphim_profile');
+  if(_authApp){_authApp.auth().signOut().then(function(){toast('Signed out','info');});}
 }
 
 function updateAuthUI(){
