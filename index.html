@@ -1312,12 +1312,29 @@ function calcMonth(m){
   if(_calcCache[m]) return _calcCache[m];
   const txns=state.transactions.filter(t=>t.month===m&&t.type!=='Transfer');
   const earn=state.monthlyEarnings[m]||0;
+  // Withdrawals per partner
   const sW=txns.filter(t=>t.type==='Withdrawal'&&t.who==='Sharon').reduce((s,t)=>s+Number(t.amount),0);
   const nW=txns.filter(t=>t.type==='Withdrawal'&&t.who==='Shon').reduce((s,t)=>s+Number(t.amount),0);
+  // ALL expenses per partner (for display)
   const sE=txns.filter(t=>t.type==='Expense'&&t.who==='Sharon').reduce((s,t)=>s+Number(t.amount),0);
   const nE=txns.filter(t=>t.type==='Expense'&&t.who==='Shon').reduce((s,t)=>s+Number(t.amount),0);
-  const totalExp=sE+nE;const meb=earn-totalExp;const split=meb/2;
-  var result={month:m,earnings:earn,sharonW:sW,shonW:nW,sharonE:sE,shonE:nE,totalExp,meb,split,sharonOwed:split-(sW-sE),shonOwed:split-(nW-nE)};
+  // Fanvue-direct expenses (reduce the pot before splitting — neither partner pays)
+  const fvExp=txns.filter(t=>t.type==='Expense'&&t.through==='Fanvue').reduce((s,t)=>s+Number(t.amount),0);
+  // Bank expenses per partner (partner paid from their own pocket)
+  const sE_bank=txns.filter(t=>t.type==='Expense'&&t.who==='Sharon'&&t.through!=='Fanvue').reduce((s,t)=>s+Number(t.amount),0);
+  const nE_bank=txns.filter(t=>t.type==='Expense'&&t.who==='Shon'&&t.through!=='Fanvue').reduce((s,t)=>s+Number(t.amount),0);
+  const totalExp=sE+nE;
+  const meb=earn-totalExp;
+  // Split: earnings minus Fanvue expenses, minus bank expenses, divided by 2
+  const split=meb/2;
+  // Remaining to withdraw: partner's share minus withdrawals plus bank expenses they fronted
+  // Fanvue expenses already reduced the pool equally for both via meb
+  // Bank expenses: partner fronted money, so they get credit
+  var result={month:m,earnings:earn,sharonW:sW,shonW:nW,sharonE:sE,shonE:nE,
+    sharonE_bank:sE_bank,shonE_bank:nE_bank,fanvueExp:fvExp,
+    totalExp,meb,split,
+    sharonOwed:split-(sW-sE_bank),
+    shonOwed:split-(nW-nE_bank)};
   _calcCache[m]=result;return result;
 }
 function calcAll(){return state.months.map(m=>calcMonth(m));}
