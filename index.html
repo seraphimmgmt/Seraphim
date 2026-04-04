@@ -633,6 +633,9 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 .screen-fade-in{animation:screenFadeIn 0.4s ease forwards}
 @keyframes screenFadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(0.96)}}
 @keyframes screenFadeIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
+
+#panel-overview .tw{margin-bottom:0}
+#panel-overview .chart-card{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -728,19 +731,20 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
       <div class="section-label" style="margin-bottom:8px">Monthly timeline</div>
       <div class="timeline" id="timeline-cards"></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
-        <div>
+        <div style="display:flex;flex-direction:column">
           <div class="section-label" style="margin-bottom:8px">Recent transactions</div>
-          <div class="tw" style="padding:0"><div class="recent-list" id="recent-list"></div></div>
+          <div class="tw" style="padding:0;flex:1;display:flex;flex-direction:column"><div class="recent-list" id="recent-list" style="flex:1"></div></div>
         </div>
-        <div>
+        <div style="display:flex;flex-direction:column">
           <div class="section-label" style="margin-bottom:8px">To do</div>
           <div class="todo-card" id="todo-widget"></div>
-          <div class="upcoming"><div class="upcoming-title">&#x23F1; Upcoming Subs</div><div id="upcoming-list"></div></div>
+          <div class="section-label" style="margin:12px 0 6px">Upcoming subs</div>
+          <div id="upcoming-list"></div>
         </div>
-      </div>
-      <div class="charts-row" style="margin-top:16px">
-        <div class="chart-card"><div class="chart-title">Earnings vs expenses</div><div class="chart-wrap"><canvas id="chart-main"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Spend by category</div><div class="chart-wrap"><canvas id="chart-pie"></canvas></div></div>
+        <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="chart-card"><div class="chart-title">Earnings vs expenses</div><div class="chart-wrap"><canvas id="chart-main"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Spend by category</div><div class="chart-wrap"><canvas id="chart-pie"></canvas></div></div>
+        </div>
       </div>
     </div>
     <!-- MONTHLY -->
@@ -892,6 +896,10 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
       </div>
     </div>
     <div id="profile-status" style="font-size:11px;color:var(--dim);margin-top:8px;text-align:center"></div>
+  </div>
+  <div style="background:var(--s1);border:1px solid rgba(235,88,88,0.12);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-size:12px;color:var(--muted)" id="settings-user-email"></div><div style="font-size:10px;color:var(--dim);margin-top:2px">Signed in as <strong id="settings-user-name" style="color:var(--gold)"></strong></div></div>
+    <button class="btn sm danger" onclick="doLogout();closeModal('m-settings')">Sign out</button>
   </div>
   <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Notifications</div>
@@ -1114,6 +1122,9 @@ const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec
 const FREQ_LABELS={'1':'Monthly','2':'Every 2mo','3':'Quarterly','6':'Every 6mo','12':'Annual'};
 const CAT_COLORS={Marketing:'rgba(208,184,104,0.7)',Software:'rgba(96,165,250,0.7)',VA:'rgba(167,139,250,0.7)',Travel:'rgba(251,191,36,0.7)',Equipment:'rgba(74,222,128,0.7)',Personal:'rgba(248,113,113,0.5)',Other:'rgba(100,100,120,0.6)'};
 
+// Pre-load Firebase config from localStorage
+var _preload=null;
+try{_preload=JSON.parse(localStorage.getItem('seraphim_v3')||'null');}catch(e){}
 var state={
   transactions:[],months:[],monthlyEarnings:{},modelEarnings:{},monthNotes:{},
   subscriptions:[],staffMembers:[],workers:[],
@@ -1340,7 +1351,7 @@ function renderOverview(){
 
   // RECENT TRANSACTIONS — compact, 8 max, no future subs
   var _now=new Date().toISOString().split('T')[0];
-  var recent=state.transactions.filter(function(t){return t.date&&t.date<=_now&&!t.isRecurring;}).sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,8);
+  var recent=state.transactions.filter(function(t){return t.date&&t.date<=_now&&!t.isRecurring;}).sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,15);
   document.getElementById('recent-list').innerHTML=recent.map(function(t){
     var isIncome=t.type==='Withdrawal';
     var dotColor=isIncome?'var(--green)':'var(--red)';
@@ -2112,6 +2123,10 @@ function renderSyncLog(){
 
 function openSettings(){
   renderSyncLog();
+  var sue=document.getElementById('settings-user-email');
+  var sun=document.getElementById('settings-user-name');
+  if(sue) sue.textContent=_authUser?_authUser.email:'Not signed in';
+  if(sun) sun.textContent=state.currentUser||'Unknown';
   document.getElementById('cfg-models').value=(state.models||['Akira','Mila']).join(', ');
   var np=state.notifyPrefs||{partnerChanges:true,syncEvents:true};
   var npc=document.getElementById('notif-partner');if(npc)npc.checked=np.partnerChanges!==false;
@@ -2900,8 +2915,11 @@ var _sessionWarnTimer=null;
 
 function initAuth(){
   if(typeof firebase==='undefined'){showDashboard();return;}
-  var cfg=state.firebaseConfig;
-  if(!cfg||!cfg.apiKey){showDashboard();return;}
+  var cfg=state.firebaseConfig||(_preload&&_preload.firebaseConfig)||null;
+  if(!cfg||!cfg.apiKey){
+    cfg={databaseURL:'https://expenses-dashboard-a180a-default-rtdb.firebaseio.com',apiKey:'AIzaSyCSxyDqlD5nVFYHwnzcG-cMl25Nlz4cDjw',projectId:'expenses-dashboard-a180a',authDomain:'expenses-dashboard-a180a.firebaseapp.com'};
+    state.firebaseConfig=cfg;
+  }
   try{
     try{_authApp=firebase.app('seraphim_shared');}catch(e){
       var dbUrl=(cfg.databaseURL||'').replace(/\/+$/,'');
@@ -2916,6 +2934,15 @@ function initAuth(){
         updateHeaderUser();
         showDashboard();
         resetSessionTimer();
+        // Auto-connect + sync on refresh
+        if(typeof firebase!=='undefined'&&state.firebaseConfig&&state.firebaseConfig.databaseURL&&!state.firebaseConnected){
+          if(localStorage.getItem('seraphim_fb_manual_off')!=='true'){
+            setTimeout(function(){
+              initFirebase();
+              setTimeout(function(){if(state.firebaseConnected&&_fbRef)manualSync();},1500);
+            },800);
+          }
+        }
       } else {
         fadeToScreen('profile');
       }
@@ -2996,6 +3023,7 @@ function fadeToScreen(target){
 function pickProfile(name){
   state.currentUser=name;
   sessionStorage.setItem('seraphim_profile',name);
+  localStorage.removeItem('seraphim_fb_manual_off');
   fadeToScreen('dashboard');
   setTimeout(function(){
     init();
@@ -3003,6 +3031,23 @@ function pickProfile(name){
     logActivity('login','Signed in as '+name+': '+(_authUser?_authUser.email:''),{by:name,device:navigator.userAgent.indexOf('Mobile')>=0?'Mobile':'Desktop'});
     saveLocal();
     resetSessionTimer();
+    // Auto-connect Firebase + force sync on login
+    if(typeof firebase!=='undefined'&&state.firebaseConfig&&state.firebaseConfig.databaseURL){
+      localStorage.removeItem('seraphim_fb_manual_off');
+      if(!state.firebaseConnected){
+        initFirebase();
+      }
+      // Force sync once connected — poll until ready
+      var _syncAttempts=0;
+      var _syncCheck=setInterval(function(){
+        _syncAttempts++;
+        if(state.firebaseConnected&&_fbRef){
+          clearInterval(_syncCheck);
+          manualSync();
+        }
+        if(_syncAttempts>15) clearInterval(_syncCheck);
+      },500);
+    }
   },400);
 }
 
