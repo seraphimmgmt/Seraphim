@@ -826,6 +826,8 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
           <div class="todo-card" id="todo-widget"></div>
           <div class="section-label" style="margin:12px 0 6px">Upcoming subs</div>
           <div id="upcoming-list"></div>
+          <div class="section-label" style="margin:14px 0 6px">Recent activity</div>
+          <div id="recent-activity" style="font-size:11px"></div>
         </div>
         <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <div class="chart-card"><div class="chart-title">Earnings vs expenses</div><div class="chart-wrap"><canvas id="chart-main"></canvas></div></div>
@@ -1531,6 +1533,19 @@ function renderOverview(){
   // TOTAL REMAINING
   var totalRemaining=sBall+nBall;
   document.getElementById('total-remaining-card').innerHTML='<div><span style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em">Total remaining in Fanvue</span><div style="font-size:20px;font-family:DM Mono,monospace;color:var(--gold);margin-top:3px">'+fmt(totalRemaining)+'</div></div><div style="text-align:right"><span style="font-size:9px;color:var(--dim)">Sharon '+fmt(sBall)+'</span><span style="font-size:9px;color:var(--dim);margin-left:12px">Shon '+fmt(nBall)+'</span></div>';
+
+  // RECENT ACTIVITY FEED
+  var recentActs=(state.activityLog||[]).slice(0,8);
+  var actIcons={add:'<span style="color:var(--green)">+</span>',edit:'<span style="color:var(--amber)">✎</span>','delete':'<span style="color:var(--red)">✕</span>',login:'<span style="color:var(--blue)">→</span>',restore:'<span style="color:var(--teal)">↩</span>'};
+  document.getElementById('recent-activity').innerHTML=recentActs.length?recentActs.map(function(a){
+    var dt=new Date(a.timestamp);
+    var ago=Math.floor((Date.now()-dt.getTime())/60000);
+    var agoStr=ago<1?'now':ago<60?ago+'m':ago<1440?Math.floor(ago/60)+'h':Math.floor(ago/1440)+'d';
+    var icon=actIcons[a.action]||'·';
+    var who=(a.meta&&a.meta.by)||'';
+    var whoColor=who==='Sharon'?'var(--purple)':who==='Shon'?'var(--amber)':'var(--dim)';
+    return '<div style="display:flex;gap:6px;padding:4px 0;border-bottom:1px solid var(--b1);align-items:flex-start"><div style="flex-shrink:0;width:14px;text-align:center;margin-top:1px">'+icon+'</div><div style="flex:1;min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:11px">'+(a.desc||'Action')+'</div></div><div style="flex-shrink:0;display:flex;gap:6px;align-items:center"><span style="color:'+whoColor+';font-size:9px">'+who+'</span><span style="color:var(--dim);font-size:9px">'+agoStr+'</span></div></div>';
+  }).join('')+'<div style="text-align:center;padding:6px"><button class="btn sm" onclick="switchTab(\x27activity\x27,null)" style="font-size:10px;color:var(--dim)">View full log &rarr;</button></div>':'<div style="color:var(--dim);padding:10px;text-align:center">No activity yet</div>';
 
   // TIMELINE CARDS
   var withData=active.filter(function(r){return r.earnings>0||r.totalExp>0;});
@@ -3158,6 +3173,7 @@ var _fbListener=null;
 var _pushTimer=null;
 var _ignoreWindow=0;
 var _lastPushTime=0;
+var _initialSyncDone=false;
 
 function stripAttachmentData(txns){
   return txns.map(function(t){
@@ -3247,8 +3263,23 @@ function mergeRemoteState(remote){
   try{localStorage.setItem('seraphim_premerge',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   try{localStorage.setItem('seraphim_backup',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   var quickHash=JSON.stringify(remote._ts||0)+'-'+(remote._by||'');
-  if(window._lastRemoteHash===quickHash) return;
+  if(window._lastRemoteHash===quickHash&&_initialSyncDone) return;
   window._lastRemoteHash=quickHash;
+  // On first sync of session: full replace — remote is the truth
+  if(!_initialSyncDone){
+    console.log('[Sync] First sync — full replace from remote');
+    var arrayKeys=['transactions','subscriptions','staffMembers','workers','archive','todos','activityLog'];
+    arrayKeys.forEach(function(k){if(Array.isArray(remote[k])) state[k]=remote[k];});
+    var simpleKeys=['months','monthlyEarnings','modelEarnings','monthNotes','budgets','models'];
+    simpleKeys.forEach(function(k){if(remote[k]!==undefined) state[k]=remote[k];});
+    _initialSyncDone=true;
+    saveLocal();
+    reapplyAllSubs();refreshCurrent();
+    var who=remote._by||'Someone';
+    logSync('merge','Initial sync — loaded remote data from '+who);
+    updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    return;
+  }
   var changed=false;
   var mergeArray=function(local,remote,key){
     if(!Array.isArray(remote)) return local;
@@ -3314,10 +3345,12 @@ function mergeRemoteState(remote){
     updateSyncUI('on','Connected');
     updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }
+  _initialSyncDone=true;
 }
 
 function pushToFirebase(){
   if(!_fbRef||!state.firebaseConnected) return;
+  if(!_initialSyncDone){console.log('[Sync] Push blocked — waiting for initial sync');return;}
   _lastPushTime=Date.now();
   _ignoreWindow=Date.now()+2000;
   var payload=getSharedState();
@@ -3404,6 +3437,7 @@ function testConnection(){
 
 function toggleFirebase(){
   localStorage.removeItem('seraphim_fb_manual_off');
+  _initialSyncDone=false;
   if(state.firebaseConnected){
     disconnectFirebase();
   } else {
