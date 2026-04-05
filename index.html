@@ -813,6 +813,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
         </div>
       </div>
       <div class="partner-row" id="partner-row"></div>
+      <div id="total-remaining-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between"></div>
       <div class="section-label" style="margin-bottom:8px">Monthly timeline</div>
       <div class="timeline" id="timeline-cards"></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
@@ -846,7 +847,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     </div>
     <!-- TRANSACTIONS -->
     <div class="panel" id="panel-transactions">
-      <div class="ph"><div class="ph-top"><span class="pg-title">Transactions</span><div class="pg-actions"><button class="btn sm" onclick="openBudgetModal()">&#x2699; Budgets</button><button class="btn sm primary" onclick="openAddTransaction()">+ Add</button><button class="btn sm" onclick="exportTaxCSV()">&#x2193; Tax CSV</button></div></div><div class="pg-sub">All expenses, withdrawals and transfers</div></div>
+      <div class="ph"><div class="ph-top"><span class="pg-title">Transactions</span><div class="pg-actions"><button class="btn sm" onclick="openBudgetModal()">&#x2699; Budgets</button><button class="btn sm primary" onclick="openAddTransaction()">+ Add</button><button class="btn sm danger" onclick="openChargeback()">Chargeback</button><button class="btn sm" onclick="exportTaxCSV()">&#x2193; Tax CSV</button></div></div><div class="pg-sub">All expenses, withdrawals and transfers</div></div>
       <div class="kpis" id="txn-kpis"></div>
       <div class="charts-row" style="margin-bottom:16px">
         <div class="chart-card"><div class="chart-title">Spend by Category</div><div class="chart-wrap"><canvas id="chart-cats"></canvas></div></div>
@@ -954,10 +955,16 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <div class="panel" id="panel-activity">
       <div class="ph"><div class="ph-top"><span class="pg-title">Activity Log</span><div class="pg-actions"><span class="al-clear" onclick="clearActivityLog()">Clear Log</span></div></div><div class="pg-sub">Every action recorded — adds, edits, deletes, restores</div></div>
       <div class="kpis" id="al-kpis"></div>
-      <div class="filters">
-        <select class="fsel" id="al-type" onchange="renderActivityLog()"><option value="">All Actions</option><option value="add">Added</option><option value="edit">Edited</option><option value="delete">Deleted</option><option value="restore">Restored</option></select>
-        <input class="fsearch" placeholder="Search log..." id="al-search" oninput="renderActivityLog()">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:0 4px">
+        <button class="pill-filter active" onclick="setLogFilter(this,'')">All</button>
+        <button class="pill-filter" onclick="setLogFilter(this,'add')">Added</button>
+        <button class="pill-filter" onclick="setLogFilter(this,'edit')">Edited</button>
+        <button class="pill-filter" onclick="setLogFilter(this,'delete')">Deleted</button>
+        <button class="pill-filter" onclick="setLogFilter(this,'login')">Logins</button>
+        <button class="pill-filter" onclick="setLogFilter(this,'restore')">Restored</button>
+        <input class="fsearch" placeholder="Search log..." id="al-search" oninput="renderActivityLog()" style="margin-left:auto;max-width:200px">
       </div>
+      <input type="hidden" id="al-type" value="">
       <div class="tw"><div id="al-list" style="max-height:600px;overflow-y:auto"></div></div>
     </div>
     <!-- ARCHIVE -->
@@ -1215,6 +1222,14 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     </div>
   </div>
   <iframe id="pdf-preview-frame" style="flex:1;border:none;background:#fff;border-radius:0 0 8px 8px"></iframe>
+</div></div>
+<div class="overlay" id="m-chargeback"><div class="modal" style="max-width:400px">
+  <div class="modal-title" style="color:var(--red)">Log Chargeback</div>
+  <div class="modal-sub">Deducts from total earnings — affects both partners equally</div>
+  <div class="fg"><label class="fl">Description</label><input class="fi" id="cb-desc" placeholder="e.g. Subscriber chargeback"></div>
+  <div class="frow"><div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="cb-amt" step="0.01" min="0" placeholder="0.00"></div><div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="cb-date"></div></div>
+  <div class="fg"><label class="fl">Notes</label><input class="fi" id="cb-notes" placeholder="Reference number, details..."></div>
+  <div class="ma"><button class="bc" onclick="closeModal('m-chargeback')">Cancel</button><button class="bs" style="background:rgba(235,88,88,0.1);border-color:rgba(235,88,88,0.3);color:var(--red)" onclick="saveChargeback()">Log Chargeback</button></div>
 </div></div>
 <div id="lightbox">
   <button id="lb-close" onclick="closeLightbox()">&times;</button>
@@ -1513,6 +1528,10 @@ function renderOverview(){
     '<div class="p-card p-card-sharon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(200,128,184,0.1);color:var(--purple)">S</div><div class="p-card-name" style="color:var(--purple)">Sharon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--purple)">'+fmt(allTime.sW)+'</div></div><div><div class="p-card-stat-label">Paid from bank</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.sE_bank)+'</div></div></div>'+(allTime.fvExp?'<div style="font-size:9px;color:var(--dim);padding:4px 0">Fanvue-direct expenses: '+fmt(allTime.fvExp/2)+' (your share)</div>':'')+'<div class="p-card-balance">Remaining: <strong style="color:var(--purple)">'+fmt(sBall)+'</strong></div></div>'+
     '<div class="p-card p-card-shon"><div class="p-card-header"><div class="p-card-avatar" style="background:rgba(242,201,76,0.1);color:var(--amber)">S</div><div class="p-card-name" style="color:var(--amber)">Shon</div></div><div class="p-card-stats"><div><div class="p-card-stat-label">Withdrawn</div><div class="p-card-stat-val" style="color:var(--amber)">'+fmt(allTime.nW)+'</div></div><div><div class="p-card-stat-label">Paid from bank</div><div class="p-card-stat-val" style="color:var(--red)">'+fmt(allTime.nE_bank)+'</div></div></div>'+(allTime.fvExp?'<div style="font-size:9px;color:var(--dim);padding:4px 0">Fanvue-direct expenses: '+fmt(allTime.fvExp/2)+' (your share)</div>':'')+'<div class="p-card-balance">Remaining: <strong style="color:var(--amber)">'+fmt(nBall)+'</strong></div></div>';
 
+  // TOTAL REMAINING
+  var totalRemaining=sBall+nBall;
+  document.getElementById('total-remaining-card').innerHTML='<div><span style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em">Total remaining in Fanvue</span><div style="font-size:20px;font-family:DM Mono,monospace;color:var(--gold);margin-top:3px">'+fmt(totalRemaining)+'</div></div><div style="text-align:right"><span style="font-size:9px;color:var(--dim)">Sharon '+fmt(sBall)+'</span><span style="font-size:9px;color:var(--dim);margin-left:12px">Shon '+fmt(nBall)+'</span></div>';
+
   // TIMELINE CARDS
   var withData=active.filter(function(r){return r.earnings>0||r.totalExp>0;});
   document.getElementById('timeline-cards').innerHTML=withData.slice().reverse().map(function(r){
@@ -1785,9 +1804,9 @@ function saveTransfer(){
 function renderPartners(){
   const mf=resolveMonth(document.getElementById('ptf-month').value),months=mf?[mf]:activeMths();
   const rows=months.map(m=>calcMonth(m));
-  const tot=rows.reduce((acc,r)=>({earnings:acc.earnings+r.earnings,expenses:acc.expenses+r.totalExp,sW:acc.sW+r.sharonW,nW:acc.nW+r.shonW,sE:acc.sE+r.sharonE,nE:acc.nE+r.shonE}),{earnings:0,expenses:0,sW:0,nW:0,sE:0,nE:0});
-  const net=tot.earnings-tot.expenses,sbal=(net/2)-(tot.sW-tot.sE),nbal=(net/2)-(tot.nW-tot.nE);
-  document.getElementById('partner-cards').innerHTML=pcardHtml('Sharon','sharon',net/2,tot.sW,tot.sE,sbal)+pcardHtml('Shon','shon',net/2,tot.nW,tot.nE,nbal);
+  const tot=rows.reduce((acc,r)=>({earnings:acc.earnings+r.earnings,expenses:acc.expenses+r.totalExp,sW:acc.sW+r.sharonW,nW:acc.nW+r.shonW,sE_bank:acc.sE_bank+(r.sharonE_bank||0),nE_bank:acc.nE_bank+(r.shonE_bank||0),fvExp:acc.fvExp+(r.fanvueExp||0),sOwed:acc.sOwed+(r.sharonOwed||0),nOwed:acc.nOwed+(r.shonOwed||0)}),{earnings:0,expenses:0,sW:0,nW:0,sE_bank:0,nE_bank:0,fvExp:0,sOwed:0,nOwed:0});
+  const net=tot.earnings-tot.expenses,sbal=tot.sOwed,nbal=tot.nOwed;
+  document.getElementById('partner-cards').innerHTML=pcardHtml('Sharon','sharon',net/2,tot.sW,tot.sE_bank,sbal,tot.fvExp)+pcardHtml('Shon','shon',net/2,tot.nW,tot.nE_bank,nbal,tot.fvExp);
   const trSearch=(document.getElementById('tr-search')||{value:''}).value.toLowerCase();
   const trSort=(document.getElementById('tr-sort')||{value:'date-desc'}).value;
   let allTransfers=state.transactions.filter(function(t){
@@ -1821,7 +1840,7 @@ function renderPartners(){
   if(chev) chev.style.transform=transferListOpen?'':'rotate(-90deg)';
   let sr=0,nr=0;
   document.getElementById('partners-tbody').innerHTML=months.map(function(m){
-    const r=calcMonth(m),sB=r.split-(r.sharonW-r.sharonE),nB=r.split-(r.shonW-r.shonE);sr+=sB;nr+=nB;
+    const r=calcMonth(m),sB=r.sharonOwed,nB=r.shonOwed;sr+=sB;nr+=nB;
     return '<tr><td style="color:var(--gold)">'+m+'</td><td class="amt">'+fmt(r.earnings)+'</td><td class="amt neg">'+fmt(r.totalExp)+'</td>'
       +'<td class="amt '+(r.meb>=0?'pos':'neg')+'">'+fmt(r.meb)+'</td><td class="amt td-muted">'+fmt(r.split)+'</td>'
       +'<td class="amt">'+fmt(r.sharonW)+'</td><td class="amt">'+fmt(r.shonW)+'</td>'
@@ -1831,12 +1850,13 @@ function renderPartners(){
   }).join('');
 }
 
-function pcardHtml(name,cls,share,withdrew,expenses,bal){
+function pcardHtml(name,cls,share,withdrew,bankExp,bal,fvExp){
   return '<div class="pcard"><div class="pcard-name '+cls+'">'+name+'</div>'+
     '<div class="pstat"><span>Gross Share (50%)</span><span>'+fmt(share)+'</span></div>'+
     '<div class="pstat"><span>Withdrawn</span><span class="'+(cls==='sharon'?'pu':'am')+'">'+fmt(withdrew)+'</span></div>'+
-    '<div class="pstat"><span>Expenses Paid</span><span class="r">'+fmt(expenses)+'</span></div>'+
-    '<div class="pstat"><span>Running Balance</span><span class="'+(bal>=0?'g':'r')+'">'+( bal>=0?'Owed '+fmt(bal):'Over '+fmt(Math.abs(bal)))+'</span></div>'+
+    '<div class="pstat"><span>Paid from bank</span><span class="r">'+fmt(bankExp)+'</span></div>'+
+    (fvExp?'<div class="pstat" style="font-size:10px;opacity:0.6"><span>Fanvue-direct (your share)</span><span>'+fmt(fvExp/2)+'</span></div>':'')+
+    '<div class="pstat" style="border-top:1px solid var(--b1);padding-top:6px;margin-top:4px"><span>Remaining</span><span class="'+(bal>=0?'g':'r')+'" style="font-weight:600">'+fmt(bal)+'</span></div>'+
     '</div>';
 }
 
@@ -2047,6 +2067,34 @@ function txnRowFull(t){
 
 // CRUD - TRANSACTIONS
 function onTxnTypeChange(){document.getElementById('txn-transfer-fields').style.display=document.getElementById('txn-type').value==='Transfer'?'block':'none';}
+function openChargeback(){
+  document.getElementById('cb-desc').value='';
+  document.getElementById('cb-amt').value='';
+  document.getElementById('cb-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('cb-notes').value='';
+  openModal('m-chargeback');
+}
+function saveChargeback(){
+  var desc=document.getElementById('cb-desc').value.trim();
+  var amt=parseFloat(document.getElementById('cb-amt').value)||0;
+  var date=document.getElementById('cb-date').value;
+  var notes=document.getElementById('cb-notes').value.trim();
+  if(!desc||!amt){toast('Enter description and amount','error');return;}
+  pushUndo();
+  var month=dateToMonth(date);
+  // Chargeback is stored as through:'Fanvue' so it reduces the pool equally
+  var txn={id:'cb_'+Date.now(),date:date,desc:'CHARGEBACK: '+desc,type:'Expense',amount:amt,who:'Shon',month:month,notes:notes,cat:'Chargeback',through:'Fanvue',isChargeback:true};
+  state.transactions.push(txn);
+  // Also reduce that month's earnings
+  if(state.monthlyEarnings[month]!==undefined){
+    state.monthlyEarnings[month]=Math.max(0,state.monthlyEarnings[month]-amt);
+  }
+  logActivity('add','Chargeback: '+desc+' — '+fmt(amt)+' (reduces earnings for '+month+')',{by:state.currentUser,month:month});
+  save();closeModal('m-chargeback');
+  toast('Chargeback of '+fmt(amt)+' logged — deducted from '+month+' earnings','info',5000);
+  refreshCurrent();
+}
+
 function openAddTransaction(defType){
   document.getElementById('txn-title').textContent='Add Transaction';
   document.getElementById('txn-id').value='';
@@ -2485,6 +2533,44 @@ function renderChangelog(q,tag){
   }).filter(Boolean).join('')||'<div style="color:var(--dim);text-align:center;padding:40px">No matching changes found</div>';
 }
 
+function auditBalances(){
+  console.log('========== BALANCE AUDIT ==========');
+  var months=activeMths();
+  var sTotal={w:0,eBank:0,eFV:0,eAll:0,split:0,owed:0};
+  var nTotal={w:0,eBank:0,eFV:0,eAll:0,split:0,owed:0};
+  months.forEach(function(m){
+    var r=calcMonth(m);
+    sTotal.w+=r.sharonW;sTotal.eBank+=(r.sharonE_bank||0);sTotal.eFV+=(r.fanvueExp||0);sTotal.eAll+=r.sharonE;sTotal.split+=r.split;
+    nTotal.w+=r.shonW;nTotal.eBank+=(r.shonE_bank||0);nTotal.eAll+=r.shonE;nTotal.split+=r.split;
+    if(r.fanvueExp>0||r.sharonE_bank!==r.sharonE||r.shonE_bank!==r.shonE){
+      console.log(m+': earn='+r.earnings+' fvExp='+r.fanvueExp+' sharon(w='+r.sharonW+' eAll='+r.sharonE+' eBank='+r.sharonE_bank+' owed='+r.sharonOwed.toFixed(2)+') shon(w='+r.shonW+' eAll='+r.shonE+' eBank='+r.shonE_bank+' owed='+r.shonOwed.toFixed(2)+')');
+    }
+  });
+  console.log('--- ALL TIME ---');
+  console.log('Sharon: withdrawn='+sTotal.w.toFixed(2)+' bankExp='+sTotal.eBank.toFixed(2)+' allExp='+sTotal.eAll.toFixed(2)+' split='+sTotal.split.toFixed(2));
+  console.log('Shon:   withdrawn='+nTotal.w.toFixed(2)+' bankExp='+nTotal.eBank.toFixed(2)+' allExp='+nTotal.eAll.toFixed(2)+' split='+nTotal.split.toFixed(2));
+  var sOwed=sTotal.split-(sTotal.w-sTotal.eBank);
+  var nOwed=nTotal.split-(nTotal.w-nTotal.eBank);
+  var sOwedOld=sTotal.split-(sTotal.w-sTotal.eAll);
+  var nOwedOld=nTotal.split-(nTotal.w-nTotal.eAll);
+  console.log('--- REMAINING (new formula — bank only) ---');
+  console.log('Sharon: '+sOwed.toFixed(2));
+  console.log('Shon:   '+nOwed.toFixed(2));
+  console.log('--- REMAINING (old formula — all expenses) ---');
+  console.log('Sharon: '+sOwedOld.toFixed(2));
+  console.log('Shon:   '+nOwedOld.toFixed(2));
+  console.log('--- FANVUE EXPENSES ---');
+  var fvTxns=state.transactions.filter(function(t){return t.through==='Fanvue';});
+  console.log('Total Fanvue-direct transactions: '+fvTxns.length);
+  fvTxns.forEach(function(t){
+    console.log('  '+t.date+' '+t.desc+' $'+t.amount+' ('+t.who+') month='+t.month);
+  });
+  console.log('Total Fanvue $: '+fvTxns.reduce(function(s,t){return s+Number(t.amount);},0).toFixed(2));
+  console.log('========== END AUDIT ==========');
+  return{sharonNew:sOwed.toFixed(2),shonNew:nOwed.toFixed(2),sharonOld:sOwedOld.toFixed(2),shonOld:nOwedOld.toFixed(2)};
+}
+window.auditBalances=auditBalances;
+
 function openSettings(){
   renderSyncLog();
   var sue=document.getElementById('settings-user-email');
@@ -2532,10 +2618,10 @@ function buildExportData(){
   all.forEach(function(r){
     var hasData=r.earnings>0;
     var sW=hasData?r.sharonW:0, nW=hasData?r.shonW:0;
-    var sE=hasData?r.sharonE:0, nE=hasData?r.shonE:0;
+    var sE=hasData?(r.sharonE_bank||r.sharonE):0, nE=hasData?(r.shonE_bank||r.shonE):0;
     var earn=r.earnings;
-    var sOwed=hasData?(r.split-(sW-sE)):0;
-    var nOwed=hasData?(r.split-(nW-nE)):0;
+    var sOwed=hasData?(r.sharonOwed||0):0;
+    var nOwed=hasData?(r.shonOwed||0):0;
     sumRows.push([r.month,earn,Number(sW.toFixed(2)),Number(nW.toFixed(2)),Number(sE.toFixed(2)),Number(nE.toFixed(2)),Number(sOwed.toFixed(2)),Number(nOwed.toFixed(2))]);
     totals[0]+=earn;totals[1]+=sW;totals[2]+=nW;totals[3]+=sE;totals[4]+=nE;totals[5]+=sOwed;totals[6]+=nOwed;
   });
@@ -2543,7 +2629,7 @@ function buildExportData(){
   sheets['Summary']={data:sumRows,groupHeaders:true};
 
   // TRANSACTIONS
-  var txnRows=[['Date','Description','Type','Amount','Who','Month','Category','Notes']];
+  var txnRows=[['Date','Description','Type','Amount','Who','Month','Category','Through','Notes']];
   state.transactions.filter(function(t){return t.date;}).sort(function(a,b){return a.date.localeCompare(b.date);}).forEach(function(t){txnRows.push([t.date,t.desc,t.type,Number(t.amount),t.who,t.month,t.cat||'',t.notes||'']);});
   sheets['Transactions']={data:txnRows};
 
@@ -2724,7 +2810,7 @@ function downloadPreviewPDF(){
 
 function exportMonthCSV(){const m=state.currentMonth;if(!m) return;const txns=state.transactions.filter(t=>t.month===m);const rows=[['Date','Description','Type','Amount','Who','Notes'],...txns.map(t=>[t.date,t.desc,t.type,t.amount,t.who,t.notes||''])];dlCSV(rows,'Seraphim_'+m+'.csv');}
 function exportTaxCSV(){const rows=[['Date','Description','Category','Amount','Who','Month','Notes'],...state.transactions.filter(t=>t.type==='Expense').sort((a,b)=>a.date.localeCompare(b.date)).map(t=>[t.date,t.desc,t.cat||'',t.amount,t.who,t.month,t.notes||''])];dlCSV(rows,'Seraphim_Expenses_Tax.csv');}
-function exportTaxReport(){const mf=resolveMonth(document.getElementById('ptf-month').value),months=mf?[mf]:activeMths();let sR=0,nR=0;const rows=[['Month','Earnings','Expenses','Net','Sharon Share','Shon Share','Sharon Running','Shon Running']];months.forEach(m=>{const r=calcMonth(m),sB=r.split-(r.sharonW-r.sharonE),nB=r.split-(r.shonW-r.shonE);sR+=sB;nR+=nB;rows.push([m,r.earnings,r.totalExp,r.meb,r.split,r.split,sR,nR]);});dlCSV(rows,'Seraphim_Tax_Report.csv');}
+function exportTaxReport(){const mf=resolveMonth(document.getElementById('ptf-month').value),months=mf?[mf]:activeMths();let sR=0,nR=0;const rows=[['Month','Earnings','Expenses','Net','Sharon Share','Shon Share','Sharon Running','Shon Running']];months.forEach(m=>{const r=calcMonth(m),sB=r.sharonOwed,nB=r.shonOwed;sR+=sB;nR+=nB;rows.push([m,r.earnings,r.totalExp,r.meb,r.split,r.split,sR,nR]);});dlCSV(rows,'Seraphim_Tax_Report.csv');}
 function dlCSV(rows,name){const csv=rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=name;a.click();}
 
 // BUDGETS
@@ -3980,6 +4066,14 @@ function logActivity(action,desc,meta){
     try{_fb.database().ref('seraphim/audit/'+entry.id).set(entry);}catch(e){}
   }
 }
+// Activity log filtering handled by setLogFilter()
+function setLogFilter(btn,type){
+  document.getElementById('al-type').value=type;
+  btn.parentElement.querySelectorAll('.pill-filter').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderActivityLog();
+}
+
 function renderActivityLog(){
   var tf=document.getElementById('al-type').value;
   var q=(document.getElementById('al-search').value||'').toLowerCase();
