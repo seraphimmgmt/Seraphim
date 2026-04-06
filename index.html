@@ -884,6 +884,10 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   .btn{font-size:10px;padding:4px 10px}
   .fi{font-size:12px;padding:8px 10px}
 }
+
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+#pull-spinner.spinning #pull-arrow{animation:spin 0.8s linear infinite}
+#pull-spinner{opacity:0}
 </style>
 
 
@@ -945,9 +949,10 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4.2</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4.4</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
+<div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
 <div id="offline-banner">You are offline — changes will sync when reconnected</div>
 <div id="topnav">
   <button class="nav-item active" data-tab="overview" onclick="switchTab('overview',null)">Overview</button>
@@ -1266,7 +1271,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   </div>
   <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px">
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Mobile experience</div>
-    <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-haptic" style="accent-color:var(--gold)" onchange="applyPref('haptic',this.checked)"> Haptic feedback on actions</label>
+
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-pullrefresh" style="accent-color:var(--gold)" onchange="applyPref('pullRefresh',this.checked)"> Pull to refresh (swipe down to sync)</label>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-swipe" style="accent-color:var(--gold)" onchange="applyPref('swipeTabs',this.checked)"> Swipe between tabs</label>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-compact" style="accent-color:var(--gold)" onchange="applyPref('compact',this.checked)"> Compact mode</label>
@@ -2453,7 +2458,7 @@ function delTxn(id){
     state.transactions=state.transactions.filter(function(x){return x.id!==id;});
     state.archive.push({itemType:'transaction',item:Object.assign({},t),deletedAt:new Date().toISOString()});
     logActivity('delete','Deleted transaction: '+t.desc+' — '+fmt(t.amount),{type:t.type,who:t.who,month:t.month});
-    save();toast('"'+t.desc+'" archived — find it in Archive to restore','info');renderOverview();refreshCurrent();
+    save();haptic('heavy');toast('"'+t.desc+'" archived — find it in Archive to restore','info');renderOverview();refreshCurrent();
   });
 }
 
@@ -2506,7 +2511,7 @@ function saveEditEarnings(){
   if(modelTotal) state.modelEarnings[m]=me;
   if(notes) state.monthNotes[m]=notes;else delete state.monthNotes[m];
   var _prevEarn=state.monthlyEarnings[m]||0;var _diff=combined-_prevEarn;
-  logActivity('edit','Updated earnings for '+m+': '+fmt(combined)+(_diff!==0?' ('+(+_diff>0?'+':'')+fmt(_diff)+')':''),{month:m,type:'earnings',amount:combined,diff:_diff});save();closeModal('m-edit-earn');toast(m+' earnings updated to '+fmt(combined),'success');renderMonthly();renderOverview();
+  logActivity('edit','Updated earnings for '+m+': '+fmt(combined)+(_diff!==0?' ('+(+_diff>0?'+':'')+fmt(_diff)+')':''),{month:m,type:'earnings',amount:combined,diff:_diff});save();closeModal('m-edit-earn');haptic();toast(m+' earnings updated to '+fmt(combined),'success');renderMonthly();renderOverview();
 }
 
 // CRUD - MODEL EARNINGS
@@ -2526,7 +2531,7 @@ function saveModelEarnings(){
   document.querySelectorAll('.me-inp').forEach(inp=>{const v=parseFloat(inp.value)||0;if(inp.dataset.model)me[inp.dataset.model]=v;total+=v;});
   state.modelEarnings[m]=me;if(total) state.monthlyEarnings[m]=total;
   var _prevTotal=state.monthlyEarnings[m]||0;var _modelDiff=total-_prevTotal;
-  logActivity('edit','Updated model earnings for '+m+': '+fmt(total)+(_modelDiff!==0?' ('+(+_modelDiff>0?'+':'')+fmt(_modelDiff)+')':''),{month:m,type:'earnings',amount:total,diff:_modelDiff});save();closeModal('m-model-earn');toast(m+' earnings saved — '+fmt(total),'success');refreshCurrent();
+  logActivity('edit','Updated model earnings for '+m+': '+fmt(total)+(_modelDiff!==0?' ('+(+_modelDiff>0?'+':'')+fmt(_modelDiff)+')':''),{month:m,type:'earnings',amount:total,diff:_modelDiff});save();closeModal('m-model-earn');haptic();toast(m+' earnings saved — '+fmt(total),'success');refreshCurrent();
 }
 
 // CRUD - SUBSCRIPTIONS
@@ -2710,6 +2715,14 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.4.4',date:'Apr 2026',title:'Cleanup',items:[
+  {t:'ui',text:'Removed haptic feedback toggle — iOS Safari does not support vibration API'},
+]},
+{v:'2.4.3',date:'Apr 2026',title:'Pull to refresh & haptics',items:[
+  {t:'feature',text:'Visual pull-to-refresh — drag arrow appears, flips at threshold, spins while syncing'},
+  {t:'feature',text:'Light haptic at 40px drag, heavy vibration at 80px trigger'},
+  {t:'feature',text:'Haptic feedback on: tab switch, modal open, save, delete, archive, sync, undo/redo, todo, payments, settings'},
+]},
 {v:'2.4.2',date:'Apr 2026',title:'Admin live fix',items:[
   {t:'fix',text:'Admin device status now actually updates live — polls Firebase every 10s while tab is open'},
   {t:'fix',text:'Polling only starts when Admin tab is selected, stops on any other tab or settings close'},
@@ -3041,7 +3054,7 @@ function loadSavedIcon(){
 }
 
 var _prefs=JSON.parse(localStorage.getItem('seraphim_prefs')||'{}');
-function applyPref(key,val){_prefs[key]=val;localStorage.setItem('seraphim_prefs',JSON.stringify(_prefs));applyAllPrefs();}
+function applyPref(key,val){haptic();_prefs[key]=val;localStorage.setItem('seraphim_prefs',JSON.stringify(_prefs));applyAllPrefs();}
 function applyAllPrefs(){
   document.documentElement.setAttribute('data-compact',_prefs.compact?'true':'false');
   document.documentElement.setAttribute('data-oled',_prefs.oled?'true':'false');
@@ -3055,7 +3068,6 @@ function loadPrefsUI(){
   el=document.getElementById('pref-timeout');if(el) el.value=_prefs.timeout||'15';
   el=document.getElementById('pref-privacy');if(el) el.checked=!!_prefs.privacy;
   el=document.getElementById('pref-shortcuts');if(el) el.checked=_prefs.shortcuts!==false;
-  el=document.getElementById('pref-haptic');if(el) el.checked=!!_prefs.haptic;
   el=document.getElementById('pref-pullrefresh');if(el) el.checked=!!_prefs.pullRefresh;
   el=document.getElementById('pref-swipe');if(el) el.checked=!!_prefs.swipeTabs;
   el=document.getElementById('pref-compact');if(el) el.checked=!!_prefs.compact;
@@ -3065,10 +3077,50 @@ function loadPrefsUI(){
   el=document.getElementById('pref-backup-freq');if(el) el.value=_prefs.backupFreq||'30';
 }
 function haptic(s){if(!_prefs.haptic||!navigator.vibrate)return;navigator.vibrate(s==='heavy'?[20,30,20]:10);}
-var _pullY=0,_pulling=false;
-document.addEventListener('touchstart',function(e){if(!_prefs.pullRefresh)return;var m=document.getElementById('main');if(m&&m.scrollTop===0)_pullY=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchmove',function(e){if(!_prefs.pullRefresh||!_pullY)return;if(e.touches[0].clientY-_pullY>80&&!_pulling){_pulling=true;haptic('heavy');manualSync();toast('Syncing...','info',2000);}},{passive:true});
-document.addEventListener('touchend',function(){_pullY=0;_pulling=false;},{passive:true});
+var _pullY=0,_pulling=false,_pullDy=0;
+document.addEventListener('touchstart',function(e){
+  if(!_prefs.pullRefresh)return;
+  var m=document.getElementById('main');
+  if(m&&m.scrollTop<=0)_pullY=e.touches[0].clientY;
+  else _pullY=0;
+},{passive:true});
+document.addEventListener('touchmove',function(e){
+  if(!_prefs.pullRefresh||!_pullY)return;
+  _pullDy=Math.max(0,e.touches[0].clientY-_pullY);
+  var spinner=document.getElementById('pull-spinner');
+  var arrow=document.getElementById('pull-arrow');
+  if(!spinner)return;
+  if(_pullDy>10){
+    var pct=Math.min(_pullDy/80,1);
+    spinner.style.transform='translateY('+Math.min(_pullDy*0.6,60)+'px)';
+    spinner.style.opacity=pct;
+    if(arrow) arrow.style.transform='rotate('+(_pullDy>80?180:0)+'deg)';
+    if(_pullDy>40&&_pullDy<50) haptic();
+  }
+  if(_pullDy>80&&!_pulling){
+    _pulling=true;
+    haptic('heavy');
+    if(arrow) arrow.innerHTML='&#x21BB;';
+    spinner.style.transform='translateY(48px)';
+    spinner.classList.add('spinning');
+    manualSync();
+    toast('Syncing...','info',2000);
+    setTimeout(function(){
+      spinner.style.transform='translateY(-40px)';
+      spinner.style.opacity='0';
+      spinner.classList.remove('spinning');
+      if(arrow) arrow.innerHTML='&#x2193;';
+    },2000);
+  }
+},{passive:true});
+document.addEventListener('touchend',function(){
+  _pullY=0;_pullDy=0;_pulling=false;
+  var spinner=document.getElementById('pull-spinner');
+  if(spinner&&!spinner.classList.contains('spinning')){
+    spinner.style.transform='translateY(-40px)';
+    spinner.style.opacity='0';
+  }
+},{passive:true});
 var _swipeX=0;
 document.addEventListener('touchstart',function(e){if(!_prefs.swipeTabs)return;_swipeX=e.touches[0].clientX;},{passive:true});
 document.addEventListener('touchend',function(e){if(!_prefs.swipeTabs||!_swipeX)return;var dx=e.changedTouches[0].clientX-_swipeX;if(Math.abs(dx)<80)return;var tabs=['overview','monthly','transactions','payouts','partners','staff','subscriptions','activity','archive'];var cur=tabs.indexOf(state.currentTab);if(cur<0)return;if(dx<-80&&cur<tabs.length-1){switchTab(tabs[cur+1],null);haptic();}else if(dx>80&&cur>0){switchTab(tabs[cur-1],null);haptic();}_swipeX=0;},{passive:true});
@@ -3499,7 +3551,7 @@ let toastT=null;
 function toast(msg,type,dur){const el=document.getElementById('toast'),icons={success:'&#x2713;',error:'&#x2715;',info:'&middot;'},colors={success:'var(--green)',error:'var(--red)',info:'var(--gold)'};document.getElementById('ti').innerHTML=icons[type]||'&middot;';document.getElementById('ti').style.color=colors[type]||'var(--muted)';document.getElementById('tm').textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),dur||3200);}
 
 // MODAL UTILS
-function openModal(id){document.getElementById(id).classList.add('open');}
+function openModal(id){haptic();document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('lightbox').classList.contains('open'))return;document.querySelectorAll('.overlay.open').forEach(m=>m.classList.remove('open'));}});
@@ -3905,7 +3957,7 @@ function mergeRemoteState(remote){
     reapplyAllSubs();refreshCurrent();
     var who=remote._by||'Someone';
     logSync('merge','Initial sync — loaded remote data from '+who);
-    updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    haptic();updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
     return;
   }
   var changed=false;
@@ -3971,7 +4023,7 @@ function mergeRemoteState(remote){
       ['transactions','payouts','partners','staff','subscriptions'].forEach(function(t){addUnseenBadge(t);});
     }
     updateSyncUI('on','Connected');
-    updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    haptic();updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }
   _initialSyncDone=true;
   // Layer 2: check version on every sync
@@ -3999,7 +4051,7 @@ function pushToFirebase(){
   _fbRef.set(payload).then(function(){
     resolved=true;
     logSync('push','Data pushed successfully');
-    updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    haptic();updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }).catch(function(err){
     logSync('error','Push failed: '+err.message);
     resolved=true;
@@ -4047,7 +4099,7 @@ function manualSync(){
       toast('No remote data — pushing local data...','info');
       pushToFirebase();
     }
-    updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+    haptic();updateSyncUI('on','Synced — '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }).catch(function(err){
     updateSyncUI('off','Sync failed');
     toast('Sync error: '+err.message,'error',5000);
@@ -4494,7 +4546,7 @@ function pushUndo(){
     _redoStack=[];
   }catch(e){}
 }
-function undo(){
+function undo(){haptic();
   if(!_undoStack.length){toast('Nothing to undo','info');return;}
   try{
     var currentSnapshot=JSON.stringify({transactions:state.transactions,subscriptions:state.subscriptions,staffMembers:state.staffMembers,workers:state.workers,archive:state.archive,todos:state.todos,monthlyEarnings:state.monthlyEarnings,modelEarnings:state.modelEarnings});
@@ -4505,7 +4557,7 @@ function undo(){
     toast('Undone — '+_undoStack.length+' step'+((_undoStack.length!==1)?'s':'')+' left','info');
   }catch(e){toast('Undo failed','error');}
 }
-function redo(){
+function redo(){haptic();
   if(!_redoStack.length){toast('Nothing to redo','info');return;}
   try{
     var currentSnapshot=JSON.stringify({transactions:state.transactions,subscriptions:state.subscriptions,staffMembers:state.staffMembers,workers:state.workers,archive:state.archive,todos:state.todos,monthlyEarnings:state.monthlyEarnings,modelEarnings:state.modelEarnings});
@@ -4902,8 +4954,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.4.2';
-var _BUILD='1775453100';
+var SERAPHIM_VERSION='2.4.4';
+var _BUILD='1775453807';
 var _initDone=false;
 function init(){
   if(_initDone) return;
