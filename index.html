@@ -1054,7 +1054,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
   <div class="frow"><div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="txn-date"></div><div class="fg"><label class="fl">Type</label><select class="fi" id="txn-type" onchange="onTxnTypeChange()"><option value="Expense">Expense</option><option value="Withdrawal">Withdrawal / Payout</option></select></div></div>
   <div class="fg"><label class="fl">Description</label><input class="fi" id="txn-desc" placeholder="e.g. IG Ads, Payout Mila"></div>
   <div class="frow"><div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="txn-amount" placeholder="0.00" step="0.01"></div><div class="fg"><label class="fl">Who</label><select class="fi" id="txn-who"><option value="Shon">Shon</option><option value="Sharon">Sharon</option></select></div></div>
-  <div class="frow"><div class="fg"><label class="fl">Month</label><select class="fi" id="txn-month"></select></div><div class="fg"><label class="fl">Category</label><select class="fi" id="txn-cat"><option value="">None</option><option value="Marketing">Marketing</option><option value="Software">Software</option><option value="VA">VA / Staff</option><option value="Travel">Travel</option><option value="Equipment">Equipment</option><option value="Personal">Personal</option><option value="Other">Other</option></select></div></div>
+  <div class="fg"><label class="fl">Category</label><select class="fi" id="txn-cat"><option value="">None</option><option value="Marketing">Marketing</option><option value="Software">Software</option><option value="VA">VA / Staff</option><option value="Travel">Travel</option><option value="Equipment">Equipment</option><option value="Personal">Personal</option><option value="Other">Other</option></select></div>
   <div id="txn-transfer-fields"><div class="fg" style="margin-bottom:0"><label class="fl">Transfer To</label><select class="fi" id="txn-transfer-to"><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select></div></div>
   <div class="fg"><label class="fl">Notes</label><input class="fi" id="txn-notes" placeholder="Optional"></div>
   <div class="fg"><label class="fl">Invoices &amp; receipts</label>
@@ -2105,7 +2105,7 @@ function saveChargeback(){
     state.monthlyEarnings[month]=Math.max(0,state.monthlyEarnings[month]-amt);
   }
   logActivity('add','Chargeback: '+desc+' — '+fmt(amt)+' (reduces earnings for '+month+')',{by:state.currentUser,month:month});
-  save();closeModal('m-chargeback');
+  save();closeModal('m-chargeback');renderOverview();
   toast('Chargeback of '+fmt(amt)+' logged — deducted from '+month+' earnings','info',5000);
   refreshCurrent();
 }
@@ -2121,8 +2121,7 @@ function openAddTransaction(defType){
   document.getElementById('txn-notes').value='';
   document.getElementById('txn-cat').value='';
   document.getElementById('txn-transfer-fields').style.display='none';
-  const ms=document.getElementById('txn-month');
-  ms.innerHTML=state.months.map(m=>'<option value="'+m+'"'+(m===state.currentMonth?' selected':'')+'>'+m+'</option>').join('');
+  // Month auto-derived from date
   loadExistingAttsToModal('txn','');
   openModal('m-txn');
 }
@@ -2139,8 +2138,7 @@ function editTxn(id){
   document.getElementById('txn-cat').value=t.cat||'';
   onTxnTypeChange(); // ensure transfer fields show/hide correctly
   if(t.type==='Transfer'&&t.transferTo) document.getElementById('txn-transfer-to').value=t.transferTo;
-  const ms=document.getElementById('txn-month');
-  ms.innerHTML=state.months.map(m=>'<option value="'+m+'"'+(m===t.month?' selected':'')+'>'+m+'</option>').join('');
+  // Month auto-derived from date
   loadExistingAttsToModal('txn',id);
   openModal('m-txn');
 }
@@ -2154,7 +2152,7 @@ function saveTxn(){
     desc:document.getElementById('txn-desc').value,
     type,amount:parseFloat(document.getElementById('txn-amount').value)||0,
     who:document.getElementById('txn-who').value,
-    month:document.getElementById('txn-month').value,
+    month:dateToMonth(document.getElementById('txn-date').value),
     notes:document.getElementById('txn-notes').value,
     cat:document.getElementById('txn-cat').value
   };
@@ -2164,7 +2162,7 @@ function saveTxn(){
   if(!txn.desc||!txn.amount) return;
   if(id){const i=state.transactions.findIndex(t=>t.id===id);if(i>=0){if(state.transactions[i].isRecurring)txn._edited=true;state.transactions[i]=txn;}logActivity('edit','Edited: '+txn.desc+' — '+fmt(txn.amount),{type:txn.type,who:txn.who,month:txn.month});}
   else{state.transactions.push(txn);logActivity('add','Added: '+txn.desc+' — '+fmt(txn.amount),{type:txn.type,who:txn.who,month:txn.month});}
-  save();closeModal('m-txn');toast((id?'Updated':'Added')+': '+txn.desc+' '+fmt(txn.amount),'success');refreshCurrent();
+  save();closeModal('m-txn');toast((id?'Updated':'Added')+': '+txn.desc+' '+fmt(txn.amount),'success');renderOverview();refreshCurrent();
 }
 function delTxn(id){
   var t=state.transactions.find(function(x){return x.id===id;});if(!t) return;
@@ -2172,7 +2170,7 @@ function delTxn(id){
     state.transactions=state.transactions.filter(function(x){return x.id!==id;});
     state.archive.push({itemType:'transaction',item:Object.assign({},t),deletedAt:new Date().toISOString()});
     logActivity('delete','Deleted transaction: '+t.desc+' — '+fmt(t.amount),{type:t.type,who:t.who,month:t.month});
-    save();toast('"'+t.desc+'" archived — find it in Archive to restore','info');refreshCurrent();
+    save();toast('"'+t.desc+'" archived — find it in Archive to restore','info');renderOverview();refreshCurrent();
   });
 }
 
