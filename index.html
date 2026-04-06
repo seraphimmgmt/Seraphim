@@ -821,13 +821,24 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 [data-oled="true"][data-theme="dark"] #topnav{background:#000}
 [data-privacy="true"] .amt,[data-privacy="true"] .hero-amount,[data-privacy="true"] .p-card-stat-val,
 [data-privacy="true"] .kpi-v,[data-privacy="true"] .recent-amt,[data-privacy="true"] .t-card-earn,
-[data-privacy="true"] .pstat span:last-child{filter:blur(8px);transition:filter 0.2s;cursor:pointer}
+[data-privacy="true"] .t-card-exp,[data-privacy="true"] .t-card-net,
+[data-privacy="true"] .pstat span:last-child,[data-privacy="true"] .hero-stat-val,
+[data-privacy="true"] .sc-stat span:last-child,[data-privacy="true"] .urow-amt,
+[data-privacy="true"] #total-remaining-card div[style*="font-size:20px"],
+[data-privacy="true"] #total-remaining-card span[style*="font-size:9px"]{filter:blur(8px);transition:filter 0.2s;cursor:pointer}
 [data-privacy="true"] .amt:hover,[data-privacy="true"] .hero-amount:hover,[data-privacy="true"] .p-card-stat-val:hover,
 [data-privacy="true"] .kpi-v:hover,[data-privacy="true"] .recent-amt:hover,[data-privacy="true"] .t-card-earn:hover,
-[data-privacy="true"] .pstat span:last-child:hover{filter:none}
+[data-privacy="true"] .t-card-exp:hover,[data-privacy="true"] .t-card-net:hover,
+[data-privacy="true"] .pstat span:last-child:hover,[data-privacy="true"] .hero-stat-val:hover,
+[data-privacy="true"] .sc-stat span:last-child:hover,[data-privacy="true"] .urow-amt:hover,
+[data-privacy="true"] #total-remaining-card div[style*="font-size:20px"]:hover,
+[data-privacy="true"] #total-remaining-card span[style*="font-size:9px"]:hover{filter:none}
 #offline-banner{display:none;position:fixed;top:var(--hh);left:0;right:0;background:var(--red);color:#fff;text-align:center;font-size:11px;padding:4px 0;z-index:100;font-weight:500}
 #offline-banner.show{display:block}
 .kbd{display:inline-block;background:var(--s2);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+
+@keyframes shine-pulse{0%,100%{color:var(--gold);text-shadow:none}50%{color:#FFD700;text-shadow:0 0 8px rgba(255,215,0,0.5)}}
+#changelog-btn.new-version{animation:shine-pulse 2s ease-in-out infinite}
 </style>
 
 
@@ -889,7 +900,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.3</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.3.1</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="offline-banner">You are offline — changes will sync when reconnected</div>
@@ -933,12 +944,12 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
           <div class="tw" style="padding:0;flex:1;display:flex;flex-direction:column"><div class="recent-list" id="recent-list" style="flex:1"></div></div>
         </div>
         <div style="display:flex;flex-direction:column">
-          <div class="section-label" style="margin-bottom:8px">To do</div>
+          <div class="section-label" style="margin-bottom:8px">Recent activity</div>
+          <div id="recent-activity" style="font-size:11px"></div>
+          <div class="section-label" style="margin:14px 0 6px">To do</div>
           <div class="todo-card" id="todo-widget"></div>
           <div class="section-label" style="margin:12px 0 6px">Upcoming subs</div>
           <div id="upcoming-list"></div>
-          <div class="section-label" style="margin:14px 0 6px">Recent activity</div>
-          <div id="recent-activity" style="font-size:11px"></div>
         </div>
         <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <div class="chart-card"><div class="chart-title">Earnings vs expenses</div><div class="chart-wrap"><canvas id="chart-main"></canvas></div></div>
@@ -1129,7 +1140,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Session &amp; privacy</div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;color:var(--muted)"><span>Session timeout</span><select class="fi" id="pref-timeout" style="width:auto;font-size:11px;padding:4px 8px" onchange="applyPref('timeout',this.value)"><option value="5">5 min</option><option value="10">10 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="60">60 min</option><option value="0">Never</option></select></div>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-privacy" style="accent-color:var(--gold)" onchange="applyPref('privacy',this.checked)"> Privacy mode — blur all amounts (hover to reveal)</label>
-    <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-shortcuts" style="accent-color:var(--gold)" onchange="applyPref('shortcuts',this.checked)"> Show keyboard shortcuts on <span class="kbd">?</span></label>
+    <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-shortcuts" style="accent-color:var(--gold)" onchange="applyPref('shortcuts',this.checked)"> Press <span class="kbd">?</span> key to show keyboard shortcuts</label>
   </div>
   <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Partner colors</div>
@@ -1153,17 +1164,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <div class="fb-status" id="fb-status" style="display:none"></div>
     <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm" onclick="testConnection()" id="fb-test-btn" style="display:none">Test Connection</button><button class="btn sm" onclick="manualSync()" id="fb-sync-btn" style="display:none">Force Sync Now</button></div>
     <div style="margin-top:14px"><div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Sync log</div>
-    <div id="sync-log-list" style="max-height:160px;overflow-y:auto;border:1px solid var(--b1);border-radius:6px;font-size:11px"><div class="settings-page" id="spage-4" style="display:none">
-  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
-    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Active sessions</div>
-    <div style="font-size:11px;color:var(--dim);margin-bottom:10px">Devices currently logged in.</div>
-    <div id="admin-devices"></div>
-    <button class="btn sm danger" onclick="forceLogoutAll()" style="margin-top:10px">Force logout all others</button>
-  </div>
-  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
-    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Banned devices</div>
-    <div id="admin-banned" style="font-size:12px;color:var(--dim)">No banned devices</div>
-  </div>
+    <div id="sync-log-list" style="max-height:160px;overflow-y:auto;border:1px solid var(--b1);border-radius:6px;font-size:11px">
   </div></div></div>
     <div style="font-size:10px;color:var(--dim);margin-top:10px;line-height:1.6">
       <strong style="color:var(--muted)">Setup:</strong> Firebase Console &rarr; Create project &rarr; Realtime Database &rarr; Create database &rarr; Start in <strong style="color:var(--muted)">test mode</strong> &rarr; Copy the database URL and API key from Project Settings.
@@ -1185,37 +1186,25 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <button class="btn danger" onclick="confirmClear()">Factory reset</button>
   </div>
   </div><div class="settings-page" id="spage-3" style="display:none">
-  <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px">App icon</div>
-  <div style="font-size:11px;color:var(--dim);margin-bottom:14px">Choose an icon for your home screen. After selecting, re-add the app from Safari to update.</div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px" id="icon-grid"></div>
-  <div id="icon-preview" style="display:none;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:16px">
-      <div style="position:relative">
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px">App icon</div>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:14px">Choose an icon for your home screen. Re-add from Safari to update.</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px" id="icon-grid"></div>
+    <div id="icon-preview" style="display:none;border-top:1px solid var(--b1);padding-top:14px">
+      <div style="display:flex;align-items:center;gap:16px">
         <div style="width:60px;height:60px;border-radius:14px;overflow:hidden;border:1px solid var(--b2)" id="icon-preview-large"></div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--text)" id="icon-preview-name"></div>
+          <div style="font-size:11px;color:var(--dim);margin-top:2px" id="icon-preview-desc"></div>
+        </div>
       </div>
-      <div>
-        <div style="font-size:13px;font-weight:500;color:var(--text)" id="icon-preview-name"></div>
-        <div style="font-size:11px;color:var(--dim);margin-top:2px" id="icon-preview-desc"></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:6px">Home screen preview:</div>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;background:rgba(0,0,0,0.3);border-radius:16px;padding:16px 20px;justify-content:center">
-      <div style="text-align:center">
-        <div style="width:52px;height:52px;border-radius:12px;overflow:hidden;margin:0 auto 4px" id="icon-preview-home"></div>
-        <div style="font-size:9px;color:#fff;opacity:0.8">Seraphim</div>
-      </div>
-      <div style="text-align:center;opacity:0.3">
-        <div style="width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,0.08);margin:0 auto 4px"></div>
-        <div style="font-size:9px;color:#fff;opacity:0.5">Safari</div>
-      </div>
-      <div style="text-align:center;opacity:0.3">
-        <div style="width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,0.08);margin:0 auto 4px"></div>
-        <div style="font-size:9px;color:#fff;opacity:0.5">Photos</div>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:14px;background:rgba(0,0,0,0.3);border-radius:16px;padding:14px 20px;justify-content:center">
+        <div style="text-align:center"><div style="width:48px;height:48px;border-radius:11px;overflow:hidden;margin:0 auto 4px" id="icon-preview-home"></div><div style="font-size:9px;color:#fff;opacity:0.8">Seraphim</div></div>
+        <div style="text-align:center;opacity:0.3"><div style="width:48px;height:48px;border-radius:11px;background:linear-gradient(135deg,#4DA0FF,#1A73E8);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/><path d="M12 2C12 2 16 8 16 12C16 16 12 22 12 22" stroke="white" stroke-width="1"/><path d="M12 2C12 2 8 8 8 12C8 16 12 22 12 22" stroke="white" stroke-width="1"/></svg></div><div style="font-size:9px;color:#fff;opacity:0.5">Safari</div></div>
       </div>
     </div>
   </div>
-  </div>
-  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-top:20px">
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px">
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Mobile experience</div>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-haptic" style="accent-color:var(--gold)" onchange="applyPref('haptic',this.checked)"> Haptic feedback on actions</label>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-pullrefresh" style="accent-color:var(--gold)" onchange="applyPref('pullRefresh',this.checked)"> Pull to refresh (swipe down to sync)</label>
@@ -1224,7 +1213,23 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="pref-oled" style="accent-color:var(--gold)" onchange="applyPref('oled',this.checked)"> OLED dark mode — true black</label>
   </div>
 </div>
-  <div class="ma" style="justify-content:space-between"><div></div><div style="display:flex;gap:8px"><button class="bc" onclick="closeModal('m-settings')">Cancel</button><button class="bs" onclick="saveSettings()">Save</button></div></div>
+<div class="settings-page" id="spage-4" style="display:none">
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Active sessions</div>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:10px">Devices currently logged in.</div>
+    <div id="admin-devices"></div>
+    <button class="btn sm danger" onclick="forceLogoutAll()" style="margin-top:10px">Force logout all others</button>
+  </div>
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Banned devices</div>
+    <div id="admin-banned" style="font-size:12px;color:var(--dim)">No banned devices</div>
+  </div>
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
+    <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Login history</div>
+    <div id="admin-login-log" style="font-size:12px;max-height:200px;overflow-y:auto;color:var(--dim)">Connect to Firebase to see history</div>
+  </div>
+</div>
+<div class="ma" style="justify-content:space-between"><div></div><div style="display:flex;gap:8px"><button class="bc" onclick="closeModal('m-settings')">Cancel</button><button class="bs" onclick="saveSettings()">Save</button></div></div>
 </div></div>
 <div class="overlay" id="m-txn"><div class="modal">
   <div class="modal-title" id="txn-title">Add Transaction</div><div class="modal-sub">Log expense, payout or partner transfer</div>
@@ -1947,7 +1952,7 @@ function renderPayouts(){
       '<td class="td-muted" style="font-size:11px;max-width:150px;white-space:normal">'+(t.notes||'')+'</td>'+
       '<td class="flex-actions">'+transferBtn+'<button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
       '</tr>';
-  }).join(''):'<tr><td colspan="7"><div class="empty">No payouts logged yet.<br><button class="btn sm" onclick="openLogPayout()" style="margin-top:8px">+ Log Payout</button></div></td></tr>';
+  }).join(''):'<tr><td colspan="7"><div class="empty">No payouts logged yet.<br><button class="btn sm" onclick="openAddTransaction()" style="margin-top:8px">+ Log Payout</button></div></td></tr>';
 }
 
 // PARTNERS
@@ -2619,8 +2624,6 @@ function showSettingsTab(n){
     var pg=document.getElementById('spage-'+i);
     var tb=document.getElementById('stab-'+i);
     if(pg) pg.style.display=i===n?'block':'none';
-    if(n===3) renderIconGrid();
-    if(n===4) renderAdminDevices();
     if(tb) tb.className='pill-filter'+(i===n?' active':'');
   }
   if(n===3) renderIconGrid();
@@ -2642,6 +2645,17 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.3.1',date:'Apr 2026',title:'Bug fixes',items:[
+  {t:'fix',text:'Admin tab was showing iPhone icon picker — settings page structure fixed'},
+  {t:'fix',text:'Mobile toggles were appearing on every settings tab — now inside iPhone only'},
+  {t:'fix',text:'Privacy blur expanded to cover all amounts including hero stats and timeline'},
+  {t:'fix',text:'Home screen preview shows Safari compass icon instead of blank square'},
+  {t:'fix',text:'Changelog no longer auto-opens on login — button pulses gold for new versions'},
+  {t:'fix',text:'Device login history added to Admin panel'},
+  {t:'ui',text:'Recent Activity moved above To Do on Overview for better visibility'},
+  {t:'ui',text:'Keyboard shortcuts label clarified to "Press ? key"'},
+  {t:'ui',text:'Icon rendering improved with cleaner wing shapes'},
+]},
 {v:'2.3.0',date:'Apr 2026',title:'Settings & mobile',items:[
   {t:'feature',text:'iPhone Settings tab — pick from 10 app icon color variants with home screen preview'},
   {t:'feature',text:'Admin panel — view active sessions, force logout devices, ban/unban'},
@@ -2858,17 +2872,32 @@ var ICON_VARIANTS=[
 function drawSeraphimIcon(canvas,v,size){
   var s=size||60;canvas.width=s;canvas.height=s;
   var x=canvas.getContext('2d');
-  x.fillStyle=v.bg;x.beginPath();x.roundRect(0,0,s,s,s*0.22);x.fill();
+  // Background
+  x.fillStyle=v.bg;
+  if(x.roundRect){x.beginPath();x.roundRect(0,0,s,s,s*0.22);x.fill();}
+  else{x.fillRect(0,0,s,s);}
+  // Wings
   x.fillStyle=v.wing;
-  var cx=s/2,cy=s*0.6,sc=s/180;
-  function wing(d){
-    x.beginPath();x.moveTo(cx,cy);x.bezierCurveTo(cx+d*-12*sc,cy-26*sc,cx+d*-42*sc,cy-40*sc,cx+d*-65*sc,cy-50*sc);x.bezierCurveTo(cx+d*-55*sc,cy-43*sc,cx+d*-25*sc,cy-30*sc,cx,cy);x.fill();
-    x.beginPath();x.moveTo(cx,cy);x.bezierCurveTo(cx+d*-10*sc,cy-30*sc,cx+d*-42*sc,cy-42*sc,cx+d*-62*sc,cy-42*sc);x.bezierCurveTo(cx+d*-50*sc,cy-36*sc,cx+d*-28*sc,cy-30*sc,cx,cy);x.fill();
-    x.beginPath();x.moveTo(cx,cy);x.bezierCurveTo(cx+d*-6*sc,cy-15*sc,cx+d*-32*sc,cy-20*sc,cx+d*-52*sc,cy-16*sc);x.bezierCurveTo(cx+d*-38*sc,cy-20*sc,cx+d*-14*sc,cy-18*sc,cx,cy);x.fill();
+  var cx=s/2,cy=s*0.58,sc=s/180;
+  function wing(dir){
+    var d=dir;
+    // Upper wing feather
+    x.beginPath();x.moveTo(cx,cy);
+    x.quadraticCurveTo(cx+d*30*sc,cy-35*sc,cx+d*60*sc,cy-48*sc);
+    x.quadraticCurveTo(cx+d*45*sc,cy-30*sc,cx,cy);x.fill();
+    // Middle wing feather
+    x.beginPath();x.moveTo(cx,cy);
+    x.quadraticCurveTo(cx+d*35*sc,cy-28*sc,cx+d*62*sc,cy-35*sc);
+    x.quadraticCurveTo(cx+d*42*sc,cy-22*sc,cx,cy);x.fill();
+    // Lower wing feather
+    x.beginPath();x.moveTo(cx,cy);
+    x.quadraticCurveTo(cx+d*30*sc,cy-12*sc,cx+d*52*sc,cy-8*sc);
+    x.quadraticCurveTo(cx+d*35*sc,cy-6*sc,cx,cy);x.fill();
   }
-  wing(-1);wing(1);
-  x.strokeStyle=v.wing;x.lineWidth=3*sc;
-  x.beginPath();x.ellipse(cx,s*0.23,16*sc,6*sc,0,0,Math.PI*2);x.stroke();
+  wing(1);wing(-1);
+  // Halo
+  x.strokeStyle=v.wing;x.lineWidth=Math.max(2,2.5*sc);
+  x.beginPath();x.ellipse(cx,s*0.25,14*sc,5*sc,0,0,Math.PI*2);x.stroke();
 }
 function renderIconGrid(){
   var grid=document.getElementById('icon-grid');if(!grid) return;
@@ -2960,18 +2989,59 @@ window.addEventListener('offline',function(){document.getElementById('offline-ba
 document.addEventListener('keydown',function(e){if(e.key==='?'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){if(_prefs.shortcuts!==false)openModal('m-shortcuts');}if((e.ctrlKey||e.metaKey)&&e.key===','){e.preventDefault();openSettings();}});
 var _deviceId=localStorage.getItem('seraphim_device_id');if(!_deviceId){_deviceId='dev_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);localStorage.setItem('seraphim_device_id',_deviceId);}
 function getDeviceInfo(){var ua=navigator.userAgent;var mobile=/Mobile|iPhone|Android/.test(ua);var browser=/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':/Firefox/.test(ua)?'Firefox':'Other';var os=/iPhone|iPad/.test(ua)?'iOS':/Mac/.test(ua)?'macOS':/Windows/.test(ua)?'Windows':/Android/.test(ua)?'Android':'Other';return{id:_deviceId,browser:browser,os:os,mobile:mobile,user:state.currentUser||'Unknown',lastSeen:new Date().toISOString()};}
-function registerDevice(){if(!_fb||!state.firebaseConnected)return;try{_fb.database().ref('seraphim/devices/'+_deviceId).set(getDeviceInfo());}catch(e){}}
+function registerDevice(){
+  if(!_fb||!state.firebaseConnected)return;
+  var info=getDeviceInfo();
+  try{_fb.database().ref('seraphim/devices/'+_deviceId).set(info);}catch(e){}
+  // Log device login to Firebase admin log
+  try{
+    var logEntry={id:'dlog_'+Date.now(),ts:new Date().toISOString(),user:state.currentUser||'Unknown',device:info.browser+' / '+info.os+(info.mobile?' (Mobile)':''),deviceId:_deviceId,action:'login'};
+    _fb.database().ref('seraphim/deviceLog').push(logEntry);
+  }catch(e){}
+}
 function renderAdminDevices(){var el=document.getElementById('admin-devices');if(!el)return;if(!_fb||!state.firebaseConnected){el.innerHTML='<div style="color:var(--dim);font-size:12px">Connect to Firebase to manage devices</div>';return;}
 _fb.database().ref('seraphim/devices').once('value').then(function(snap){var devs=snap.val()||{};var banned=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');var rows=Object.values(devs).filter(function(d){return banned.indexOf(d.id)<0;});
 el.innerHTML=rows.length?rows.map(function(d){var me=d.id===_deviceId;var ago=Math.floor((Date.now()-new Date(d.lastSeen).getTime())/60000);var agoStr=ago<1?'now':ago<60?ago+'m ago':ago<1440?Math.floor(ago/60)+'h ago':Math.floor(ago/1440)+'d ago';var dot=ago<2?'var(--green)':ago<30?'var(--amber)':'var(--dim)';
 return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b1);font-size:12px"><div><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dot+';margin-right:6px"></span>'+d.browser+' / '+d.os+(d.mobile?' (Mobile)':'')+' '+(me?'<span style="font-size:9px;color:var(--gold)">(you)</span>':'')+'<div style="font-size:10px;color:var(--dim);margin-top:2px">'+d.user+' · '+agoStr+'</div></div>'+(me?'':'<div style="display:flex;gap:4px"><button class="btn sm danger" onclick="forceLogoutDevice(\x27'+d.id+'\x27)">Logout</button><button class="btn sm" style="color:var(--red);border-color:var(--red)" onclick="banDevice(\x27'+d.id+'\x27)">Ban</button></div>')+'</div>';}).join(''):'<div style="color:var(--dim);font-size:12px">No devices registered</div>';
 var bannedEl=document.getElementById('admin-banned');var bannedDevs=Object.values(devs).filter(function(d){return banned.indexOf(d.id)>=0;});
-if(bannedEl)bannedEl.innerHTML=bannedDevs.length?bannedDevs.map(function(d){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--b1)"><span style="color:var(--red)">'+d.browser+' / '+d.os+' ('+d.user+')</span><button class="btn sm" onclick="unbanDevice(\x27'+d.id+'\x27)" style="color:var(--green);border-color:var(--green);font-size:10px">Unban</button></div>';}).join(''):'<span style="font-size:12px">No banned devices</span>';});}
+if(bannedEl)bannedEl.innerHTML=bannedDevs.length?bannedDevs.map(function(d){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--b1)"><span style="color:var(--red)">'+d.browser+' / '+d.os+' ('+d.user+')</span><button class="btn sm" onclick="unbanDevice(\x27'+d.id+'\x27)" style="color:var(--green);border-color:var(--green);font-size:10px">Unban</button></div>';}).join(''):'<span style="font-size:12px">No banned devices</span>';
+    // Login history
+    var logEl=document.getElementById('admin-login-log');
+    if(logEl){_fb.database().ref('seraphim/deviceLog').orderByChild('ts').limitToLast(20).once('value').then(function(ls){
+      var logs=[];ls.forEach(function(c){logs.push(c.val());});
+      logs.sort(function(a,b){return(b.ts||'').localeCompare(a.ts||'');});
+      logEl.innerHTML=logs.length?logs.map(function(l){
+        var dt=new Date(l.ts);var ago=Math.floor((Date.now()-dt.getTime())/60000);
+        var agoStr=ago<1?'now':ago<60?ago+'m ago':ago<1440?Math.floor(ago/60)+'h ago':Math.floor(ago/1440)+'d ago';
+        var whoColor=l.user==='Sharon'?'var(--purple)':'var(--amber)';
+        return '<div style="padding:4px 0;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between"><span><span style="color:'+whoColor+';font-weight:500">'+l.user+'</span> on '+l.device+'</span><span style="color:var(--dim);font-size:10px">'+agoStr+'</span></div>';
+      }).join(''):'<div style="color:var(--dim)">No login history</div>';
+    });}});}
 function forceLogoutDevice(id){if(!_fb)return;_fb.database().ref('seraphim/forceLogout/'+id).set({ts:Date.now(),by:state.currentUser});toast('Logout signal sent','success');}
 function forceLogoutAll(){if(!_fb)return;confirmAction('Force logout all','All other devices will be logged out.','Confirm',function(){_fb.database().ref('seraphim/devices').once('value').then(function(s){var d=s.val()||{};Object.keys(d).forEach(function(id){if(id!==_deviceId)_fb.database().ref('seraphim/forceLogout/'+id).set({ts:Date.now(),by:state.currentUser});});toast('Done','success');});});}
 function banDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');if(b.indexOf(id)<0)b.push(id);localStorage.setItem('seraphim_banned',JSON.stringify(b));forceLogoutDevice(id);toast('Device banned','success');renderAdminDevices();}
 function unbanDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');b=b.filter(function(x){return x!==id;});localStorage.setItem('seraphim_banned',JSON.stringify(b));toast('Unbanned','success');renderAdminDevices();}
 function checkForceLogout(){if(!_fb||!state.firebaseConnected)return;_fb.database().ref('seraphim/forceLogout/'+_deviceId).on('value',function(snap){var d=snap.val();if(d&&Date.now()-d.ts<30000){snap.ref.remove();toast('Forced logout by '+d.by,'error',5000);setTimeout(doLogout,2000);}});}
+
+function checkVersionMatch(){
+  if(typeof firebase==='undefined'||!_fb) return;
+  _fb.database().ref('seraphim/_version').once('value').then(function(snap){
+    var remote=snap.val();
+    if(!remote){
+      // First deploy — store our version
+      _fb.database().ref('seraphim/_version').set({build:_BUILD,version:SERAPHIM_VERSION,updatedAt:new Date().toISOString()});
+      return;
+    }
+    if(remote.build&&remote.build!==_BUILD){
+      // Version mismatch — block usage
+      document.getElementById('app').style.display='none';
+      document.getElementById('topnav').style.display='none';
+      confirmAction('Update required','Your dashboard is out of date.<br><br>Live version: <strong>v'+remote.version+' (build '+remote.build+')</strong><br>Your version: <strong>v'+SERAPHIM_VERSION+' (build '+_BUILD+')</strong><br><br><span style="font-size:11px;color:var(--dim)">Please refresh or update your file to prevent sync issues.</span>','Refresh now',function(){
+        location.reload(true);
+      });
+    }
+  }).catch(function(e){console.log('Version check failed:',e);});
+}
 
 function openSettings(){
   renderSyncLog();renderIconGrid();loadPrefsUI();renderAdminDevices();
@@ -3741,6 +3811,8 @@ function pushToFirebase(){
   _lastPushTime=Date.now();
   _ignoreWindow=Date.now()+2000;
   var payload=getSharedState();
+  // Store current version for mismatch detection
+  try{_fb.database().ref('seraphim/_version').set({build:_BUILD,version:SERAPHIM_VERSION,updatedAt:new Date().toISOString()});}catch(e){}
   var resolved=false;
   _fbRef.set(payload).then(function(){
     resolved=true;
@@ -3892,6 +3964,17 @@ var _SESSION_WARN=10*60*1000; // warn at 10 minutes
 var _sessionWarnTimer=null;
 
 function initAuth(){
+  var storedBuild=localStorage.getItem('seraphim_build');
+  if(storedBuild&&storedBuild!==_BUILD){
+    console.log('[Deploy] New build detected — logging out');
+    localStorage.setItem('seraphim_build',_BUILD);
+    sessionStorage.clear();
+    if(typeof firebase!=='undefined'){try{firebase.auth().signOut();}catch(e){}}
+    location.reload();
+    return;
+  }
+  localStorage.setItem('seraphim_build',_BUILD);
+
   if(typeof firebase==='undefined'){showDashboard();return;}
   var cfg=state.firebaseConfig||(_preload&&_preload.firebaseConfig)||null;
   if(!cfg||!cfg.apiKey){
@@ -3912,6 +3995,7 @@ function initAuth(){
         updateHeaderUser();
         showDashboard();
         resetSessionTimer();
+        checkVersionMatch();
         // Firebase auto-connects via init()
       } else {
         fadeToScreen('profile');
@@ -3999,33 +4083,7 @@ function pickProfile(name){
   },400);
 }
 
-function fadeToScreen(target){
-  var login=document.getElementById('login-screen');
-  var profile=document.getElementById('profile-screen');
-  var screens=[login,profile];
-  // Fade out all visible screens
-  screens.forEach(function(s){
-    if(s&&!s.classList.contains('hidden')){
-      s.classList.add('screen-fade-out');
-      setTimeout(function(){
-        s.classList.add('hidden');
-        s.classList.remove('screen-fade-out');
-      },400);
-    }
-  });
-  setTimeout(function(){
-    if(target==='login'){
-      login.classList.remove('hidden');
-      login.classList.add('screen-fade-in');
-      setTimeout(function(){login.classList.remove('screen-fade-in');},400);
-    } else if(target==='profile'){
-      profile.classList.remove('hidden');
-      profile.classList.add('screen-fade-in');
-      setTimeout(function(){profile.classList.remove('screen-fade-in');},400);
-    }
-    // dashboard = just hide the overlays (already done above)
-  },target==='login'||target==='profile'?420:0);
-}
+
 
 
 
@@ -4661,7 +4719,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.3.0';
+var SERAPHIM_VERSION='2.3.1';
+var _BUILD='1775448971';
 var _initDone=false;
 function init(){
   if(_initDone) return;
@@ -4708,7 +4767,10 @@ function init(){
       }
     }
     var lastV=localStorage.getItem('seraphim_lastVersion');
-    if(lastV!==SERAPHIM_VERSION) openModal('m-changelog');renderChangelog();
+    if(lastV!==SERAPHIM_VERSION){
+      var clBtn=document.getElementById('changelog-btn');
+      if(clBtn) clBtn.classList.add('new-version');
+    }
 
   }catch(e){console.error('Init error:',e);}
 }
