@@ -3028,7 +3028,7 @@ function registerDevice(){
 function renderAdminDevices(){
   // Auto-clean devices not seen in 24h
   if(_fb&&state.firebaseConnected){
-    _fb.database().ref('seraphim/devices').once('value').then(function(snap){
+    _fb.database().ref('seraphim/devices').off('value');_fb.database().ref('seraphim/devices').on('value',function(snap){
       var devs=snap.val()||{};
       var cutoff=Date.now()-24*60*60*1000;
       Object.keys(devs).forEach(function(id){
@@ -3055,6 +3055,7 @@ if(bannedEl)bannedEl.innerHTML=bannedDevs.length?bannedDevs.map(function(d){retu
         return '<div style="padding:4px 0;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between"><span><span style="color:'+whoColor+';font-weight:500">'+l.user+'</span> on '+l.device+'</span><span style="color:var(--dim);font-size:10px">'+agoStr+'</span></div>';
       }).join(''):'<div style="color:var(--dim)">No login history</div>';
     });}});}
+function deleteDevice(id){if(!_fb)return;_fb.database().ref('seraphim/devices/'+id).remove();toast('Device removed','success');}
 function forceLogoutDevice(id){if(!_fb)return;_fb.database().ref('seraphim/forceLogout/'+id).set({ts:Date.now(),by:state.currentUser});toast('Logout signal sent','success');}
 function forceLogoutAll(){if(!_fb)return;confirmAction('Force logout all','All other devices will be logged out.','Confirm',function(){_fb.database().ref('seraphim/devices').once('value').then(function(s){var d=s.val()||{};Object.keys(d).forEach(function(id){if(id!==_deviceId)_fb.database().ref('seraphim/forceLogout/'+id).set({ts:Date.now(),by:state.currentUser});});toast('Done','success');});});}
 function banDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');if(b.indexOf(id)<0)b.push(id);localStorage.setItem('seraphim_banned',JSON.stringify(b));forceLogoutDevice(id);toast('Device banned','success');renderAdminDevices();}
@@ -3705,6 +3706,7 @@ function stripAttachmentData(txns){
 }
 function getSharedState(){
   return{
+    _requiredBuild:_BUILD,
     transactions:stripAttachmentData(state.transactions),
     months:state.months,
     monthlyEarnings:state.monthlyEarnings,
@@ -3777,6 +3779,7 @@ function logSync(type,detail){
 }
 
 function mergeRemoteState(remote){
+  if(remote&&remote._requiredBuild){var rq=parseInt(remote._requiredBuild)||0,lb=(typeof _BUILD!=='undefined')?parseInt(_BUILD)||0:0;if(lb===0||rq>lb){console.log('[Sync] Outdated');try{firebase.auth().signOut();}catch(e){}sessionStorage.clear();location.reload(true);return;}}
   try{localStorage.setItem('seraphim_premerge',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   try{localStorage.setItem('seraphim_backup',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   var quickHash=JSON.stringify(remote._ts||0)+'-'+(remote._by||'');
