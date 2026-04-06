@@ -729,79 +729,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 .drop-zone.dragover{border-color:var(--gold);background:rgba(208,184,104,0.04)}
 
 /* ═══ MOBILE ═══ */
-@media(max-width:640px){
-  :root{--hh:44px}
-  #hdr{padding:0 10px;gap:4px}
-  .brand{font-size:11px;letter-spacing:0.1em}
-  #hdr-month,.zoom-wrap,.hbtn:not(.gold){display:none !important}
-  #hdr .hbtn.gold{font-size:9px;padding:3px 8px}
-  #topnav{height:32px;padding:0 8px;gap:0;top:44px}
-  .nav-item{font-size:10px;padding:4px 10px}
-  #app{padding-top:calc(44px + 32px)}
-  .panel{padding:10px 12px}
-  .modal{max-width:95vw !important;max-height:90vh !important;margin:10px}
-  .frow{flex-direction:column}
-  .hero{padding:14px 16px}
-  .hero-amount{font-size:clamp(22px,6vw,32px)}
-  .hero-stats{flex-wrap:wrap;gap:10px}
-  .hero-stat{min-width:70px}
-  .hero-stat-val{font-size:14px}
-  .kpis{grid-template-columns:1fr 1fr}
-  .mini-kpis{grid-template-columns:1fr 1fr}
-  /* Overview grid → single column */
-  #panel-overview div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important}
-  #panel-overview div[style*="grid-column:1/-1"]{grid-template-columns:1fr !important}
-  .partner-row{grid-template-columns:1fr}
-  .p-card{margin-bottom:0}
-  .p-card-stats{gap:10px}
-  .p-card-stat-val{font-size:13px}
-  #total-remaining-card{flex-direction:column;gap:4px;text-align:center}
-  #total-remaining-card>div:last-child{display:flex;gap:10px;justify-content:center}
-  .timeline{gap:8px;padding:0 4px 8px}
-  .t-card{min-width:100px;padding:10px}
-  .t-card-earn{font-size:14px}
-  .t-card-exp,.t-card-net{font-size:10px}
-  .recent-row{padding:6px 8px;gap:6px}
-  .recent-desc{font-size:11px}
-  .recent-amt{font-size:11px;min-width:70px}
-  .recent-who{font-size:9px;min-width:40px}
-  .recent-date{font-size:9px;min-width:65px}
-  .chart-card{padding:12px}
-  .chart-wrap{height:140px}
-  .section-label{font-size:9px}
-  .staff-grid{grid-template-columns:1fr}
-  .sub-grid{grid-template-columns:1fr}
-  .worker-card,.staff-card{padding:14px}
-  .sc-name{font-size:14px}
-  .sc-stat{font-size:11px}
-  .sc-actions{flex-wrap:wrap}
-  .sc-actions .btn{font-size:9px;padding:3px 8px}
-  /* Tables scroll horizontally */
-  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:600px}
-  th,td{padding:6px 8px;font-size:11px}
-  .filters{flex-wrap:wrap;gap:6px}
-  .fsel{font-size:11px;min-width:0;max-width:120px}
-  .fsearch{font-size:11px;min-width:100px}
-  /* Login */
-  .login-card{max-width:95vw;padding:24px 20px}
-  .login-field{font-size:14px;padding:10px 14px}
-  .profile-pick{padding:16px}
-  /* Settings */
-  .settings-tabs{flex-wrap:wrap}
-  .pill-filter{font-size:10px;padding:3px 10px}
-  /* Partner Split */
-  .pcard{padding:14px}
-  .pstat{font-size:11px}
-  /* FAB */
-  #fab-btn{width:40px !important;height:40px !important;font-size:18px !important;bottom:16px !important;right:16px !important}
-  /* Page headers */
-  .ph{padding:0}
-  .pg-title{font-size:16px}
-  .pg-actions{flex-wrap:wrap;gap:4px}
-  .pg-actions .btn{font-size:9px;padding:3px 8px}
-  /* Activity log */
-  #al-list{max-height:400px}
+
 }
 
 @media(max-width:380px){
@@ -844,6 +772,118 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 
 @keyframes shine-pulse{0%,100%{color:var(--gold);text-shadow:none}50%{color:#FFD700;text-shadow:0 0 8px rgba(255,215,0,0.5)}}
 #changelog-btn.new-version{animation:shine-pulse 2s ease-in-out infinite}
+
+/* Bottom nav — mobile only */
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--sb-bg);border-top:1px solid rgba(208,184,104,0.08);z-index:200;justify-content:space-around;align-items:center;padding:0 4px;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--dim);font-size:9px;font-family:'DM Sans',sans-serif;padding:6px 8px;cursor:pointer;min-width:48px;transition:color 0.15s}
+.bnav-item.active{color:var(--gold)}
+.bnav-item svg{opacity:0.5;transition:opacity 0.15s}
+.bnav-item.active svg{opacity:1;stroke:var(--gold)}
+#mobile-more-menu{position:fixed;bottom:57px;left:0;right:0;background:var(--s2);border-top:1px solid var(--b1);z-index:199;padding:8px;padding-bottom:env(safe-area-inset-bottom)}
+#mobile-more-menu button{display:block;width:100%;text-align:left;padding:12px 16px;background:none;border:none;border-bottom:1px solid var(--b1);color:var(--muted);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer}
+#mobile-more-menu button:hover,#mobile-more-menu button:active{color:var(--gold);background:rgba(208,184,104,0.04)}
+#mobile-more-menu button:last-child{border-bottom:none}
+
+@media(max-width:640px){
+  :root{--hh:44px}
+  /* Bottom nav */
+  #bottom-nav{display:flex}
+  #topnav{display:none !important}
+  #app{padding-top:var(--hh);padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+  #fab-btn{bottom:calc(66px + env(safe-area-inset-bottom)) !important;width:40px !important;height:40px !important;font-size:18px !important;right:14px !important}
+  /* Header */
+  #hdr{padding:0 10px;gap:4px}
+  .brand{font-size:10px;letter-spacing:0.1em}
+  #hdr-month,.zoom-wrap{display:none !important}
+  .hbtn{font-size:9px !important;padding:3px 8px !important}
+  #changelog-btn{display:none !important}
+  #sync-label{display:none}
+  .sync-wrap{gap:4px}
+  #hdr-user{font-size:9px}
+  /* Panels */
+  .panel{padding:10px 12px}
+  .modal{max-width:95vw !important;max-height:90vh !important;margin:10px}
+  .modal-title{font-size:16px}
+  .frow{flex-direction:column}
+  /* Hero */
+  .hero{padding:14px 16px}
+  .hero-amount{font-size:clamp(22px,6vw,32px)}
+  .hero-stats{flex-wrap:wrap;gap:8px}
+  .hero-stat{min-width:60px}
+  .hero-stat-val{font-size:13px}
+  .hero-stat-label{font-size:8px}
+  /* KPIs */
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .mini-kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:10px 12px}
+  .kpi-v{font-size:16px}
+  .kpi-l{font-size:8px}
+  /* Overview grid */
+  #panel-overview div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important}
+  #panel-overview div[style*="grid-column:1/-1"]{grid-template-columns:1fr !important}
+  /* Partners */
+  .partner-row{grid-template-columns:1fr}
+  .p-card{margin-bottom:0;padding:12px 14px}
+  .p-card-stats{gap:8px}
+  .p-card-stat-val{font-size:13px}
+  #total-remaining-card{flex-direction:column;gap:4px;text-align:center}
+  #total-remaining-card>div:last-child{display:flex;gap:10px;justify-content:center}
+  /* Timeline */
+  .timeline{gap:8px;padding:0 4px 8px}
+  .t-card{min-width:90px;padding:8px 10px}
+  .t-card-earn{font-size:13px}
+  .t-card-exp,.t-card-net{font-size:9px}
+  /* Recent */
+  .recent-row{padding:6px 8px;gap:4px}
+  .recent-desc{font-size:10px;min-width:0;flex:1}
+  .recent-amt{font-size:10px;min-width:60px}
+  .recent-who{font-size:8px;min-width:36px}
+  .recent-date{font-size:8px;min-width:55px}
+  /* Charts */
+  .chart-card{padding:10px}
+  .chart-wrap{height:130px}
+  .charts-row{grid-template-columns:1fr !important}
+  /* Right column sections */
+  .section-label{font-size:9px}
+  .todo-card{padding:10px 12px}
+  /* Team */
+  .staff-grid{grid-template-columns:1fr}
+  .sub-grid{grid-template-columns:1fr}
+  .worker-card,.staff-card{padding:12px}
+  .sc-name{font-size:13px}
+  .sc-stat{font-size:10px}
+  .sc-actions{flex-wrap:wrap;gap:4px}
+  .sc-actions .btn{font-size:9px;padding:3px 7px}
+  /* Tables */
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:550px}
+  th,td{padding:5px 6px;font-size:10px}
+  .filters{flex-wrap:wrap;gap:6px}
+  .fsel{font-size:11px;min-width:0;max-width:110px}
+  .fsearch{font-size:11px;min-width:80px;flex:1}
+  /* Login */
+  .login-card{max-width:95vw;padding:24px 20px}
+  .login-field{font-size:14px;padding:10px 14px}
+  .profile-pick{padding:16px}
+  /* Settings */
+  .settings-tabs{flex-wrap:wrap;gap:4px}
+  .pill-filter{font-size:10px;padding:4px 10px}
+  .settings-page{padding:0}
+  /* Partner Split */
+  .pcard{padding:12px}
+  .pstat{font-size:10px}
+  /* Page headers */
+  .ph{padding:0}
+  .pg-title{font-size:15px}
+  .pg-subtitle{font-size:10px}
+  .pg-actions{flex-wrap:wrap;gap:4px}
+  .pg-actions .btn{font-size:9px;padding:3px 7px}
+  /* Activity log */
+  #al-list{max-height:400px}
+  /* Misc */
+  .btn{font-size:10px;padding:4px 10px}
+  .fi{font-size:12px;padding:8px 10px}
+}
 </style>
 
 
@@ -905,7 +945,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.3.1</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="offline-banner">You are offline — changes will sync when reconnected</div>
@@ -1107,6 +1147,21 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
       <div class="tw"><div id="arc-list" style="max-height:600px;overflow-y:auto"></div></div>
     </div>
   </div>
+</div>
+<div id="bottom-nav">
+  <button class="bnav-item active" data-tab="overview" onclick="switchTab('overview',null)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Home</span></button>
+  <button class="bnav-item" data-tab="transactions" onclick="switchTab('transactions',null)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Money</span></button>
+  <button class="bnav-item" data-tab="staff" onclick="switchTab('staff',null)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Team</span></button>
+  <button class="bnav-item" data-tab="partners" onclick="switchTab('partners',null)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Split</span></button>
+  <button class="bnav-item" data-tab="_more" onclick="toggleMobileMore()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>More</span></button>
+</div>
+<div id="mobile-more-menu" style="display:none">
+  <button onclick="switchTab('monthly',null);toggleMobileMore()">Monthly</button>
+  <button onclick="switchTab('payouts',null);toggleMobileMore()">Payouts</button>
+  <button onclick="switchTab('subscriptions',null);toggleMobileMore()">Subscriptions</button>
+  <button onclick="switchTab('activity',null);toggleMobileMore()">Activity log</button>
+  <button onclick="switchTab('archive',null);toggleMobileMore()">Archive</button>
+  <button onclick="openSettings();toggleMobileMore()">Settings</button>
 </div>
 <button id="fab-btn" onclick="fabAction()" title="Quick add" style="position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--gold);color:#0C0A10;font-size:22px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:150;box-shadow:0 4px 20px rgba(208,184,104,0.4);transition:transform 0.15s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">+</button>
 <div id="toast"><span id="ti" style="font-size:15px"></span><span id="tm"></span></div>
@@ -1655,6 +1710,11 @@ function fabAction(){
 }
 
 function renderTab(tab){
+  // Update bottom nav
+  document.querySelectorAll('.bnav-item').forEach(function(b){
+    b.classList.toggle('active',b.dataset.tab===tab||(b.dataset.tab==='_more'&&['monthly','payouts','subscriptions','activity','archive'].indexOf(tab)>=0));
+  });
+  if(_moreOpen){_moreOpen=false;var mm=document.getElementById('mobile-more-menu');if(mm)mm.style.display='none';}
   var fabEl=document.getElementById('fab-btn');
   if(fabEl){
     var tips={overview:'Add transaction',transactions:'Add transaction',monthly:'Add transaction',payouts:'Set earnings',partners:'New transfer',staff:'Add team member',subscriptions:'Add subscription'};
@@ -2650,6 +2710,19 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.4.0',date:'Apr 2026',title:'Mobile & security',items:[
+  {t:'feature',text:'Bottom navigation bar on mobile with More menu'},
+  {t:'feature',text:'Admin live device tracking with 15s refresh'},
+  {t:'feature',text:'4 device statuses: active, idle, away, offline'},
+  {t:'feature',text:'Delete button on non-active devices'},
+  {t:'feature',text:'Login history in Admin panel'},
+  {t:'security',text:'3-layer version gating blocks old HTML files'},
+  {t:'security',text:'Stable device fingerprint'},
+  {t:'fix',text:'Admin settings structure fixed'},
+  {t:'fix',text:'Privacy blur covers all amounts'},
+  {t:'fix',text:'Mobile layout fully restored with 64 rules'},
+  {t:'ui',text:'Bottom nav replaces top nav on mobile'},
+]},
 {v:'2.3.1',date:'Apr 2026',title:'Bug fixes',items:[
   {t:'fix',text:'Admin tab was showing iPhone icon picker — settings page structure fixed'},
   {t:'fix',text:'Mobile toggles were appearing on every settings tab — now inside iPhone only'},
@@ -3144,6 +3217,15 @@ function checkVersionMatch(onPass){
     document.body.appendChild(b);
   }).catch(function(e){console.log('Version check error:',e);if(onPass)onPass();});
 }
+
+var _moreOpen=false;
+function toggleMobileMore(){
+  _moreOpen=!_moreOpen;
+  document.getElementById('mobile-more-menu').style.display=_moreOpen?'block':'none';
+if(_moreOpen){document.addEventListener('click',function _mc(e){if(!e.target.closest('#mobile-more-menu,#bottom-nav')){_moreOpen=false;document.getElementById('mobile-more-menu').style.display='none';document.removeEventListener('click',_mc);}},{once:false});}
+}
+// Update bottom nav active state on tab switch
+var _origSwitchTab=typeof switchTab==='function'?switchTab:null;
 
 function openSettings(){
   renderSyncLog();renderIconGrid();loadPrefsUI();renderAdminDevices();
@@ -4835,8 +4917,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.3.1';
-var _BUILD='1775449736';
+var SERAPHIM_VERSION='2.4.0';
+var _BUILD='1775451931';
 var _initDone=false;
 function init(){
   if(_initDone) return;
