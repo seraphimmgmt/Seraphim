@@ -819,20 +819,25 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 [data-compact="true"] .p-card{padding:10px 12px}
 [data-oled="true"][data-theme="dark"]{--bg:#000;--s1:#0A0A0A;--s2:#111;--s3:#1A1A1A;--hdr-bg:rgba(0,0,0,0.98);--sb-bg:#000}
 [data-oled="true"][data-theme="dark"] #topnav{background:#000}
-[data-privacy="true"] .amt,[data-privacy="true"] .hero-amount,[data-privacy="true"] .p-card-stat-val,
-[data-privacy="true"] .kpi-v,[data-privacy="true"] .recent-amt,[data-privacy="true"] .t-card-earn,
-[data-privacy="true"] .t-card-exp,[data-privacy="true"] .t-card-net,
-[data-privacy="true"] .pstat span:last-child,[data-privacy="true"] .hero-stat-val,
-[data-privacy="true"] .sc-stat span:last-child,[data-privacy="true"] .urow-amt,
-[data-privacy="true"] #total-remaining-card div[style*="font-size:20px"],
-[data-privacy="true"] #total-remaining-card span[style*="font-size:9px"]{filter:blur(8px);transition:filter 0.2s;cursor:pointer}
-[data-privacy="true"] .amt:hover,[data-privacy="true"] .hero-amount:hover,[data-privacy="true"] .p-card-stat-val:hover,
-[data-privacy="true"] .kpi-v:hover,[data-privacy="true"] .recent-amt:hover,[data-privacy="true"] .t-card-earn:hover,
-[data-privacy="true"] .t-card-exp:hover,[data-privacy="true"] .t-card-net:hover,
-[data-privacy="true"] .pstat span:last-child:hover,[data-privacy="true"] .hero-stat-val:hover,
-[data-privacy="true"] .sc-stat span:last-child:hover,[data-privacy="true"] .urow-amt:hover,
-[data-privacy="true"] #total-remaining-card div[style*="font-size:20px"]:hover,
-[data-privacy="true"] #total-remaining-card span[style*="font-size:9px"]:hover{filter:none}
+[data-privacy="true"] .amt,
+[data-privacy="true"] .hero-amount,
+[data-privacy="true"] .hero-stat-val,
+[data-privacy="true"] .p-card-stat-val,
+[data-privacy="true"] .p-card-balance strong,
+[data-privacy="true"] .kpi-v,
+[data-privacy="true"] .mk-v,
+[data-privacy="true"] .recent-amt,
+[data-privacy="true"] .t-card-earn,
+[data-privacy="true"] .t-card-exp,
+[data-privacy="true"] .t-card-net,
+[data-privacy="true"] .pstat span:last-child,
+[data-privacy="true"] .sc-stat span:last-child,
+[data-privacy="true"] .urow-amt,
+[data-privacy="true"] .salary-bar-top span:last-child,
+[data-privacy="true"] td.amt,
+[data-privacy="true"] #total-remaining-card div[style*="font-family"],
+[data-privacy="true"] #total-remaining-card div[style*="font-size:20px"]{filter:blur(8px);transition:filter 0.15s;cursor:pointer}
+[data-privacy="true"] *:hover{filter:none !important}
 #offline-banner{display:none;position:fixed;top:var(--hh);left:0;right:0;background:var(--red);color:#fff;text-align:center;font-size:11px;padding:4px 0;z-index:100;font-weight:500}
 #offline-banner.show{display:block}
 .kbd{display:inline-block;background:var(--s2);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
@@ -2989,10 +2994,17 @@ window.addEventListener('offline',function(){document.getElementById('offline-ba
 document.addEventListener('keydown',function(e){if(e.key==='?'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){if(_prefs.shortcuts!==false)openModal('m-shortcuts');}if((e.ctrlKey||e.metaKey)&&e.key===','){e.preventDefault();openSettings();}});
 var _deviceId=localStorage.getItem('seraphim_device_id');if(!_deviceId){_deviceId='dev_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);localStorage.setItem('seraphim_device_id',_deviceId);}
 function getDeviceInfo(){var ua=navigator.userAgent;var mobile=/Mobile|iPhone|Android/.test(ua);var browser=/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':/Firefox/.test(ua)?'Firefox':'Other';var os=/iPhone|iPad/.test(ua)?'iOS':/Mac/.test(ua)?'macOS':/Windows/.test(ua)?'Windows':/Android/.test(ua)?'Android':'Other';return{id:_deviceId,browser:browser,os:os,mobile:mobile,user:state.currentUser||'Unknown',lastSeen:new Date().toISOString()};}
+var _heartbeatTimer=null;
 function registerDevice(){
   if(!_fb||!state.firebaseConnected)return;
   var info=getDeviceInfo();
   try{_fb.database().ref('seraphim/devices/'+_deviceId).set(info);}catch(e){}
+  // Heartbeat every 60s so admin sees live status
+  if(!_heartbeatTimer) _heartbeatTimer=setInterval(function(){
+    if(_fb&&state.firebaseConnected){
+      try{_fb.database().ref('seraphim/devices/'+_deviceId+'/lastSeen').set(new Date().toISOString());}catch(e){}
+    }
+  },60000);
   // Log device login to Firebase admin log
   try{
     var logEntry={id:'dlog_'+Date.now(),ts:new Date().toISOString(),user:state.currentUser||'Unknown',device:info.browser+' / '+info.os+(info.mobile?' (Mobile)':''),deviceId:_deviceId,action:'login'};
@@ -3021,26 +3033,45 @@ function forceLogoutDevice(id){if(!_fb)return;_fb.database().ref('seraphim/force
 function forceLogoutAll(){if(!_fb)return;confirmAction('Force logout all','All other devices will be logged out.','Confirm',function(){_fb.database().ref('seraphim/devices').once('value').then(function(s){var d=s.val()||{};Object.keys(d).forEach(function(id){if(id!==_deviceId)_fb.database().ref('seraphim/forceLogout/'+id).set({ts:Date.now(),by:state.currentUser});});toast('Done','success');});});}
 function banDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');if(b.indexOf(id)<0)b.push(id);localStorage.setItem('seraphim_banned',JSON.stringify(b));forceLogoutDevice(id);toast('Device banned','success');renderAdminDevices();}
 function unbanDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');b=b.filter(function(x){return x!==id;});localStorage.setItem('seraphim_banned',JSON.stringify(b));toast('Unbanned','success');renderAdminDevices();}
-function checkForceLogout(){if(!_fb||!state.firebaseConnected)return;_fb.database().ref('seraphim/forceLogout/'+_deviceId).on('value',function(snap){var d=snap.val();if(d&&Date.now()-d.ts<30000){snap.ref.remove();toast('Forced logout by '+d.by,'error',5000);setTimeout(doLogout,2000);}});}
+function checkForceLogout(){
+  // Also listen for build-based force logout
+  if(_fb){
+    _fb.database().ref('seraphim/_version/build').on('value',function(snap){
+      var remoteBuild=snap.val();
+      if(remoteBuild&&remoteBuild!==_BUILD){
+        toast('New version deployed — logging out','info',3000);
+        setTimeout(function(){
+          sessionStorage.clear();
+          try{firebase.auth().signOut();}catch(e){}
+          location.reload(true);
+        },2000);
+      }
+    });
+  }if(!_fb||!state.firebaseConnected)return;_fb.database().ref('seraphim/forceLogout/'+_deviceId).on('value',function(snap){var d=snap.val();if(d&&Date.now()-d.ts<30000){snap.ref.remove();toast('Forced logout by '+d.by,'error',5000);setTimeout(doLogout,2000);}});}
 
-function checkVersionMatch(){
-  if(typeof firebase==='undefined'||!_fb) return;
+function checkVersionMatch(onPass){
+  if(typeof firebase==='undefined'||!_fb){if(onPass)onPass();return;}
   _fb.database().ref('seraphim/_version').once('value').then(function(snap){
     var remote=snap.val();
     if(!remote){
-      // First deploy — store our version
       _fb.database().ref('seraphim/_version').set({build:_BUILD,version:SERAPHIM_VERSION,updatedAt:new Date().toISOString()});
+      if(onPass)onPass();
       return;
     }
     if(remote.build&&remote.build!==_BUILD){
-      // Version mismatch — block usage
-      document.getElementById('app').style.display='none';
-      document.getElementById('topnav').style.display='none';
-      confirmAction('Update required','Your dashboard is out of date.<br><br>Live version: <strong>v'+remote.version+' (build '+remote.build+')</strong><br>Your version: <strong>v'+SERAPHIM_VERSION+' (build '+_BUILD+')</strong><br><br><span style="font-size:11px;color:var(--dim)">Please refresh or update your file to prevent sync issues.</span>','Refresh now',function(){
-        location.reload(true);
-      });
+      // BLOCK — version mismatch
+      try{firebase.auth().signOut();}catch(e){}
+      sessionStorage.clear();
+      var screens=document.querySelectorAll('#app,#topnav,.panel');
+      screens.forEach(function(el){el.style.display='none';});
+      var blocker=document.createElement('div');
+      blocker.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center';
+      blocker.innerHTML='<div style="text-align:center;max-width:400px;padding:30px"><div style="font-size:28px;margin-bottom:12px">&#x26D4;</div><div style="font-size:18px;font-weight:500;color:var(--gold);margin-bottom:8px;font-family:DM Mono,monospace">Version mismatch</div><div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">Your dashboard is outdated and cannot sync.<br><br>Your build: <strong style="color:var(--red)">'+_BUILD+'</strong><br>Live build: <strong style="color:var(--green)">'+remote.build+'</strong></div><button onclick="location.reload(true)" style="background:var(--gold);color:#0C0A10;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:500">Refresh to update</button><div style="font-size:11px;color:var(--dim);margin-top:12px">If using a downloaded file, get the latest from GitHub Pages</div></div>';
+      document.body.appendChild(blocker);
+      return; // Never calls onPass — blocked
     }
-  }).catch(function(e){console.log('Version check failed:',e);});
+    if(onPass)onPass();
+  }).catch(function(e){console.log('Version check failed:',e);if(onPass)onPass();});
 }
 
 function openSettings(){
@@ -3989,17 +4020,18 @@ function initAuth(){
   _authApp.auth().onAuthStateChanged(function(user){
     if(user){
       _authUser=user;
-      var savedProfile=sessionStorage.getItem('seraphim_profile');
-      if(savedProfile){
-        state.currentUser=savedProfile;
-        updateHeaderUser();
-        showDashboard();
-        resetSessionTimer();
-        checkVersionMatch();
-        // Firebase auto-connects via init()
-      } else {
-        fadeToScreen('profile');
-      }
+      _fb=_authApp; // ensure _fb is set for version check
+      checkVersionMatch(function(){
+        var savedProfile=sessionStorage.getItem('seraphim_profile');
+        if(savedProfile){
+          state.currentUser=savedProfile;
+          updateHeaderUser();
+          showDashboard();
+          resetSessionTimer();
+        } else {
+          fadeToScreen('profile');
+        }
+      });
     } else {
       _authUser=null;
       fadeToScreen('login');
