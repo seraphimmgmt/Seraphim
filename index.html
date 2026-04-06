@@ -1555,10 +1555,31 @@ function renderOverview(){
     return '<div class="t-card'+(isCur?' current':'')+'" onclick="editMonthFromOverview('+qid(r.month)+')"><div class="t-card-month">'+r.month+'</div><div class="t-card-earn">'+fmt(r.earnings)+'</div><div class="t-card-exp">-'+fmt(r.totalExp)+'</div><div class="t-card-net" style="color:'+(net>=0?'var(--green)':'var(--red)')+'">'+fmt(net)+'</div></div>';
   }).join('');
 
-  // RECENT TRANSACTIONS — compact, 8 max, no future subs
+  // RECENT FEED — transactions + earnings events
   var _now=new Date().toISOString().split('T')[0];
-  var recent=state.transactions.filter(function(t){return t.date&&t.date<=_now&&!t.isRecurring;}).sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,15);
-  document.getElementById('recent-list').innerHTML=recent.map(function(t){
+  var recentTxns=state.transactions.filter(function(t){return t.date&&t.date<=_now&&!t.isRecurring;}).map(function(t){
+    return{_type:'txn',_sort:t.date,data:t};
+  });
+  // Pull earnings events from activity log
+  var earnEvents=(state.activityLog||[]).filter(function(a){
+    return a.meta&&a.meta.type==='earnings';
+  }).map(function(a){
+    return{_type:'earn',_sort:a.timestamp?a.timestamp.split('T')[0]:'',data:a};
+  });
+  var combined=recentTxns.concat(earnEvents).sort(function(a,b){return b._sort.localeCompare(a._sort);}).slice(0,20);
+  document.getElementById('recent-list').innerHTML=combined.map(function(item){
+    if(item._type==='earn'){
+      var a=item.data;
+      var diff=a.meta&&a.meta.diff?a.meta.diff:0;
+      var diffStr=diff>0?'+'+fmt(diff):diff<0?fmt(diff):'';
+      var diffColor=diff>0?'var(--green)':diff<0?'var(--red)':'var(--dim)';
+      var who=(a.meta&&a.meta.by)||'';
+      var whoColor=who==='Sharon'?'var(--purple)':who==='Shon'?'var(--amber)':'var(--dim)';
+      var dt=new Date(a.timestamp);
+      var dateStr=dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+      return '<div class="recent-row" style="background:rgba(208,184,104,0.03)"><div class="recent-dot" style="background:var(--gold)"></div><span class="recent-desc">'+a.desc+'</span><span class="recent-amt" style="color:'+diffColor+'">'+(diffStr||fmt(a.meta.amount||0))+'</span><span class="recent-who" style="color:'+whoColor+'">'+who+'</span><span class="recent-date">'+dateStr+'</span></div>';
+    }
+    var t=item.data;
     var isIncome=t.type==='Withdrawal';
     var dotColor=isIncome?'var(--green)':'var(--red)';
     if(t.type==='Transfer') dotColor='var(--gold)';
@@ -2222,7 +2243,8 @@ function saveEditEarnings(){
   state.monthlyEarnings[m]=combined;
   if(modelTotal) state.modelEarnings[m]=me;
   if(notes) state.monthNotes[m]=notes;else delete state.monthNotes[m];
-  logActivity('edit','Updated earnings for '+m+': '+fmt(combined),{month:m});save();closeModal('m-edit-earn');toast(m+' earnings updated to '+fmt(combined),'success');renderMonthly();renderOverview();
+  var _prevEarn=state.monthlyEarnings[m]||0;var _diff=combined-_prevEarn;
+  logActivity('edit','Updated earnings for '+m+': '+fmt(combined)+(_diff!==0?' ('+(+_diff>0?'+':'')+fmt(_diff)+')':''),{month:m,type:'earnings',amount:combined,diff:_diff});save();closeModal('m-edit-earn');toast(m+' earnings updated to '+fmt(combined),'success');renderMonthly();renderOverview();
 }
 
 // CRUD - MODEL EARNINGS
@@ -2241,7 +2263,8 @@ function saveModelEarnings(){
   const m=document.getElementById('me-month').value,me={};let total=0;
   document.querySelectorAll('.me-inp').forEach(inp=>{const v=parseFloat(inp.value)||0;if(inp.dataset.model)me[inp.dataset.model]=v;total+=v;});
   state.modelEarnings[m]=me;if(total) state.monthlyEarnings[m]=total;
-  logActivity('edit','Updated model earnings for '+m+': '+fmt(total),{month:m});save();closeModal('m-model-earn');toast(m+' earnings saved — '+fmt(total),'success');refreshCurrent();
+  var _prevTotal=state.monthlyEarnings[m]||0;var _modelDiff=total-_prevTotal;
+  logActivity('edit','Updated model earnings for '+m+': '+fmt(total)+(_modelDiff!==0?' ('+(+_modelDiff>0?'+':'')+fmt(_modelDiff)+')':''),{month:m,type:'earnings',amount:total,diff:_modelDiff});save();closeModal('m-model-earn');toast(m+' earnings saved — '+fmt(total),'success');refreshCurrent();
 }
 
 // CRUD - SUBSCRIPTIONS
