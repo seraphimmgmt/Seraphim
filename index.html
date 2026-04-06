@@ -945,7 +945,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4.1</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4.2</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="offline-banner">You are offline — changes will sync when reconnected</div>
@@ -2692,7 +2692,7 @@ function showSettingsTab(n){
     if(tb) tb.className='pill-filter'+(i===n?' active':'');
   }
   if(n===3) renderIconGrid();
-  if(n===4) renderAdminDevices(); else stopAdminPolling();
+  if(n===4){startAdminPolling();}else{stopAdminPolling();}
 }
 
 function renderSyncLog(){
@@ -2710,6 +2710,11 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.4.2',date:'Apr 2026',title:'Admin live fix',items:[
+  {t:'fix',text:'Admin device status now actually updates live — polls Firebase every 10s while tab is open'},
+  {t:'fix',text:'Polling only starts when Admin tab is selected, stops on any other tab or settings close'},
+  {t:'fix',text:'openSettings no longer pre-calls renderAdminDevices which was getting killed by tab init'},
+]},
 {v:'2.4.1',date:'Apr 2026',title:'Admin & mobile fixes',items:[
   {t:'fix',text:'Admin device status now polls Firebase every 10s — statuses update live even when devices stop heartbeating'},
   {t:'fix',text:'More menu closes immediately when selecting a tab'},
@@ -3103,86 +3108,47 @@ function registerDevice(){
     _fb.database().ref('seraphim/deviceLog').push(logEntry);
   }catch(e){}
 }
-var _adminDevicesCache=null;
-var _adminRefreshTimer=null;
-var _adminActive=false;
+var _adminTimer=null;
 function renderAdminDevices(){
   var el=document.getElementById('admin-devices');
-  if(!el)return;
-  if(!_fb||!state.firebaseConnected){el.innerHTML='<div style="color:var(--dim);font-size:12px">Connect to Firebase to manage devices</div>';return;}
-  _adminActive=true;
-  // Fetch + paint immediately
-  fetchAndPaintDevices();
-  // Poll every 10 seconds for live status
-  clearInterval(_adminRefreshTimer);
-  _adminRefreshTimer=setInterval(function(){
-    if(!_adminActive)return;
-    fetchAndPaintDevices();
-  },10000);
-}
-function stopAdminPolling(){
-  _adminActive=false;
-  clearInterval(_adminRefreshTimer);
-}
-function fetchAndPaintDevices(){
-  if(!_fb||!_adminActive)return;
+  if(!el||!_fb||!state.firebaseConnected){if(el)el.innerHTML='<div style="color:var(--dim);font-size:12px">Connect to Firebase to manage devices</div>';return;}
   _fb.database().ref('seraphim/devices').once('value').then(function(snap){
-    _adminDevicesCache=snap.val()||{};
-    // Auto-clean 48h stale
-    var cutoff=Date.now()-48*60*60*1000;
-    Object.keys(_adminDevicesCache).forEach(function(id){
-      if(_adminDevicesCache[id].lastSeen&&new Date(_adminDevicesCache[id].lastSeen).getTime()<cutoff){
-        _fb.database().ref('seraphim/devices/'+id).remove();delete _adminDevicesCache[id];
+    var devs=snap.val()||{};
+    var banned=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');
+    // Clean 48h stale
+    var cutoff=Date.now()-48*3600000;
+    Object.keys(devs).forEach(function(id){if(devs[id].lastSeen&&new Date(devs[id].lastSeen).getTime()<cutoff){_fb.database().ref('seraphim/devices/'+id).remove();delete devs[id];}});
+    var rows=Object.values(devs).filter(function(d){return d&&d.id&&banned.indexOf(d.id)<0;});
+    rows.sort(function(a,b){return(b.lastSeen||'').localeCompare(a.lastSeen||'');});
+    el.innerHTML=rows.length?rows.map(function(d){
+      var me=d.id===_deviceId;
+      var ago=Math.floor((Date.now()-new Date(d.lastSeen).getTime())/60000);
+      var agoStr=ago<1?'now':ago<60?ago+'m ago':ago<1440?Math.floor(ago/60)+'h ago':Math.floor(ago/1440)+'d ago';
+      var dot,status;
+      if(ago<2){dot='var(--green)';status='active';}
+      else if(ago<10){dot='var(--amber)';status='idle';}
+      else if(ago<30){dot='var(--amber)';status='away';}
+      else{dot='var(--dim)';status='offline';}
+      var btns='';
+      if(!me){
+        if(status==='active'||status==='idle') btns+='<button class="btn sm danger" onclick="forceLogoutDevice(\x27'+d.id+'\x27)" style="font-size:10px">Logout</button>';
+        btns+='<button class="btn sm" style="color:var(--red);border-color:var(--red);font-size:10px" onclick="banDevice(\x27'+d.id+'\x27)">Ban</button>';
+        if(status!=='active') btns+='<button class="btn sm" onclick="deleteDevice(\x27'+d.id+'\x27)" style="font-size:10px;color:var(--dim)">Delete</button>';
       }
-    });
-    paintAdminDevices();
+      var badge='<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:'+(status==='active'?'rgba(88,200,140,0.1);color:var(--green)':status==='idle'?'rgba(242,201,76,0.1);color:var(--amber)':status==='away'?'rgba(242,201,76,0.08);color:var(--amber)':'rgba(255,255,255,0.05);color:var(--dim)')+'">'+status+'</span>';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1);font-size:12px"><div style="display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+dot+';flex-shrink:0'+(status==='active'?';box-shadow:0 0 6px rgba(88,200,140,0.5)':'')+'"></span><div><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+d.browser+' / '+d.os+(d.mobile?' (Mobile)':'')+(me?' <span style="font-size:9px;color:var(--gold)">(you)</span>':'')+' '+badge+'</div><div style="font-size:10px;color:var(--dim);margin-top:2px">'+d.user+' \xb7 '+agoStr+'</div></div></div><div style="display:flex;gap:4px">'+btns+'</div></div>';
+    }).join(''):'<div style="color:var(--dim);font-size:12px">No devices</div>';
+    // Banned
+    var bEl=document.getElementById('admin-banned');
+    var bRows=Object.values(devs).filter(function(d){return d&&d.id&&banned.indexOf(d.id)>=0;});
+    if(bEl)bEl.innerHTML=bRows.length?bRows.map(function(d){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--b1)"><span style="color:var(--red)">'+d.browser+'/'+d.os+' ('+d.user+')</span><div style="display:flex;gap:4px"><button class="btn sm" onclick="unbanDevice(\x27'+d.id+'\x27)" style="color:var(--green);border-color:var(--green);font-size:10px">Unban</button><button class="btn sm" onclick="deleteDevice(\x27'+d.id+'\x27)" style="font-size:10px;color:var(--dim)">Delete</button></div></div>';}).join(''):'<div style="font-size:12px;color:var(--dim)">No banned devices</div>';
+    // Login history
+    var lEl=document.getElementById('admin-login-log');
+    if(lEl)_fb.database().ref('seraphim/deviceLog').orderByChild('ts').limitToLast(20).once('value').then(function(ls){var logs=[];ls.forEach(function(c){logs.push(c.val());});logs.sort(function(a,b){return(b.ts||'').localeCompare(a.ts||'');});lEl.innerHTML=logs.length?logs.map(function(l){var la=Math.floor((Date.now()-new Date(l.ts).getTime())/60000);var las=la<1?'now':la<60?la+'m ago':la<1440?Math.floor(la/60)+'h ago':Math.floor(la/1440)+'d ago';return '<div style="padding:4px 0;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:12px"><span><span style="color:'+(l.user==='Sharon'?'var(--purple)':'var(--amber)')+';font-weight:500">'+l.user+'</span> on '+l.device+'</span><span style="color:var(--dim);font-size:10px">'+las+'</span></div>';}).join(''):'<div style="color:var(--dim)">No login history</div>';});
   });
 }
-function paintAdminDevices(){
-  var el=document.getElementById('admin-devices');
-  if(!el||!_adminDevicesCache)return;
-  var devs=_adminDevicesCache;
-  var banned=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');
-  var rows=Object.values(devs).filter(function(d){return d&&d.id&&banned.indexOf(d.id)<0;});
-  rows.sort(function(a,b){return(b.lastSeen||'').localeCompare(a.lastSeen||'');});
-  el.innerHTML=rows.length?rows.map(function(d){
-    var me=d.id===_deviceId;
-    var ago=Math.floor((Date.now()-new Date(d.lastSeen).getTime())/60000);
-    var agoStr=ago<1?'now':ago<60?ago+'m ago':ago<1440?Math.floor(ago/60)+'h ago':Math.floor(ago/1440)+'d ago';
-    var dot,status;
-    if(ago<2){dot='var(--green)';status='active';}
-    else if(ago<10){dot='var(--amber)';status='idle';}
-    else if(ago<30){dot='var(--amber)';status='away';}
-    else{dot='var(--dim)';status='offline';}
-    var canDelete=!me&&status!=='active';
-    var btns='';
-    if(!me){
-      if(status==='active'||status==='idle') btns+='<button class="btn sm danger" onclick="forceLogoutDevice(\x27'+d.id+'\x27)" style="font-size:10px">Logout</button>';
-      btns+='<button class="btn sm" style="color:var(--red);border-color:var(--red);font-size:10px" onclick="banDevice(\x27'+d.id+'\x27)">Ban</button>';
-      if(canDelete) btns+='<button class="btn sm" onclick="deleteDevice(\x27'+d.id+'\x27)" style="font-size:10px;color:var(--dim)">Delete</button>';
-    }
-    var statusBadge='<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:'+(status==='active'?'rgba(88,200,140,0.1);color:var(--green)':status==='idle'?'rgba(242,201,76,0.1);color:var(--amber)':status==='away'?'rgba(242,201,76,0.08);color:var(--amber)':'rgba(255,255,255,0.05);color:var(--dim)')+'">'+status+'</span>';
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1);font-size:12px"><div style="display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+dot+';flex-shrink:0'+(status==='active'?';box-shadow:0 0 6px rgba(88,200,140,0.5)':'')+'"></span><div><div style="display:flex;align-items:center;gap:6px">'+d.browser+' / '+d.os+(d.mobile?' (Mobile)':'')+(me?' <span style="font-size:9px;color:var(--gold)">(you)</span>':'')+' '+statusBadge+'</div><div style="font-size:10px;color:var(--dim);margin-top:2px">'+d.user+' \xb7 '+agoStr+'</div></div></div><div style="display:flex;gap:4px">'+btns+'</div></div>';
-  }).join(''):'<div style="color:var(--dim);font-size:12px">No devices</div>';
-  // Banned
-  var bannedEl=document.getElementById('admin-banned');
-  var bannedDevs=Object.values(devs).filter(function(d){return d&&d.id&&banned.indexOf(d.id)>=0;});
-  if(bannedEl)bannedEl.innerHTML=bannedDevs.length?bannedDevs.map(function(d){
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--b1)"><span style="color:var(--red)">'+d.browser+' / '+d.os+' ('+d.user+')</span><div style="display:flex;gap:4px"><button class="btn sm" onclick="unbanDevice(\x27'+d.id+'\x27)" style="color:var(--green);border-color:var(--green);font-size:10px">Unban</button><button class="btn sm" onclick="deleteDevice(\x27'+d.id+'\x27)" style="font-size:10px;color:var(--dim)">Delete</button></div></div>';
-  }).join(''):'<div style="font-size:12px;color:var(--dim)">No banned devices</div>';
-  // Login history
-  var logEl=document.getElementById('admin-login-log');
-  if(logEl&&_fb){_fb.database().ref('seraphim/deviceLog').orderByChild('ts').limitToLast(20).once('value').then(function(ls){
-    var logs=[];ls.forEach(function(c){logs.push(c.val());});
-    logs.sort(function(a,b){return(b.ts||'').localeCompare(a.ts||'');});
-    logEl.innerHTML=logs.length?logs.map(function(l){
-      var dt=new Date(l.ts);var la=Math.floor((Date.now()-dt.getTime())/60000);
-      var las=la<1?'now':la<60?la+'m ago':la<1440?Math.floor(la/60)+'h ago':Math.floor(la/1440)+'d ago';
-      var wc=l.user==='Sharon'?'var(--purple)':'var(--amber)';
-      return '<div style="padding:4px 0;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:12px"><span><span style="color:'+wc+';font-weight:500">'+l.user+'</span> on '+l.device+'</span><span style="color:var(--dim);font-size:10px">'+las+'</span></div>';
-    }).join(''):'<div style="color:var(--dim)">No login history</div>';
-  });}
-}
+function startAdminPolling(){clearInterval(_adminTimer);renderAdminDevices();_adminTimer=setInterval(renderAdminDevices,10000);}
+function stopAdminPolling(){clearInterval(_adminTimer);_adminTimer=null;}
 
 function deleteDevice(id){if(!_fb)return;_fb.database().ref('seraphim/devices/'+id).remove();toast('Device removed','success');}
 function forceLogoutDevice(id){if(!_fb)return;_fb.database().ref('seraphim/forceLogout/'+id).set({ts:Date.now(),by:state.currentUser});toast('Logout signal sent','success');}
@@ -3247,7 +3213,7 @@ if(_moreOpen){document.addEventListener('click',function _mc(e){if(!e.target.clo
 var _origSwitchTab=typeof switchTab==='function'?switchTab:null;
 
 function openSettings(){
-  renderSyncLog();renderIconGrid();loadPrefsUI();renderAdminDevices();
+  renderSyncLog();renderIconGrid();loadPrefsUI();
   var sue=document.getElementById('settings-user-email');
   var sun=document.getElementById('settings-user-name');
   if(sue) sue.textContent=_authUser?_authUser.email:'Not signed in';
@@ -4936,8 +4902,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.4.1';
-var _BUILD='1775452550';
+var SERAPHIM_VERSION='2.4.2';
+var _BUILD='1775453100';
 var _initDone=false;
 function init(){
   if(_initDone) return;
