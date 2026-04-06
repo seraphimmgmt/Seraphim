@@ -949,7 +949,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4.4</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.4.5</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -2715,6 +2715,10 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.4.5',date:'Apr 2026',title:'Version check fix',items:[
+  {t:'fix',text:'Deploy detection now polls Firebase every 30s instead of relying on .on() listener'},
+  {t:'fix',text:'All reloads use cache-busting URL to prevent stale HTML from browser cache'},
+]},
 {v:'2.4.4',date:'Apr 2026',title:'Cleanup',items:[
   {t:'ui',text:'Removed haptic feedback toggle — iOS Safari does not support vibration API'},
 ]},
@@ -3208,22 +3212,22 @@ function forceLogoutAll(){if(!_fb)return;confirmAction('Force logout all','All o
 function banDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');if(b.indexOf(id)<0)b.push(id);localStorage.setItem('seraphim_banned',JSON.stringify(b));forceLogoutDevice(id);toast('Device banned','success');renderAdminDevices();}
 function unbanDevice(id){var b=JSON.parse(localStorage.getItem('seraphim_banned')||'[]');b=b.filter(function(x){return x!==id;});localStorage.setItem('seraphim_banned',JSON.stringify(b));toast('Unbanned','success');renderAdminDevices();}
 function checkForceLogout(){
-  // Live listener: force logout when build changes in Firebase
-  if(_fb){
-    _fb.database().ref('seraphim/_version/build').on('value',function(snap){
-      var remoteBuild=parseInt(snap.val()||'0');
-      var localBuild=parseInt(_BUILD||'0');
-      if(remoteBuild>0&&localBuild>0&&remoteBuild>localBuild){
-        console.log('[Deploy] Newer version detected via listener — forcing reload');
-        toast('New version deployed — updating...','info',2000);
+  // Poll version every 30s — brute force, always works
+  setInterval(function(){
+    if(!_fb||!state.firebaseConnected)return;
+    _fb.database().ref('seraphim/_version/build').once('value').then(function(snap){
+      var rb=parseInt(snap.val()||'0'),lb=parseInt(_BUILD||'0');
+      if(rb>0&&lb>0&&rb>lb){
+        console.log('[Deploy] Outdated build. Remote:'+rb+' Local:'+lb);
+        toast('New version detected — updating...','info',2000);
         setTimeout(function(){
           sessionStorage.clear();
           try{firebase.auth().signOut();}catch(e){}
-          location.reload(true);
+          window.location.href=window.location.pathname+'?v='+Date.now();
         },2500);
       }
     });
-  }if(!_fb||!state.firebaseConnected)return;_fb.database().ref('seraphim/forceLogout/'+_deviceId).on('value',function(snap){var d=snap.val();if(d&&Date.now()-d.ts<30000){snap.ref.remove();toast('Forced logout by '+d.by,'error',5000);setTimeout(doLogout,2000);}});}
+  },30000);if(!_fb||!state.firebaseConnected)return;_fb.database().ref('seraphim/forceLogout/'+_deviceId).on('value',function(snap){var d=snap.val();if(d&&Date.now()-d.ts<30000){snap.ref.remove();toast('Forced logout by '+d.by,'error',5000);setTimeout(doLogout,2000);}});}
 
 function checkVersionMatch(onPass){
   if(typeof firebase==='undefined'||!_fb){if(onPass)onPass();return;}
@@ -3939,7 +3943,7 @@ function logSync(type,detail){
 }
 
 function mergeRemoteState(remote){
-  if(remote&&remote._requiredBuild){var rq=parseInt(remote._requiredBuild)||0,lb=(typeof _BUILD!=='undefined')?parseInt(_BUILD)||0:0;if(lb===0||rq>lb){console.log('[Sync] Outdated');try{firebase.auth().signOut();}catch(e){}sessionStorage.clear();location.reload(true);return;}}
+  if(remote&&remote._requiredBuild){var rq=parseInt(remote._requiredBuild)||0,lb=(typeof _BUILD!=='undefined')?parseInt(_BUILD)||0:0;if(lb===0||rq>lb){console.log('[Sync] Outdated');try{firebase.auth().signOut();}catch(e){}sessionStorage.clear();window.location.href=window.location.pathname+'?v='+Date.now();return;}}
   try{localStorage.setItem('seraphim_premerge',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   try{localStorage.setItem('seraphim_backup',localStorage.getItem('seraphim_v3')||'');}catch(e){}
   var quickHash=JSON.stringify(remote._ts||0)+'-'+(remote._by||'');
@@ -4033,7 +4037,7 @@ function mergeRemoteState(remote){
       if(rb>lb){
         console.log('[Sync] Version mismatch detected during sync');
         toast('New version available — refreshing...','info',2000);
-        setTimeout(function(){location.reload(true);},2500);
+        setTimeout(function(){window.location.href=window.location.pathname+'?v='+Date.now();},2500);
       }
     });
   }
@@ -4954,8 +4958,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.4.4';
-var _BUILD='1775453807';
+var SERAPHIM_VERSION='2.4.5';
+var _BUILD='1775453932';
 var _initDone=false;
 function init(){
   if(_initDone) return;
