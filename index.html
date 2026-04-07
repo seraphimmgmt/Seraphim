@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0C0A10">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='180' height='180' rx='40' fill='%230C0A10'/%3E%3Cpath d='M90 105C82 85 58 73 30 60c8 5 28 14 60 45z' fill='%23D0B868'/%3E%3Cpath d='M90 105C81 80 52 70 32 70c10 4 32 10 58 35z' fill='%23D0B868'/%3E%3Cpath d='M90 105C84 93 62 87 42 90c12-2 36 0 48 15z' fill='%23D0B868'/%3E%3Cpath d='M90 105C98 85 122 73 150 60c-8 5-28 14-60 45z' fill='%23D0B868'/%3E%3Cpath d='M90 105C99 80 128 70 148 70c-10 4-32 10-58 35z' fill='%23D0B868'/%3E%3Cpath d='M90 105C96 93 118 87 138 90c-12-2-36 0-48 15z' fill='%23D0B868'/%3E%3Cellipse cx='90' cy='42' rx='16' ry='6' fill='none' stroke='%23D0B868' stroke-width='3'/%3E%3C/svg%3E">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>Seraphim</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M32 38C28 30 18 24 6 16c4 3 14 8 26 16z' fill='%23D0B868'/%3E%3Cpath d='M32 38C27 28 14 22 4 22c5 2 16 6 28 16z' fill='%23D0B868'/%3E%3Cpath d='M32 38C29 32 18 28 8 30c6-1 18 0 24 8z' fill='%23D0B868'/%3E%3Cpath d='M32 38C36 30 46 24 58 16c-4 3-14 8-26 16z' fill='%23D0B868'/%3E%3Cpath d='M32 38C37 28 50 22 60 22c-5 2-16 6-28 16z' fill='%23D0B868'/%3E%3Cpath d='M32 38C35 32 46 28 56 30c-6-1-18 0-24 8z' fill='%23D0B868'/%3E%3Cellipse cx='32' cy='12' rx='8' ry='3' fill='none' stroke='%23D0B868' stroke-width='2'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -732,13 +732,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 
 }
 
-@media(max-width:380px){
-  .nav-item{font-size:9px;padding:3px 8px}
-  .hero-amount{font-size:20px}
-  .kpis{grid-template-columns:1fr}
-  .mini-kpis{grid-template-columns:1fr}
-  table{min-width:500px}
-}
+
 
 [data-compact="true"] .panel{padding:8px 10px}
 [data-compact="true"] td,th{padding:4px 6px;font-size:10px}
@@ -774,139 +768,128 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
 #changelog-btn.new-version{animation:shine-pulse 2s ease-in-out infinite}
 
 /* Bottom nav — mobile only */
-#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sb-bg);border-top:1px solid rgba(208,184,104,0.08);z-index:200;justify-content:space-around;align-items:center;padding:10px 4px;padding-bottom:calc(10px + env(safe-area-inset-bottom));box-sizing:border-box}
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sb-bg);border-top:1px solid rgba(208,184,104,0.08);z-index:200;justify-content:space-around;align-items:center;padding:10px 4px;padding-bottom:10px;box-sizing:border-box}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--dim);font-size:9px;font-family:'DM Sans',sans-serif;padding:6px 8px;cursor:pointer;min-width:48px;transition:color 0.15s}
 .bnav-item.active{color:var(--gold)}
 .bnav-item svg{opacity:0.5;transition:opacity 0.15s}
 .bnav-item.active svg{opacity:1;stroke:var(--gold)}
-#mobile-more-menu{position:fixed;bottom:calc(56px + env(safe-area-inset-bottom,0px));left:0;right:0;background:var(--s2);border-top:1px solid var(--b1);z-index:199;padding:8px;padding-bottom:env(safe-area-inset-bottom)}
+#mobile-more-menu{position:fixed;bottom:56px;left:0;right:0;background:var(--s2);border-top:1px solid var(--b1);z-index:199;padding:8px;padding-bottom:0}
 #mobile-more-menu button{display:block;width:100%;text-align:left;padding:12px 16px;background:none;border:none;border-bottom:1px solid var(--b1);color:var(--muted);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer}
 #mobile-more-menu button:hover,#mobile-more-menu button:active{color:var(--gold);background:rgba(208,184,104,0.04)}
 #mobile-more-menu button:last-child{border-bottom:none}
 
-@media(max-width:640px){
-  :root{--hh:44px}
-  *{box-sizing:border-box}
-  /* Bottom nav */
-  #bottom-nav{display:flex}
-  #topnav{display:none !important}
-  #app{position:fixed;top:calc(var(--hh) + env(safe-area-inset-top,0px));bottom:calc(56px + env(safe-area-inset-bottom,0px));left:0;right:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:0;height:auto;display:block}
-  #main{width:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-  #fab-btn{bottom:calc(62px + env(safe-area-inset-bottom)) !important;width:40px !important;height:40px !important;font-size:18px !important;right:14px !important}
-  /* Safe area — notch */
-
-  /* Header */
-  #hdr{padding:0 10px;gap:4px;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);top:env(safe-area-inset-top,0px)}
-  .brand{font-size:clamp(9px,2.5vw,12px);letter-spacing:0.08em}
-  #hdr-month,.zoom-wrap{display:none !important}
-  .hbtn{font-size:clamp(8px,2vw,10px) !important;padding:3px 8px !important}
-  #changelog-btn{display:none !important}
-  #sync-label{display:none}
-  .sync-wrap{gap:4px}
-  #hdr-user{font-size:clamp(8px,2vw,10px)}
-  .logout-btn{font-size:9px !important;padding:2px 6px !important}
-  /* Panels */
-  .panel{padding:clamp(8px,2vw,14px) clamp(8px,3vw,14px);width:100%;max-width:100%;overflow-x:hidden}
-  .overlay{padding-top:env(safe-area-inset-top,0px)}
-  .modal{max-width:95vw !important;max-height:calc(85vh - env(safe-area-inset-top,0px)) !important;margin:8px auto;overflow-y:auto}
-  .modal-title{font-size:clamp(14px,4vw,18px)}
-  .frow{flex-direction:column;gap:8px}
-  .fi{font-size:13px;padding:8px 10px;width:100%}
-  .fsel{font-size:12px;min-width:0;max-width:100%;width:100%}
-  /* Hero */
-  .hero{padding:clamp(10px,3vw,16px);overflow:hidden}
-  .hero-amount{font-size:clamp(20px,6vw,30px)}
-  .hero-stats{flex-wrap:wrap;gap:clamp(6px,2vw,12px)}
-  .hero-stat{min-width:clamp(55px,15vw,80px)}
-  .hero-stat-val{font-size:clamp(11px,3vw,15px)}
-  .hero-stat-label{font-size:clamp(7px,1.8vw,9px)}
-  /* KPIs */
-  .kpis,.mini-kpis{grid-template-columns:1fr 1fr;gap:clamp(6px,2vw,10px)}
-  .kpi{padding:clamp(8px,2vw,12px)}
-  .kpi-v{font-size:clamp(13px,4vw,18px)}
-  .kpi-l,.mk-l{font-size:clamp(7px,1.8vw,9px)}
-  /* Overview grid — single column */
-  #panel-overview div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important}
-  #panel-overview div[style*="grid-column:1/-1"]{grid-template-columns:1fr !important}
-  /* Partners */
-  .partner-row,.partner-grid{grid-template-columns:1fr !important}
-  .p-card{margin-bottom:0;padding:clamp(10px,3vw,16px)}
-  .p-card-name{font-size:clamp(13px,3.5vw,16px)}
-  .p-card-stats{gap:8px;flex-wrap:wrap}
-  .p-card-stat-val{font-size:clamp(11px,3vw,14px)}
-  .p-card-stat-label{font-size:clamp(7px,1.8vw,9px)}
-  #total-remaining-card{flex-direction:column;gap:6px;text-align:center;padding:clamp(10px,3vw,16px)}
-  #total-remaining-card>div:last-child{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-  /* Timeline */
-  .timeline{gap:6px;padding:0 2px 8px}
-  .t-card{min-width:clamp(80px,22vw,110px);padding:clamp(6px,2vw,10px)}
-  .t-card-month{font-size:clamp(8px,2vw,10px)}
-  .t-card-earn{font-size:clamp(11px,3vw,14px)}
-  .t-card-exp,.t-card-net{font-size:clamp(8px,2vw,10px)}
-  /* Recent */
-  .recent-row{padding:5px 6px;gap:4px}
-  .recent-desc{font-size:clamp(9px,2.5vw,11px);min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .recent-amt{font-size:clamp(9px,2.5vw,11px);min-width:clamp(50px,14vw,70px);text-align:right}
-  .recent-who{font-size:clamp(7px,1.8vw,9px);min-width:clamp(28px,8vw,40px)}
-  .recent-date{font-size:clamp(7px,1.8vw,9px);min-width:clamp(45px,12vw,60px)}
-  /* Charts */
-  .chart-card{padding:clamp(8px,2vw,12px)}
-  .chart-wrap{height:clamp(100px,30vw,150px)}
-  .charts-row{grid-template-columns:1fr !important}
-  /* Right column */
-  .section-label{font-size:clamp(8px,2vw,10px)}
-  .todo-card{padding:clamp(8px,2vw,12px)}
-  /* Team */
-  .staff-grid,.sub-grid{grid-template-columns:1fr}
-  .worker-card,.staff-card{padding:clamp(10px,3vw,14px)}
-  .sc-name{font-size:clamp(12px,3.5vw,15px)}
-  .sc-stat{font-size:clamp(9px,2.5vw,11px)}
-  .sc-actions{flex-wrap:wrap;gap:4px}
-  .sc-actions .btn{font-size:clamp(8px,2vw,10px);padding:3px clamp(5px,1.5vw,8px)}
-  /* Tables */
-  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100vw}
-  table{min-width:500px}
-  th,td{padding:clamp(4px,1vw,6px) clamp(4px,1.5vw,8px);font-size:clamp(9px,2.5vw,11px)}
-  .filters{flex-wrap:wrap;gap:6px}
-  .fsearch{font-size:11px;min-width:80px;flex:1}
-  /* Login */
-  .login-card{max-width:90vw;padding:clamp(16px,5vw,28px) clamp(14px,4vw,24px)}
-  .login-field{font-size:14px;padding:10px 14px}
-  .profile-pick{padding:clamp(12px,4vw,20px)}
-  /* Settings */
-  .settings-tabs{flex-wrap:wrap;gap:4px}
-  .pill-filter{font-size:clamp(9px,2.5vw,11px);padding:clamp(3px,1vw,5px) clamp(8px,2.5vw,12px)}
-  .settings-page{padding:0}
-  /* Partner Split */
-  .pcard{padding:clamp(10px,3vw,14px)}
-  .pstat{font-size:clamp(9px,2.5vw,11px)}
-  /* Page headers */
-  .ph{padding:0}
-  .pg-title{font-size:clamp(14px,4vw,18px)}
-  .pg-subtitle{font-size:clamp(9px,2.5vw,11px)}
-  .pg-actions{flex-wrap:wrap;gap:4px}
-  .pg-actions .btn{font-size:clamp(8px,2vw,10px);padding:3px clamp(5px,1.5vw,8px)}
-  /* Activity log */
-  #al-list{max-height:60vh}
-  /* Buttons */
-  .btn{font-size:clamp(9px,2.5vw,11px);padding:clamp(3px,1vw,5px) clamp(8px,2vw,12px)}
-  .btn.sm{font-size:clamp(8px,2vw,10px)}
-  /* Prevent horizontal overflow */
-  body{overflow-x:hidden;width:100vw}
-}
 
 
 
-@media(max-width:320px){
-  .hero-amount{font-size:18px}
-  .kpi-v{font-size:14px}
-  .brand{font-size:8px}
-  .bnav-item{padding:4px 4px;min-width:40px}
-}
+
+
+
+
 
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 #pull-spinner.spinning #pull-arrow{animation:spin 0.8s linear infinite}
 #pull-spinner{opacity:0}
+
+
+/* ══════════════════════════════════════════
+   MOBILE — 640px and below
+   ══════════════════════════════════════════ */
+@media(max-width:640px){
+  html,body{height:auto;overflow:auto;margin:0;padding:0;width:100%}
+  #hdr{position:fixed;top:0;left:0;right:0;height:44px;z-index:200;padding:0 10px;gap:4px}
+  #topnav{display:none !important}
+  #bottom-nav{display:flex !important;height:56px}
+  #app{display:block;position:relative;height:auto;padding:44px 0 56px 0;overflow:visible}
+  #main{width:100%;overflow:visible}
+  .panel{padding:10px 12px;width:100%;box-sizing:border-box}
+  #fab-btn{position:fixed !important;bottom:66px !important;right:14px !important;width:40px !important;height:40px !important;font-size:18px !important;z-index:150}
+
+  .brand{font-size:clamp(9px,2.5vw,12px);letter-spacing:0.08em}
+  #hdr-month,.zoom-wrap{display:none !important}
+  .hbtn{font-size:9px !important;padding:3px 8px !important}
+  #changelog-btn{display:none !important}
+  #sync-label{display:none}
+  #hdr-user{font-size:9px}
+  .logout-btn{font-size:9px !important;padding:2px 6px !important}
+
+  .overlay{align-items:flex-start;padding-top:50px}
+  .modal{max-width:92vw !important;max-height:75vh !important;margin:0 auto;overflow-y:auto}
+  .modal-title{font-size:16px}
+  .frow{flex-direction:column;gap:8px}
+  .fi{font-size:13px;padding:8px 10px;width:100%;box-sizing:border-box}
+  .fsel{font-size:12px;width:100%}
+
+  .hero{padding:12px 14px;overflow:hidden}
+  .hero-amount{font-size:clamp(20px,6vw,30px)}
+  .hero-stats{flex-wrap:wrap;gap:8px}
+  .hero-stat{min-width:60px}
+  .hero-stat-val{font-size:13px}
+
+  .kpis,.mini-kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:10px}
+  .kpi-v{font-size:16px}
+  .kpi-l,.mk-l{font-size:8px}
+
+  #panel-overview div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important}
+  #panel-overview div[style*="grid-column:1/-1"]{grid-template-columns:1fr !important}
+  .charts-row{grid-template-columns:1fr !important}
+
+  .partner-row,.partner-grid{grid-template-columns:1fr !important}
+  .p-card{padding:12px 14px}
+  .p-card-stat-val{font-size:13px}
+  #total-remaining-card{flex-direction:column;gap:6px;text-align:center}
+
+  .timeline{gap:6px;padding:0 2px 8px}
+  .t-card{min-width:90px;padding:8px 10px}
+  .t-card-earn{font-size:13px}
+  .t-card-exp,.t-card-net{font-size:9px}
+
+  .recent-row{padding:5px 6px;gap:4px}
+  .recent-desc{font-size:10px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .recent-amt{font-size:10px;min-width:55px;text-align:right}
+  .recent-who{font-size:8px;min-width:32px}
+  .recent-date{font-size:8px;min-width:50px}
+
+  .chart-card{padding:10px}
+  .chart-wrap{height:130px}
+
+  .staff-grid,.sub-grid{grid-template-columns:1fr}
+  .worker-card,.staff-card{padding:12px}
+  .sc-name{font-size:13px}
+  .sc-stat{font-size:10px}
+  .sc-actions{flex-wrap:wrap;gap:4px}
+  .sc-actions .btn{font-size:9px;padding:3px 7px}
+
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:500px}
+  th,td{padding:5px 6px;font-size:10px}
+  .filters{flex-wrap:wrap;gap:6px}
+  .fsearch{font-size:11px;flex:1}
+
+  .login-card{max-width:90vw;padding:20px}
+  .login-field{font-size:14px;padding:10px 14px}
+
+  .settings-tabs{flex-wrap:wrap;gap:4px}
+  .pill-filter{font-size:10px;padding:4px 10px}
+
+  .pcard{padding:12px}
+  .pstat{font-size:10px}
+
+  .pg-title{font-size:15px}
+  .pg-actions{flex-wrap:wrap;gap:4px}
+  .pg-actions .btn{font-size:9px;padding:3px 7px}
+
+  .section-label{font-size:9px}
+  .btn{font-size:10px;padding:4px 10px}
+  #al-list{max-height:60vh}
+}
+
+@media(max-width:380px){
+  .kpis,.mini-kpis{grid-template-columns:1fr}
+  .recent-who,.recent-date{display:none}
+  table{min-width:400px}
+  .bnav-item span{font-size:8px}
+}
 </style>
 
 
@@ -968,7 +951,7 @@ tbody tr:nth-child(even) td{background:rgba(208,184,104,0.015)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.5.4</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.6</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -2734,6 +2717,24 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.6.0',date:'Apr 2026',title:'Mobile layout v3',items:[
+  {t:'fix',text:'Removed viewport-fit=cover — let iOS handle safe areas automatically'},
+  {t:'fix',text:'Removed all env(safe-area-inset) CSS — browser manages notch/home indicator natively'},
+  {t:'fix',text:'App uses normal document flow on mobile — body scrolls, no position:fixed/absolute on #app'},
+  {t:'fix',text:'Simple padding on #app: 44px top (header height), 56px bottom (nav height)'},
+]},
+{v:'2.5.5',date:'Apr 2026',title:'Mobile rewrite',items:[
+  {t:'fix',text:'Removed all old mobile CSS and rewrote from scratch — clean single block'},
+  {t:'fix',text:'App uses position:absolute pinned between header and nav — no vh/dvh'},
+  {t:'fix',text:'Scroll container is #app itself with -webkit-overflow-scrolling:touch'},
+  {t:'fix',text:'No more conflicting rules from multiple media queries'},
+]},
+{v:'2.5.5',date:'Apr 2026',title:'Mobile layout rewrite v3',items:[
+  {t:'fix',text:'Complete mobile CSS rewrite — all layout rules use !important to guarantee override'},
+  {t:'fix',text:'App container pinned with position:fixed between header and nav — no vh/dvh'},
+  {t:'fix',text:'Body overflow:hidden prevents background scroll, content scrolls inside fixed app'},
+  {t:'fix',text:'Header uses top:0px to sit below notch'},
+]},
 {v:'2.5.4',date:'Apr 2026',title:'Mobile layout rewrite',items:[
   {t:'fix',text:'Ditched vh/dvh entirely — app container pinned with position:fixed between header and nav'},
   {t:'fix',text:'Content scrolls naturally in the fixed frame, no more clipping or gaps'},
@@ -2752,7 +2753,7 @@ var CHANGELOG=[
   {t:'fix',text:'Safe area rules consolidated — no conflicting @supports blocks'},
 ]},
 {v:'2.5.2',date:'Apr 2026',title:'Notch fix v2',items:[
-  {t:'fix',text:'Header positioned below notch using top:env(safe-area-inset-top) instead of padding'},
+  {t:'fix',text:'Header positioned below notch using top:0px instead of padding'},
   {t:'fix',text:'Removed bottom gap caused by double safe-area-inset on modals'},
   {t:'fix',text:'Safe area rules wrapped in @supports for browsers that do not support it'},
 ]},
@@ -5012,8 +5013,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.5.4';
-var _BUILD='1775493710';
+var SERAPHIM_VERSION='2.6.0';
+var _BUILD='1775520600';
 var _initDone=false;
 function init(){
   if(_initDone) return;
