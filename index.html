@@ -951,7 +951,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.7</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.7.1</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -2390,10 +2390,8 @@ function saveChargeback(){
   // Chargeback is stored as through:'Fanvue' so it reduces the pool equally
   var txn={id:'cb_'+Date.now(),date:date,desc:'CHARGEBACK: '+desc,type:'Expense',amount:amt,who:'Shon',month:month,notes:notes,cat:'Chargeback',through:'Fanvue',isChargeback:true};
   state.transactions.push(txn);
-  // Also reduce that month's earnings
-  if(state.monthlyEarnings[month]!==undefined){
-    state.monthlyEarnings[month]=Math.max(0,state.monthlyEarnings[month]-amt);
-  }
+  // Chargeback is a Fanvue expense — calcMonth() handles the deduction from the pool
+  // Do NOT also reduce monthlyEarnings — that would double-count
   logActivity('add','Chargeback: '+desc+' — '+fmt(amt)+' (reduces earnings for '+month+')',{by:state.currentUser,month:month});
   save();closeModal('m-chargeback');renderOverview();
   toast('Chargeback of '+fmt(amt)+' logged — deducted from '+month+' earnings','info',5000);
@@ -2717,6 +2715,9 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'2.7.1',date:'Apr 2026',title:'Chargeback fix',items:[
+  {t:'fix',text:'Chargebacks were double-deducting — subtracting from earnings AND adding a Fanvue expense. Now only the expense is created, calcMonth handles the rest.'},
+]},
 {v:'2.7.0',date:'Apr 2026',title:'Color scheme update',items:[
   {t:'ui',text:'Dark mode: Plum noir — deep plum background, lavender text, violet accents'},
   {t:'ui',text:'Light mode: Lavender mist — soft lavender background, deep purple text, violet accents'},
@@ -5019,8 +5020,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.7.0';
-var _BUILD='1775596992';
+var SERAPHIM_VERSION='2.7.1';
+var _BUILD='1775625834';
 var _initDone=false;
 function init(){
   if(_initDone) return;
