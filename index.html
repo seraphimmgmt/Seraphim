@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Seraphim">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0C0A10">
+<meta name="theme-color" content="#14101C">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='180' height='180' rx='40' fill='%230C0A10'/%3E%3Cpath d='M90 105C82 85 58 73 30 60c8 5 28 14 60 45z' fill='%23D0B868'/%3E%3Cpath d='M90 105C81 80 52 70 32 70c10 4 32 10 58 35z' fill='%23D0B868'/%3E%3Cpath d='M90 105C84 93 62 87 42 90c12-2 36 0 48 15z' fill='%23D0B868'/%3E%3Cpath d='M90 105C98 85 122 73 150 60c-8 5-28 14-60 45z' fill='%23D0B868'/%3E%3Cpath d='M90 105C99 80 128 70 148 70c-10 4-32 10-58 35z' fill='%23D0B868'/%3E%3Cpath d='M90 105C96 93 118 87 138 90c-12-2-36 0-48 15z' fill='%23D0B868'/%3E%3Cellipse cx='90' cy='42' rx='16' ry='6' fill='none' stroke='%23D0B868' stroke-width='3'/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>Seraphim</title>
@@ -21,7 +21,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#14101C;--s1:#1A1524;--s2:#211B2E;--s3:#2A2238;
-  --b1:rgba(180,158,224,0.06);--b2:rgba(208,184,104,0.11);--b3:rgba(208,184,104,0.2);
+  --b1:rgba(180,158,224,0.06);--b2:rgba(180,158,224,0.12);--b3:rgba(180,158,224,0.2);
   --gold:#B49EE0;--gdim:rgba(180,158,224,0.35);--shine:#C8B4F0;
   --text:#E8E0F4;--muted:#A090C0;--dim:#6A5888;
   --green:#6AC490;--red:#E06070;--amber:#F2C94C;--purple:#C880B8;--blue:#8AA0C8;--teal:#D0B868;
@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
   gap:8px;padding:0 10px;font-size:10px;color:var(--dim);transition:all 0.15s;
   font-family:"DM Mono",monospace;position:relative;white-space:nowrap;overflow:hidden;margin:0 6px}
 .mi:hover{background:var(--b1);color:var(--muted)}
-.mi.active{background:rgba(208,184,104,0.12);color:var(--gold)}
+.mi.active{background:rgba(180,158,224,0.12);color:var(--gold)}
 .mi-abbr{flex-shrink:0;width:24px;text-align:center;font-size:9px}
 .mi-label{font-size:10px;opacity:0;transition:opacity 0.18s 0.05s;overflow:hidden;white-space:nowrap}
 #sb:hover .mi-label{opacity:1}
@@ -136,7 +136,7 @@ tr:last-child td{border-bottom:none}
 .btn{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all 0.15s;border:1px solid var(--b1);background:var(--s2);color:var(--muted)}
 .btn:hover{border-color:var(--b2);color:var(--text)}
 .btn.primary{background:rgba(180,158,224,0.12);border-color:var(--gdim);color:var(--gold)}
-.btn.primary:hover{background:rgba(208,184,104,0.18)}
+.btn.primary:hover{background:rgba(180,158,224,0.18)}
 .btn.danger{border-color:rgba(239,68,68,0.25);color:var(--red)}
 .btn.danger:hover{background:rgba(239,68,68,0.08)}
 .btn.sm{padding:4px 10px;font-size:11px}
@@ -160,8 +160,8 @@ tr:last-child td{border-bottom:none}
 .ma{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
 .bc{padding:8px 20px;border-radius:8px;border:1px solid var(--b1);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:"DM Sans",sans-serif;transition:all 0.15s}
 .bc:hover{color:var(--text)}
-.bs{padding:8px 24px;border-radius:8px;background:rgba(208,184,104,0.12);border:1px solid var(--gdim);color:var(--gold);cursor:pointer;font-size:13px;font-weight:500;font-family:"DM Sans",sans-serif;transition:all 0.15s}
-.bs:hover{background:rgba(208,184,104,0.22)}
+.bs{padding:8px 24px;border-radius:8px;background:rgba(180,158,224,0.12);border:1px solid var(--gdim);color:var(--gold);cursor:pointer;font-size:13px;font-weight:500;font-family:"DM Sans",sans-serif;transition:all 0.15s}
+.bs:hover{background:rgba(180,158,224,0.22)}
 .empty{text-align:center;padding:40px 20px;color:var(--dim);font-size:12px}
 .empty-icon{font-size:28px;margin-bottom:10px;opacity:0.3}
 #toast{position:fixed;bottom:24px;right:24px;z-index:500;background:var(--s3);
@@ -195,7 +195,7 @@ tr:last-child td{border-bottom:none}
 .sub-card.paused{opacity:0.45}
 .sub-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
 .sub-freq-badge{display:inline-block;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;
-  color:var(--gold);background:rgba(180,158,224,0.1);border:1px solid rgba(208,184,104,0.12);
+  color:var(--gold);background:rgba(180,158,224,0.1);border:1px solid rgba(180,158,224,0.12);
   border-radius:20px;padding:2px 8px;margin-bottom:10px}
 .sub-amt{font-family:"DM Mono",monospace;font-size:22px;color:var(--text);margin-bottom:10px}
 .sub-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
@@ -234,9 +234,9 @@ tr:last-child td{border-bottom:none}
 .mk-v{font-family:"DM Mono",monospace;font-size:18px;color:var(--text)}
 .mk-v.g{color:var(--green)}.mk-v.r{color:var(--red)}.mk-v.gold{color:var(--gold)}
 .mk-v.pu{color:var(--purple)}.mk-v.am{color:var(--amber)}.mk-v.te{color:var(--teal)}
-.col-tip{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:rgba(208,184,104,0.07);color:var(--dim);font-size:8px;font-weight:600;cursor:help;vertical-align:middle;margin-left:3px;position:relative;transition:all 0.15s}
+.col-tip{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:rgba(180,158,224,0.08);color:var(--dim);font-size:8px;font-weight:600;cursor:help;vertical-align:middle;margin-left:3px;position:relative;transition:all 0.15s}
 .col-tip:hover{background:rgba(180,158,224,0.15);color:var(--gold)}
-.transfer-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(180,158,224,0.06);border:1px solid rgba(208,184,104,0.12);border-radius:6px;margin-bottom:6px}
+.transfer-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(180,158,224,0.06);border:1px solid rgba(180,158,224,0.12);border-radius:6px;margin-bottom:6px}
 .transfer-row .tr-label{font-size:12px;color:var(--teal);font-weight:500}
 .transfer-row .tr-meta{font-size:10px;color:var(--dim);margin-top:2px}
 .transfer-row .tr-amt{font-family:"DM Mono",monospace;font-size:13px;color:var(--teal)}
@@ -275,11 +275,11 @@ tr:last-child td{border-bottom:none}
 [data-theme="light"] body{background:var(--bg);color:var(--text)}
 [data-theme="light"] #hdr{background:var(--hdr-bg);border-bottom-color:var(--b1)}
 [data-theme="light"] #sb{background:var(--sb-bg)}
-[data-theme="light"] .si{color:rgba(208,184,104,0.25)}
-[data-theme="light"] .si:hover{color:rgba(208,184,104,0.5);background:rgba(180,158,224,0.06)}
+[data-theme="light"] .si{color:rgba(180,158,224,0.25)}
+[data-theme="light"] .si:hover{color:rgba(180,158,224,0.5);background:rgba(180,158,224,0.06)}
 [data-theme="light"] .si.active{background:rgba(180,158,224,0.12);color:var(--shine)}
-[data-theme="light"] .mi{color:rgba(208,184,104,0.25)}
-[data-theme="light"] .mi.active{background:rgba(208,184,104,0.12);color:var(--shine)}
+[data-theme="light"] .mi{color:rgba(180,158,224,0.25)}
+[data-theme="light"] .mi.active{background:rgba(180,158,224,0.12);color:var(--shine)}
 [data-theme="light"] .kpi,.kpi{background:var(--s1);border-color:var(--b1)}
 [data-theme="light"] .chart-card{background:var(--s1);border-color:var(--b1)}
 [data-theme="light"] .tw{background:var(--s1);border-color:var(--b1)}
@@ -312,7 +312,7 @@ tr:last-child td{border-bottom:none}
 .fb-status{font-size:11px;margin-top:10px;padding:8px 12px;border-radius:6px;display:flex;align-items:center;gap:8px}
 .theme-toggle{display:flex;gap:2px;background:var(--s2);border:1px solid var(--b1);border-radius:16px;padding:2px}
 .theme-btn{width:26px;height:22px;border-radius:12px;border:none;background:none;color:var(--dim);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.theme-btn.active{background:rgba(208,184,104,0.12);color:var(--gold)}
+.theme-btn.active{background:rgba(180,158,224,0.12);color:var(--gold)}
 .theme-btn:hover{color:var(--muted)}
 
 tr.drag-over td{background:rgba(180,158,224,0.06) !important}
@@ -444,7 +444,7 @@ td{padding:clamp(6px,0.5vw,10px) clamp(8px,0.8vw,16px);font-size:clamp(10px,0.7v
 .todo-input:focus{border-color:var(--gdim)}
 .todo-input::placeholder{color:var(--dim)}
 .todo-add-btn{background:rgba(180,158,224,0.12);border:1px solid var(--gdim);color:var(--gold);border-radius:6px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all 0.15s;white-space:nowrap}
-.todo-add-btn:hover{background:rgba(208,184,104,0.18)}
+.todo-add-btn:hover{background:rgba(180,158,224,0.18)}
 .todo-item{position:relative;padding-right:20px}
 .todo-del{position:absolute;right:0;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:none;border:none;color:var(--dim);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
 .todo-item:hover .todo-del{opacity:1}
@@ -575,7 +575,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 /* RECENT TXN LIST — compact */
 .recent-list{display:flex;flex-direction:column;gap:2px}
 .recent-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:12px;transition:background 0.1s}
-.recent-row:hover{background:rgba(208,184,104,0.03)}
+.recent-row:hover{background:rgba(180,158,224,0.04)}
 .recent-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .recent-desc{flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .recent-amt{font-family:'DM Mono',monospace;font-size:12px;min-width:70px;text-align:right}
@@ -586,13 +586,13 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 .pill-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
 .pill-filter{padding:4px 12px;font-size:11px;border-radius:14px;border:1px solid var(--b1);background:none;color:var(--dim);cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif}
 .pill-filter:hover{color:var(--muted);border-color:var(--b2)}
-.pill-filter.active{color:var(--gold);background:rgba(180,158,224,0.1);border-color:rgba(208,184,104,0.2)}
+.pill-filter.active{color:var(--gold);background:rgba(180,158,224,0.1);border-color:rgba(180,158,224,0.2)}
 
 [data-theme="light"] .p-card{background:var(--s2);border-color:var(--b1)}
 [data-theme="light"] .hero{background:var(--s1)}
 [data-theme="light"] .t-card{background:var(--s2)}
 [data-theme="light"] .t-card.current{background:rgba(138,116,48,0.04)}
-[data-theme="light"] .nav-item{color:rgba(208,184,104,0.4)}
+[data-theme="light"] .nav-item{color:rgba(180,158,224,0.35)}
 [data-theme="light"] .nav-item.active{color:var(--gold);background:rgba(96,64,176,0.08)}
 [data-theme="light"] #topnav{background:var(--sb-bg)}
 [data-theme="light"] .recent-row:hover{background:rgba(138,116,48,0.03)}
@@ -608,7 +608,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 
 #main::after{content:'';position:fixed;bottom:50%;right:50%;width:300px;height:240px;transform:translate(50%,50%);opacity:0.03;pointer-events:none;z-index:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 90C90 70 50 50 15 35C25 42 55 55 80 72C85 76 92 82 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C88 65 40 55 10 55C22 58 52 65 78 78C84 81 93 86 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C92 75 55 68 25 72C38 70 62 72 82 82C88 85 95 88 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C110 70 150 50 185 35C175 42 145 55 120 72C115 76 108 82 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C112 65 160 55 190 55C178 58 148 65 122 78C116 81 107 86 100 90Z' fill='%23D0B868'/%3E%3Cpath d='M100 90C108 75 145 68 175 72C162 70 138 72 118 82C112 85 105 88 100 90Z' fill='%23D0B868'/%3E%3Cellipse cx='100' cy='18' rx='12' ry='5' fill='none' stroke='%23D0B868' stroke-width='3'/%3E%3C/svg%3E") no-repeat center/contain}
 
-#login-screen{position:fixed;inset:0;background:#0C0A10;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#login-screen{position:fixed;inset:0;background:#14101C;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
 #login-screen.hidden{display:none}
 .login-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:36px 32px;width:340px;max-width:90vw;text-align:center}
 .login-logo{margin-bottom:20px}
@@ -618,7 +618,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 .login-field:focus{border-color:var(--gdim)}
 .login-field::placeholder{color:var(--dim)}
 .login-btn{width:100%;padding:11px;background:rgba(180,158,224,0.12);border:1px solid var(--gdim);color:var(--gold);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all 0.15s}
-.login-btn:hover{background:rgba(208,184,104,0.18)}
+.login-btn:hover{background:rgba(180,158,224,0.18)}
 .login-toggle{font-size:11px;color:var(--dim);margin-top:16px;cursor:pointer}
 .login-toggle span{color:var(--gold);cursor:pointer}
 .login-toggle span:hover{text-decoration:underline}
@@ -630,10 +630,10 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 .nav-badge{position:absolute;top:-2px;right:-2px;min-width:14px;height:14px;border-radius:7px;background:var(--red);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
 .nav-item{position:relative}
 
-#profile-screen{position:fixed;inset:0;background:#0C0A10;z-index:998;display:flex;align-items:center;justify-content:center}
+#profile-screen{position:fixed;inset:0;background:#14101C;z-index:998;display:flex;align-items:center;justify-content:center}
 #profile-screen.hidden{display:none}
 .profile-pick{cursor:pointer;text-align:center;padding:20px 24px;border-radius:12px;border:1px solid var(--b1);transition:all 0.2s;min-width:120px}
-.profile-pick:hover{border-color:var(--gdim);background:rgba(208,184,104,0.03);transform:translateY(-2px)}
+.profile-pick:hover{border-color:var(--gdim);background:rgba(180,158,224,0.04);transform:translateY(-2px)}
 .profile-pick-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;margin:0 auto 10px}
 .profile-pick-name{font-size:15px;font-weight:500}
 .screen-fade-out{animation:screenFadeOut 0.4s ease forwards}
@@ -890,6 +890,68 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   table{min-width:400px}
   .bnav-item span{font-size:8px}
 }
+
+
+/* Pipeline animations */
+@keyframes pipeDotFill{0%{transform:scale(0);opacity:0}50%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+@keyframes pipeLineGrow{from{height:0}to{height:100%}}
+@keyframes pipeFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.pipe-step-dot.animate{animation:pipeDotFill 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.pipe-step.animate .pipe-step-t,.pipe-step.animate .pipe-step-d{animation:pipeFadeIn 0.3s ease 0.15s both}
+.pipe-tl.animating::before{animation:pipeLineGrow 0.5s ease}
+.pipe-row{transition:border-color 0.4s ease}
+.pipe-badge{transition:background 0.3s,color 0.3s}
+.pipe-dot{transition:background 0.3s ease}
+
+
+/* Swipe to advance */
+.pipe-step-swipeable{position:relative;overflow:hidden;touch-action:pan-y}
+.pipe-step-swipe-hint{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--dim);opacity:0;transition:opacity 0.2s}
+.pipe-step-swipeable:active .pipe-step-swipe-hint{opacity:1}
+.pipe-step-swipe-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;font-size:11px;font-weight:500;border-radius:6px;transform:translateX(100%);transition:transform 0.2s}
+
+/* Pipeline */
+.pipe-row{background:var(--s1);border:1px solid var(--b1);border-radius:8px;margin-bottom:6px;overflow:hidden;transition:all 0.2s}
+.pipe-row.step-1{border-left:3px solid #EFB43C}
+.pipe-row.step-2{border-left:3px solid #64A0F0}
+.pipe-row.step-3{border-left:3px solid #58C88C}
+.pipe-main{display:flex;align-items:center;padding:10px 14px;gap:10px;cursor:pointer}
+.pipe-main:hover{background:rgba(180,158,224,0.03)}
+.pipe-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.pipe-body{flex:1;min-width:0}
+.pipe-title{font-size:12px;font-weight:500;color:var(--text)}
+.pipe-meta{font-size:9px;color:var(--dim);margin-top:2px}
+.pipe-amt{font-size:13px;font-weight:500;min-width:70px;text-align:right}
+.pipe-dots{display:flex;gap:3px;margin-left:8px}
+.pipe-dot{width:7px;height:7px;border-radius:50%}
+.pipe-dot.done{background:var(--green)}
+.pipe-dot.active{background:#64A0F0}
+.pipe-dot.pending{background:var(--dim);opacity:0.3}
+.pipe-badge{font-size:8px;padding:2px 6px;border-radius:3px;margin-left:6px}
+.pipe-expand{padding:0 14px 14px;border-top:1px solid var(--b1)}
+.pipe-tl{position:relative;padding-left:22px;margin-top:10px}
+.pipe-tl::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:rgba(180,158,224,0.1)}
+.pipe-step{position:relative;padding:6px 0 6px 14px}
+.pipe-step-dot{position:absolute;left:-22px;top:10px;width:10px;height:10px;border-radius:50%;transition:all 0.3s}
+.pipe-step-t{font-size:11px;font-weight:500;transition:opacity 0.3s}
+.pipe-step-d{font-size:9px;color:var(--dim);margin-top:1px}
+.pipe-step-note{font-size:9px;color:var(--muted);margin-top:2px;font-style:italic}
+.pipe-step.pending{opacity:0.35}
+.pipe-step.pending .pipe-step-dot{background:transparent !important;border:2px solid}
+.pipe-step-btn{font-size:9px;padding:3px 10px;border-radius:4px;border:1px solid;cursor:pointer;margin-top:4px;display:inline-block;transition:all 0.15s}
+.pipe-step-btn:hover{opacity:0.8}
+.pipe-undo{font-size:8px;color:var(--dim);cursor:pointer;margin-left:8px;text-decoration:underline}
+.pipe-method{font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(180,158,224,0.08);color:var(--muted);margin-left:4px}
+.pipe-summary{background:var(--s1);border:1px solid var(--b1);border-radius:8px;padding:12px 16px;margin-bottom:12px;font-size:11px;color:var(--muted)}
+.pipe-summary b{color:var(--text)}
+/* Model chips */
+.model-chip{display:inline-flex;align-items:center;padding:6px 14px;border-radius:6px;font-size:11px;border:1px solid var(--b2);color:var(--muted);cursor:pointer;transition:all 0.15s;user-select:none}
+.model-chip.on{background:rgba(180,158,224,0.12);border-color:var(--gold);color:var(--text)}
+.model-chip-amt{margin-top:6px}
+/* Tab badge */
+.tab-badge{position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#EFB43C}
+.nav-item{position:relative}
+
 </style>
 
 
@@ -951,7 +1013,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v2.7.1</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.1</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -988,7 +1050,8 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
       </div>
       <div class="partner-row" id="partner-row"></div>
       <div id="total-remaining-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between"></div>
-      <div class="section-label" style="margin-bottom:8px">Monthly timeline</div>
+      <div id="transfer-summary" style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px 16px;margin-bottom:12px"></div>
+<div class="section-label" style="margin-bottom:8px">Monthly timeline</div>
       <div class="timeline" id="timeline-cards"></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
         <div style="display:flex;flex-direction:column">
@@ -1011,7 +1074,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     </div>
     <!-- MONTHLY -->
     <div class="panel" id="panel-monthly">
-      <div class="ph"><div class="ph-top"><span class="pg-title" id="monthly-title">Monthly View</span><div class="pg-actions"><button class="btn sm" id="edit-earn-btn" onclick="openEditEarnings()">&#x270E; Edit Earnings</button><button class="btn sm primary" onclick="openAddTransaction()">+ Add</button><button class="btn sm" onclick="exportMonthCSV()">&#x2193; CSV</button><button class="btn sm" onclick="openPdfExportModal()">&#x2193; PDF</button></div></div><div class="pg-sub" id="monthly-sub">Select a month below</div></div>
+      <div class="ph"><div class="ph-top"><span class="pg-title" id="monthly-title">Monthly View</span><div class="pg-actions"><button class="btn sm" id="edit-earn-btn" onclick="openEditEarnings()">&#x270E; Edit Earnings</button><button class="btn sm primary" onclick="openPayoutModal()">+ Payout</button><button class="btn sm" onclick="openAddTransaction()">+ Expense</button><button class="btn sm" onclick="exportMonthCSV()">&#x2193; CSV</button><button class="btn sm" onclick="openPdfExportModal()">&#x2193; PDF</button></div></div><div class="pg-sub" id="monthly-sub">Select a month below</div></div>
       <div class="timeline" id="month-picker" style="margin-bottom:14px"></div>
       <div class="mini-kpis" id="monthly-kpis"></div>
       <div class="filters">
@@ -1049,7 +1112,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
       <div class="partner-grid" id="partner-cards"></div>
       <div style="margin-bottom:16px;background:var(--s1);border:1px solid rgba(180,158,224,0.15);border-radius:var(--r)">
         <div onclick="toggleTransferList()" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none">
-          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:500">&#x21C4; Partner Transfers</span><span id="transfer-count-badge" style="font-size:9px;background:rgba(180,158,224,0.12);color:var(--teal);border:1px solid rgba(208,184,104,0.2);border-radius:20px;padding:1px 7px"></span></div>
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:500">&#x21C4; Partner Transfers</span><span id="transfer-count-badge" style="font-size:9px;background:rgba(180,158,224,0.12);color:var(--teal);border:1px solid rgba(180,158,224,0.2);border-radius:20px;padding:1px 7px"></span></div>
           <span id="transfer-chevron" style="color:var(--teal);font-size:12px;transition:transform 0.2s">&#x25BE;</span>
         </div>
         <div id="transfer-controls" style="display:flex;gap:8px;align-items:center;padding:0 14px 10px">
@@ -1170,7 +1233,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   <button onclick="closeMobileMore();switchTab('archive',null)">Archive</button>
   <button onclick="closeMobileMore();openSettings()">Settings</button>
 </div>
-<button id="fab-btn" onclick="fabAction()" title="Quick add" style="position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--gold);color:#0C0A10;font-size:22px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:150;box-shadow:0 4px 20px rgba(208,184,104,0.4);transition:transform 0.15s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">+</button>
+<button id="fab-btn" onclick="fabAction()" title="Quick add" style="position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--gold);color:#14101C;font-size:22px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:150;box-shadow:0 4px 20px rgba(180,158,224,0.35);transition:transform 0.15s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">+</button>
 <div id="toast"><span id="ti" style="font-size:15px"></span><span id="tm"></span></div>
 <!-- MODALS -->
 <div class="overlay" id="m-settings"><div class="modal wide">
@@ -1405,6 +1468,31 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 </div></div>
 
 
+<div class="overlay" id="m-payout"><div class="modal" style="max-width:440px">
+  <div class="modal-title" style="color:var(--green)">Log payout</div>
+  <div class="modal-sub">Record a Fanvue withdrawal</div>
+  <input type="hidden" id="po-id">
+  <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="po-date"></div>
+  <div class="fg"><label class="fl">Models</label>
+    <div id="po-model-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+    <div id="po-model-amounts"></div>
+    <div style="font-size:11px;margin-top:6px;color:var(--text)">Total: <b id="po-total" style="color:var(--gold)">$0.00</b></div>
+  </div>
+  <div class="fg"><label class="fl">Who received</label><select class="fi" id="po-who"><option value="Shon">Shon</option><option value="Sharon">Sharon</option></select></div>
+  <div class="fg"><label class="fl">Notes</label><input class="fi" id="po-notes" placeholder="Optional"></div>
+  <div style="background:rgba(88,200,140,0.04);border:1px solid rgba(88,200,140,0.15);border-radius:7px;padding:10px 14px;margin-bottom:14px;cursor:pointer" onclick="togglePipelineOpt()">
+    <div style="display:flex;align-items:center;gap:8px"><div id="po-pipe-check" style="width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(180,158,224,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0">&#10003;</div><div><div style="font-size:11px;color:var(--text)">Start transfer pipeline</div><div style="font-size:9px;color:var(--dim)">Track: Fanvue &rarr; Bank &rarr; Sharon</div></div></div>
+  </div>
+  <div id="po-quick-wrap" style="display:none;background:rgba(180,158,224,0.04);border:1px solid rgba(180,158,224,0.1);border-radius:7px;padding:10px 14px;margin-bottom:14px">
+    <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="po-quick" style="accent-color:var(--gold)"> Quick log — mark all steps done (retroactive)</label>
+    <div id="po-quick-fields" style="display:none;margin-top:8px">
+      <div class="frow"><div class="fg" style="flex:1"><label class="fl">Bank received date</label><input type="date" class="fi" id="po-q-bank-date"></div><div class="fg" style="flex:1"><label class="fl">Transfer amount ($)</label><input type="number" class="fi" id="po-q-transfer-amt" step="0.01"></div></div>
+      <div class="frow"><div class="fg" style="flex:1"><label class="fl">Transfer date</label><input type="date" class="fi" id="po-q-transfer-date"></div><div class="fg" style="flex:1"><label class="fl">Method</label><select class="fi" id="po-q-method"><option value="">—</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select></div></div>
+    </div>
+  </div>
+  <div class="ma"><button class="bc" onclick="closeModal('m-payout')">Cancel</button><button class="bs" style="background:rgba(88,200,140,0.1);border-color:rgba(88,200,140,0.3);color:var(--green)" onclick="savePayout()">Save payout</button></div>
+</div></div>
+
 <div class="overlay" id="m-transfer"><div class="modal">
   <div class="modal-title" style="color:var(--teal)">&#x21C4; Partner Transfer</div>
   <div class="modal-sub">Move money between partners — excluded from P&amp;L</div>
@@ -1419,7 +1507,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="tr-date"></div>
   </div>
   <div class="fg"><label class="fl">Month</label><select class="fi" id="tr-month"></select></div>
-  <div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div>
+  <div class="frow"><div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div><div class="fg" style="max-width:140px"><label class="fl">Method</label><select class="fi" id="tr-method"><option value="">None</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select></div></div</div>
   <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="tr-att-zone" onclick="document.getElementById('tr-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'tr')">
       <span class="att-placeholder" id="tr-att-placeholder">Drop files here — images, PDFs, invoices</span>
@@ -1429,7 +1517,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   <div style="background:rgba(180,158,224,0.06);border:1px solid rgba(180,158,224,0.15);border-radius:7px;padding:10px 14px;font-size:11.5px;color:var(--teal);margin-bottom:18px">
     This transfer will appear in Partner Split under <strong>Partner Transfers</strong>. It does <strong>not</strong> affect earnings, expenses, or the 50/50 split calculation.
   </div>
-  <div class="ma"><button class="bc" onclick="closeModal('m-transfer')">Cancel</button><button class="bs" style="background:rgba(208,184,104,0.12);border-color:rgba(208,184,104,0.35);color:var(--teal)" onclick="saveTransfer()">Save Transfer</button></div>
+  <div class="ma"><button class="bc" onclick="closeModal('m-transfer')">Cancel</button><button class="bs" style="background:rgba(180,158,224,0.12);border-color:rgba(180,158,224,0.35);color:var(--teal)" onclick="saveTransfer()">Save Transfer</button></div>
 </div></div>
 <div id="qa-bg" onclick="closeQuickAdd()"></div>
 <div id="quickadd">
@@ -1542,7 +1630,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 <script>
 const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const FREQ_LABELS={'1':'Monthly','2':'Every 2mo','3':'Quarterly','6':'Every 6mo','12':'Annual'};
-const CAT_COLORS={Marketing:'rgba(208,184,104,0.7)',Software:'rgba(96,165,250,0.7)',VA:'rgba(167,139,250,0.7)',Travel:'rgba(251,191,36,0.7)',Equipment:'rgba(74,222,128,0.7)',Personal:'rgba(248,113,113,0.5)',Other:'rgba(100,100,120,0.6)'};
+const CAT_COLORS={Marketing:'rgba(180,158,224,0.7)',Software:'rgba(96,165,250,0.7)',VA:'rgba(167,139,250,0.7)',Travel:'rgba(251,191,36,0.7)',Equipment:'rgba(74,222,128,0.7)',Personal:'rgba(248,113,113,0.5)',Other:'rgba(100,100,120,0.6)'};
 
 // Pre-load Firebase config from localStorage
 var _preload=null;
@@ -1566,7 +1654,7 @@ var charts={};
 
 function saveLocal(){
   invalidateCalcCache();
-  try{localStorage.setItem('seraphim_v3',JSON.stringify({transactions:state.transactions,months:state.months,monthlyEarnings:state.monthlyEarnings,modelEarnings:state.modelEarnings,monthNotes:state.monthNotes,subscriptions:state.subscriptions,staffMembers:state.staffMembers,workers:state.workers,budgets:state.budgets,models:state.models,todos:state.todos,currentUser:state.currentUser,firebaseConfig:state.firebaseConfig,archive:state.archive,activityLog:state.activityLog}));}catch(e){}
+  try{localStorage.setItem('seraphim_v3',JSON.stringify({transactions:state.transactions,pipelines:state.pipelines||[],months:state.months,monthlyEarnings:state.monthlyEarnings,modelEarnings:state.modelEarnings,monthNotes:state.monthNotes,subscriptions:state.subscriptions,staffMembers:state.staffMembers,workers:state.workers,budgets:state.budgets,models:state.models,todos:state.todos,currentUser:state.currentUser,firebaseConfig:state.firebaseConfig,archive:state.archive,activityLog:state.activityLog}));}catch(e){}
 }
 function save(){saveLocal();debouncedPush();}
 
@@ -1846,7 +1934,7 @@ function renderOverview(){
       var whoColor=who==='Sharon'?'var(--purple)':who==='Shon'?'var(--amber)':'var(--dim)';
       var dt=new Date(a.timestamp);
       var dateStr=dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-      return '<div class="recent-row" style="background:rgba(208,184,104,0.03)"><div class="recent-dot" style="background:var(--gold)"></div><span class="recent-desc">'+a.desc+'</span><span class="recent-amt" style="color:'+diffColor+'">'+(diffStr||fmt(a.meta.amount||0))+'</span><span class="recent-who" style="color:'+whoColor+'">'+who+'</span><span class="recent-date">'+dateStr+'</span></div>';
+      return '<div class="recent-row" style="background:rgba(180,158,224,0.04)"><div class="recent-dot" style="background:var(--gold)"></div><span class="recent-desc">'+a.desc+'</span><span class="recent-amt" style="color:'+diffColor+'">'+(diffStr||fmt(a.meta.amount||0))+'</span><span class="recent-who" style="color:'+whoColor+'">'+who+'</span><span class="recent-date">'+dateStr+'</span></div>';
     }
     var t=item.data;
     var isIncome=t.type==='Withdrawal';
@@ -1860,6 +1948,18 @@ function renderOverview(){
     var catTag=t.cat&&t.cat!=='Other'?'<span style="font-size:8px;color:var(--dim);opacity:0.6;margin-left:4px">'+t.cat+'</span>':'';
     return '<div class="recent-row"><div class="recent-dot" style="background:'+dotColor+'"></div><span class="recent-desc">'+t.desc+catTag+'</span><span class="recent-amt" style="color:'+amtColor+'">'+sign+fmt(t.amount)+'</span><span class="recent-who" style="color:'+whoColor+'">'+t.who+'</span><span class="recent-date">'+fmtD(t.date)+'</span></div>';
   }).join('')+'<div style="text-align:center;padding:8px"><button class="btn sm" onclick="switchTab(\x27transactions\x27,null)" style="font-size:10px;color:var(--dim)">View all transactions &rarr;</button></div>';
+
+  // MONTHLY TRANSFER SUMMARY
+  var curMonth=state.months[state.months.length-1]||'';
+  var monthPipes=state.transactions.filter(function(t){return t.pipeline&&t.month===curMonth;});
+  var completedPipes=monthPipes.filter(function(t){return getPipelineStep(t)>=3;});
+  var pendingPipes=monthPipes.filter(function(t){return getPipelineStep(t)<3;});
+  var completedAmt=completedPipes.reduce(function(s,t){return s+(t.pipeline.steps[2].amount||0);},0);
+  var pendingAmt=pendingPipes.reduce(function(s,t){return s+t.amount;},0);
+  if(monthPipes.length){
+    var sumEl=document.getElementById('transfer-summary');
+    if(sumEl) sumEl.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">'+curMonth+' Transfers</div><div style="font-size:12px;color:var(--text)">'+completedPipes.length+' completed ('+fmt(completedAmt)+')'+( pendingPipes.length?' &middot; <span style="color:#EFB43C">'+pendingPipes.length+' pending ('+fmt(pendingAmt)+')</span>':'')+'</div></div>'+(pendingPipes.length?'<button class="btn sm" onclick="switchTab(\x27partners\x27,null)" style="font-size:9px">View &rarr;</button>':'')+'</div>';
+  }
 
   // CHARTS
   var months8=activeMths().slice(-8);
@@ -2012,19 +2112,24 @@ function renderPayouts(){
   const payouts=state.transactions.filter(t=>t.type==='Withdrawal'&&(!mf||t.month===mf)&&(!wf||t.who===wf)).sort((a,b)=>b.date.localeCompare(a.date));
   document.getElementById('payout-tbody').innerHTML=payouts.length?payouts.map(function(t){
     const isLinked=state.transactions.some(function(x){return x.type==='Transfer'&&x.linkedPayoutId===t.id;});
+    var pipeDots='';
+    if(t.pipeline){var ps=getPipelineStep(t);var dc=['#EFB43C','#64A0F0','#58C88C'];pipeDots='<span style="display:inline-flex;gap:2px;margin-left:6px">'+t.pipeline.steps.map(function(s,i){return '<span style="width:5px;height:5px;border-radius:50%;background:'+(s.status==='complete'?dc[i]:'rgba(180,158,224,0.15)')+'"></span>';}).join('')+'</span>';}
+    var modelTags=(t.models||[]).map(function(m){return '<span class="model-tag">'+m.name+'</span>';}).join(' ');
     const transferBtn=isLinked
       ? '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--teal);cursor:default" title="Transfer already logged">&#x21C4; Linked</button>'
       : '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--gold)" onclick="openTransferFromPayout('+qid(t.id)+')" title="Log as partner transfer">&#x21C4; Transfer</button>';
+    var linkedPipe=(state.pipelines||[]).find(function(p){return p.payoutIds&&p.payoutIds.indexOf(t.id)>=0;});
+    var miniDots=linkedPipe?renderPipelineDots(linkedPipe):'';
     return '<tr'+rowDragAttrs(t.id)+(isLinked?' style="opacity:0.78"':'')+'>'+
       '<td class="td-muted">'+fmtD(t.date)+'</td>'+
-      '<td><strong>'+t.desc+'</strong><div class="att-thumbs">'+attachmentThumbs(t)+'</div>'+(isLinked?' <span style="font-size:9px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(208,184,104,0.2);border-radius:4px;padding:1px 5px">&#x21C4; transferred</span>':'')+'</td>'+
+      '<td><strong>'+t.desc+'</strong><div class="att-thumbs">'+attachmentThumbs(t)+'</div>'+(isLinked?' <span style="font-size:9px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(180,158,224,0.2);border-radius:4px;padding:1px 5px">&#x21C4; transferred</span>':'')+'</td>'+
       '<td class="amt pos">'+fmt(t.amount)+'</td>'+
       '<td><span class="pill '+t.who.toLowerCase()+'">'+t.who+'</span></td>'+
       '<td class="td-muted">'+t.month+'</td>'+
       '<td class="td-muted" style="font-size:11px;max-width:150px;white-space:normal">'+(t.notes||'')+'</td>'+
-      '<td class="flex-actions">'+transferBtn+'<button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
+      '<td class="flex-actions">'+miniDots+transferBtn+'<button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
       '</tr>';
-  }).join(''):'<tr><td colspan="7"><div class="empty">No payouts logged yet.<br><button class="btn sm" onclick="openAddTransaction()" style="margin-top:8px">+ Log Payout</button></div></td></tr>';
+  }).join(''):'<tr><td colspan="7"><div class="empty">No payouts logged yet.<br><button class="btn sm" onclick="openPayoutModal()" style="margin-top:8px">+ Log Payout</button></div></td></tr>';
 }
 
 // PARTNERS
@@ -2126,18 +2231,21 @@ function renderPartners(){
   else if(trSort==='amount-asc') allTransfers.sort(function(a,b){return a.amount-b.amount;});
   const badge=document.getElementById('transfer-count-badge');
   if(badge) badge.textContent=allTransfers.length?allTransfers.length+' record'+(allTransfers.length>1?'s':''):'none';
-  const transferHTML=allTransfers.length
-    ? allTransfers.map(function(t){
+  // Separate pipeline payouts from regular transfers
+  var pipelinePayouts=state.transactions.filter(function(t){return t.pipeline&&(!mf||t.month===mf);});
+  const transferHTML=(allTransfers.length||pipelinePayouts.length)
+    ? (pipelinePayouts.length?'<div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Payout pipelines</div>'+pipelinePayouts.map(function(t){return renderPipelineRow(t);}).join(''):'')
+    + (allTransfers.length?'<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:10px 0 6px">Transfers</div>'+allTransfers.map(function(t){
         return '<div class="transfer-row" onclick="openTransferModal('+qid(t.id)+')" style="cursor:pointer;margin-bottom:8px">'
           +'<div style="display:flex;align-items:center;gap:10px">'
-          +'<div style="width:30px;height:30px;border-radius:50%;background:rgba(180,158,224,0.12);border:1px solid rgba(208,184,104,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">&#x21C4;</div>'
+          +'<div style="width:30px;height:30px;border-radius:50%;background:rgba(180,158,224,0.12);border:1px solid rgba(180,158,224,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">&#x21C4;</div>'
           +'<div><div class="tr-label">'+t.desc+'</div>'
-          +'<div class="tr-meta">'+fmtD(t.date)+' &nbsp;&middot;&nbsp; <span style="color:var(--text);font-weight:500">'+t.who+'</span> <span style="color:var(--teal)">&rarr;</span> <span style="color:var(--text);font-weight:500">'+(t.transferTo||'Partner')+'</span> &nbsp;&middot;&nbsp; '+t.month+(t.notes?' &nbsp;&middot;&nbsp; <em style="color:var(--dim)">'+t.notes+'</em>':'')+'</div>'
+          +'<div class="tr-meta">'+fmtD(t.date)+' &nbsp;&middot;&nbsp; <span style="color:var(--text);font-weight:500">'+t.who+'</span> <span style="color:var(--teal)">&rarr;</span> <span style="color:var(--text);font-weight:500">'+(t.transferTo||'Partner')+'</span> &nbsp;&middot;&nbsp; '+t.month+(t.notes?' &nbsp;&middot;&nbsp; <em style="color:var(--dim)">'+t.notes+'</em>':'')+(t.method?' &middot; <span style="font-size:8px;color:var(--muted)">'+t.method+'</span>':'')+'</div>'
           +'</div></div>'
           +'<div style="text-align:right"><div class="tr-amt">'+fmt(t.amount)+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px">Excl. P&L</div></div>'
           +'</div>';
-      }).join('')
-    : '<div style="font-size:11px;color:var(--dim);padding:4px 0 8px">No transfers recorded yet.</div>';
+      }).join(''):'')
+    : '<div style="font-size:11px;color:var(--dim);padding:4px 0 8px">No transfers or pipelines yet.</div>';
   document.getElementById('transfer-list').innerHTML=transferHTML;
   const wrap=document.getElementById('transfer-list-wrap');
   const chev=document.getElementById('transfer-chevron');
@@ -2334,14 +2442,14 @@ function txnTypePill(t){
 function transferBadge(t){
   return '<div style="display:flex;align-items:center;gap:6px">'
     +'<span style="font-size:11px;font-weight:500;color:var(--text)">'+t.desc+'</span>'
-    +'<span style="font-size:10px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(208,184,104,0.18);border-radius:20px;padding:2px 8px;white-space:nowrap">'
+    +'<span style="font-size:10px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(180,158,224,0.18);border-radius:20px;padding:2px 8px;white-space:nowrap">'
     +'&#x21C4; '+t.who+' &rarr; '+(t.transferTo||'Partner')
     +'</span></div>';
 }
 function txnRowShort(t){
   if(t.type==='Transfer'){
     const acts='<button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button>';
-    return '<tr style="background:rgba(208,184,104,0.03);border-left:2px solid rgba(208,184,104,0.35)">'
+    return '<tr style="background:rgba(180,158,224,0.04);border-left:2px solid rgba(180,158,224,0.35)">'
       +'<td class="td-muted">'+fmtD(t.date)+'</td>'
       +'<td>'+transferBadge(t)+'</td>'
       +'<td class="amt te">'+fmt(t.amount)+'</td>'
@@ -2356,7 +2464,7 @@ function txnRowShort(t){
 function txnRowFull(t){
   if(t.type==='Transfer'){
     const acts='<button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button>';
-    return '<tr style="background:rgba(208,184,104,0.03);border-left:2px solid rgba(208,184,104,0.35)">'
+    return '<tr style="background:rgba(180,158,224,0.04);border-left:2px solid rgba(180,158,224,0.35)">'
       +'<td class="td-muted">'+fmtD(t.date)+'</td>'
       +'<td>'+transferBadge(t)+'</td>'
       +'<td class="amt te">'+fmt(t.amount)+'</td>'
@@ -2715,6 +2823,48 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.1.0',date:'Apr 2026',title:'Pipeline enhancements',items:[
+  {t:'feature',text:'Animated step transitions — dots fill with spring animation, text fades in on advance'},
+  {t:'feature',text:'Swipe left on pending steps to advance (mobile) — reveals confirm action'},
+  {t:'feature',text:'Partial transfers — send Sharon multiple payments that accumulate with progress bar'},
+  {t:'feature',text:'Sharon can confirm received — "Confirm received" button appears on her side when transfer is marked sent'},
+  {t:'feature',text:'Batch pipeline — link multiple payouts to one pipeline, totals auto-update'},
+  {t:'fix',text:'Removed duplicate pipeline CSS block'},
+  {t:'fix',text:'Pipeline step classes unified (step-1/step-2/step-3)'},
+]},
+{v:'3.0.0',date:'Apr 2026',title:'Transfer pipeline',items:[
+  {t:'feature',text:'New Payout modal — select models (Akira/Mila) as chips, enter amount per model'},
+  {t:'feature',text:'Transfer pipeline system — 3-step flow: Fanvue paid → In bank → Sent to partner'},
+  {t:'feature',text:'Expandable timeline rows in Partner Transfers with colored dots and status badges'},
+  {t:'feature',text:'Smart amount pre-fill — Sharon share auto-calculated from total'},
+  {t:'feature',text:'One-tap quick log — mark all steps done for retroactive entries'},
+  {t:'feature',text:'Transfer method tracking — Zelle, Wire, Cash, Crypto, Other'},
+  {t:'feature',text:'Color-coded transfer rows — yellow (Step 1), blue (Step 2), green (Complete)'},
+  {t:'feature',text:'Pipeline mini-dots on payout rows showing progress at a glance'},
+  {t:'feature',text:'Monthly transfer summary on Partner Split — completed vs pending count and amounts'},
+  {t:'feature',text:'Badge on Partner Split tab when transfers are pending'},
+  {t:'feature',text:'Undo step advancement within the timeline'},
+  {t:'feature',text:'Date validation — warns if step dates are out of order'},
+  {t:'feature',text:'Pipeline data syncs with Firebase and persists across sessions'},
+  {t:'ui',text:'Payout and transfer modals are now separate — dedicated flows for each'},
+]},
+{v:'3.0.0',date:'Apr 2026',title:'Payout pipeline',items:[
+  {t:'feature',text:'New dedicated Payout modal — select models (Akira/Mila), enter per-model amounts'},
+  {t:'feature',text:'Transfer pipeline system — track money flow: Fanvue → Shon bank → Sharon'},
+  {t:'feature',text:'Expandable timeline on each pipeline row with colored dots and step buttons'},
+  {t:'feature',text:'Smart amount pre-fill — Sharon share auto-calculated from payout total / 2'},
+  {t:'feature',text:'One-tap complete — check "Already sent" to fill all 3 steps at once'},
+  {t:'feature',text:'Transfer method tracking — Zelle, Wire, Cash, Crypto on each step'},
+  {t:'feature',text:'Partial transfers — send in multiple payments, progress bar fills up'},
+  {t:'feature',text:'Sharon can mark received — confirmation from recipient side'},
+  {t:'feature',text:'Undo step advancement — revert any pipeline step'},
+  {t:'feature',text:'Date validation — warns if step dates are out of order'},
+  {t:'feature',text:'Pipeline mini-dots on payout rows — yellow/blue/green at a glance'},
+  {t:'feature',text:'Color-coded transfer rows — left border matches current pipeline stage'},
+  {t:'feature',text:'Badge on Partner Split tab when transfers are pending'},
+  {t:'feature',text:'Monthly transfer summary card on Overview'},
+  {t:'ui',text:'Animated dot fill on step completion'},
+]},
 {v:'2.7.1',date:'Apr 2026',title:'Chargeback fix',items:[
   {t:'fix',text:'Chargebacks were double-deducting — subtracting from earnings AND adding a Fanvue expense. Now only the expense is created, calcMonth handles the rest.'},
 ]},
@@ -3025,8 +3175,8 @@ function auditBalances(){
 window.auditBalances=auditBalances;
 
 var ICON_VARIANTS=[
-  {name:'Original gold',bg:'#0C0A10',wing:'#D0B868',desc:'Dark void + warm gold'},
-  {name:'Midnight silver',bg:'#0C0A10',wing:'#B8C4D0',desc:'Dark void + cool silver'},
+  {name:'Original gold',bg:'#14101C',wing:'#D0B868',desc:'Dark void + warm gold'},
+  {name:'Midnight silver',bg:'#14101C',wing:'#B8C4D0',desc:'Dark void + cool silver'},
   {name:'Rose gold',bg:'#1A1018',wing:'#D4A08A',desc:'Deep plum + blush rose'},
   {name:'Arctic white',bg:'#F5F3EE',wing:'#2C2410',desc:'Light cream + dark ink'},
   {name:'Royal purple',bg:'#18142A',wing:'#AFA9EC',desc:'Deep indigo + lavender'},
@@ -3311,8 +3461,8 @@ function checkVersionMatch(onPass){
     try{firebase.auth().signOut();}catch(e){}
     sessionStorage.clear();
     var b=document.createElement('div');
-    b.style.cssText='position:fixed;inset:0;background:#0C0A10;z-index:99999;display:flex;align-items:center;justify-content:center';
-    b.innerHTML='<div style="text-align:center;max-width:400px;padding:30px;font-family:sans-serif"><div style="font-size:36px;margin-bottom:12px">&#x26D4;</div><div style="font-size:18px;font-weight:600;color:#D0B868;margin-bottom:10px">Update required</div><div style="font-size:13px;color:#888;line-height:1.7;margin-bottom:20px">Your dashboard is outdated.<br><br>Yours: <strong style="color:#EB5858">'+_BUILD+'</strong><br>Live: <strong style="color:#58C88C">'+remote.build+'</strong></div><button onclick="location.reload(true)" style="background:#D0B868;color:#0C0A10;border:none;padding:12px 28px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600">Refresh to update</button><div style="font-size:11px;color:#555;margin-top:14px">Downloaded HTML? Get latest from GitHub Pages.</div></div>';
+    b.style.cssText='position:fixed;inset:0;background:#14101C;z-index:99999;display:flex;align-items:center;justify-content:center';
+    b.innerHTML='<div style="text-align:center;max-width:400px;padding:30px;font-family:sans-serif"><div style="font-size:36px;margin-bottom:12px">&#x26D4;</div><div style="font-size:18px;font-weight:600;color:#D0B868;margin-bottom:10px">Update required</div><div style="font-size:13px;color:#888;line-height:1.7;margin-bottom:20px">Your dashboard is outdated.<br><br>Yours: <strong style="color:#EB5858">'+_BUILD+'</strong><br>Live: <strong style="color:#58C88C">'+remote.build+'</strong></div><button onclick="location.reload(true)" style="background:#D0B868;color:#14101C;border:none;padding:12px 28px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600">Refresh to update</button><div style="font-size:11px;color:#555;margin-top:14px">Downloaded HTML? Get latest from GitHub Pages.</div></div>';
     document.body.appendChild(b);
   }).catch(function(e){console.log('Version check error:',e);if(onPass)onPass();});
 }
@@ -3329,6 +3479,341 @@ if(_moreOpen){document.addEventListener('click',function _mc(e){if(!e.target.clo
 }
 // Update bottom nav active state on tab switch
 var _origSwitchTab=typeof switchTab==='function'?switchTab:null;
+
+// ═══ PAYOUT PIPELINE SYSTEM ═══
+function openPayoutModal(id){
+  initPipelines();
+  var mdls=state.models||['Akira','Mila'];
+  var p=id?state.transactions.find(function(t){return t.id===id;}):null;
+  document.getElementById('po-id').value=id||'';
+  document.getElementById('po-date').value=p?p.date:new Date().toISOString().split('T')[0];
+  document.getElementById('po-who').value=p?p.who:'Shon';
+  document.getElementById('po-notes').value=p?(p.notes||''):'';
+  // Model chips
+  var chipHTML=mdls.map(function(m){return '<div class="model-chip on" data-model="'+m+'" onclick="toggleModelChip(this)">'+m+'</div>';}).join('');
+  document.getElementById('po-model-chips').innerHTML=chipHTML;
+  renderModelAmounts();
+  // Reset pipeline opt
+  document.getElementById('po-pipe-check').style.cssText='width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(180,158,224,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0';
+  document.getElementById('po-pipe-check').dataset.on='';
+  document.getElementById('po-quick-wrap').style.display='none';
+  document.getElementById('po-quick').checked=false;
+  if(document.getElementById('po-quick-fields')) document.getElementById('po-quick-fields').style.display='none';
+  openModal('m-payout');
+}
+
+function toggleModelChip(el){
+  el.classList.toggle('on');
+  renderModelAmounts();
+}
+
+function renderModelAmounts(){
+  var chips=document.querySelectorAll('#po-model-chips .model-chip.on');
+  var html='';
+  chips.forEach(function(c){
+    var m=c.dataset.model;
+    html+='<div style="margin-bottom:6px"><label style="font-size:9px;color:var(--muted)">'+m+' ($)</label><input type="number" class="fi" id="po-amt-'+m.toLowerCase()+'" step="0.01" placeholder="0.00" oninput="updatePayoutTotal()"></div>';
+  });
+  document.getElementById('po-model-amounts').innerHTML=html;
+  updatePayoutTotal();
+}
+
+function updatePayoutTotal(){
+  var total=0;
+  document.querySelectorAll('#po-model-amounts input').forEach(function(inp){total+=parseFloat(inp.value)||0;});
+  document.getElementById('po-total').textContent=fmt(total);
+  // Smart pre-fill Sharon's share
+  if(total>0){
+    var qAmt=document.getElementById('po-q-transfer-amt');
+    if(qAmt&&!qAmt.dataset.edited) qAmt.value=(total/2).toFixed(2);
+  }
+}
+
+function togglePipelineOpt(){
+  var chk=document.getElementById('po-pipe-check');
+  var on=chk.dataset.on==='1';
+  chk.dataset.on=on?'':'1';
+  chk.style.cssText='width:16px;height:16px;border-radius:4px;border:1.5px solid '+(on?'rgba(180,158,224,0.2)':'var(--gold)')+';display:flex;align-items:center;justify-content:center;font-size:10px;color:'+(on?'transparent':'var(--gold)')+';background:'+(on?'transparent':'rgba(180,158,224,0.12)')+';flex-shrink:0';
+  document.getElementById('po-quick-wrap').style.display=on?'none':'block';
+}
+
+document.addEventListener('change',function(e){
+  if(e.target.id==='po-quick'){
+    document.getElementById('po-quick-fields').style.display=e.target.checked?'block':'none';
+    if(e.target.checked){
+      var d=document.getElementById('po-date').value;
+      if(!document.getElementById('po-q-bank-date').value) document.getElementById('po-q-bank-date').value=d;
+      if(!document.getElementById('po-q-transfer-date').value) document.getElementById('po-q-transfer-date').value=d;
+    }
+  }
+  if(e.target.id==='po-q-transfer-amt') e.target.dataset.edited='1';
+});
+
+function savePayout(){
+  pushUndo();initPipelines();
+  var id=document.getElementById('po-id').value;
+  var date=document.getElementById('po-date').value;
+  var who=document.getElementById('po-who').value;
+  var notes=document.getElementById('po-notes').value.trim();
+  var models=[];var amounts={};var total=0;
+  document.querySelectorAll('#po-model-chips .model-chip.on').forEach(function(c){
+    var m=c.dataset.model;models.push(m);
+    var amt=parseFloat(document.getElementById('po-amt-'+m.toLowerCase()).value)||0;
+    amounts[m.toLowerCase()]=amt;total+=amt;
+  });
+  if(!total){toast('Enter an amount','error');return;}
+  var txn={id:id||'po_'+Date.now(),date:date,desc:'Payout'+(models.length?' — '+models.join(' + '):''),type:'Withdrawal',amount:total,who:who,month:dateToMonth(date),notes:notes,cat:'',models:models,modelAmounts:amounts};
+  if(id){var i=state.transactions.findIndex(function(t){return t.id===id;});if(i>=0)state.transactions[i]=txn;}
+  else state.transactions.push(txn);
+  // Pipeline
+  var startPipe=document.getElementById('po-pipe-check').dataset.on==='1';
+  if(startPipe&&!id){
+    var quick=document.getElementById('po-quick').checked;
+    var pipe={id:'pipe_'+Date.now(),payoutIds:[txn.id],totalAmount:total,from:who,to:who==='Shon'?'Sharon':'Shon',models:models,modelAmounts:amounts,month:txn.month,createdAt:new Date().toISOString(),
+      steps:[
+        {status:'done',date:date,amount:total,note:models.map(function(m){return m+' $'+(amounts[m.toLowerCase()]||0).toFixed(2);}).join(' + ')},
+        {status:quick?'done':'pending',date:quick?(document.getElementById('po-q-bank-date').value||date):'',amount:total,note:''},
+        {status:quick?'done':'pending',date:quick?(document.getElementById('po-q-transfer-date').value||date):'',amount:quick?(parseFloat(document.getElementById('po-q-transfer-amt').value)||total/2):0,method:quick?(document.getElementById('po-q-method').value||''):'',note:''}
+      ]
+    };
+    state.pipelines.push(pipe);
+    // If quick mode, also create the transfer transaction
+    if(quick){
+      var trAmt=parseFloat(document.getElementById('po-q-transfer-amt').value)||total/2;
+      var trTxn={id:'tr_'+Date.now(),date:pipe.steps[2].date,desc:'Transfer to '+(who==='Shon'?'Sharon':'Shon'),type:'Transfer',amount:trAmt,who:who,transferTo:who==='Shon'?'Sharon':'Shon',month:txn.month,notes:pipe.steps[2].method?'Via '+pipe.steps[2].method:'',linkedPayoutId:txn.id,pipelineId:pipe.id};
+      state.transactions.push(trTxn);
+    }
+  }
+  logActivity('add','Payout: '+fmt(total)+' ('+models.join(', ')+')'+(startPipe?' — pipeline started':''),{month:txn.month,by:state.currentUser});
+  save();closeModal('m-payout');toast('Payout logged — '+fmt(total),'success');refreshCurrent();
+}
+
+function advancePipeline(pipeId,stepIdx){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  // Date validation
+  if(stepIdx>0&&pipe.steps[stepIdx-1].date){
+    var prevDate=pipe.steps[stepIdx-1].date;
+    var today=new Date().toISOString().split('T')[0];
+    if(today<prevDate){toast('Warning: this date is before the previous step','info',4000);}
+  }
+  // Save undo state
+  _pipelineUndoStack[pipeId]=JSON.parse(JSON.stringify(pipe.steps));
+  if(stepIdx===1){
+    pipe.steps[1].status='done';
+    pipe.steps[1].date=new Date().toISOString().split('T')[0];
+    pipe.steps[1].amount=pipe.totalAmount;
+    toast('Marked as received in bank','success');
+  } else if(stepIdx===2){
+    var expectedAmt=(pipe.totalAmount/2).toFixed(2);
+    var amt=prompt('Transfer amount to '+pipe.to+' ($):\n(Full share: $'+expectedAmt+')',''+expectedAmt);
+    if(!amt||isNaN(parseFloat(amt)))return;
+    var pAmt=parseFloat(amt);
+    var method=prompt('Transfer method (Zelle/Wire/Cash/Other):','');
+    var today=new Date().toISOString().split('T')[0];
+    // Track partial payments
+    if(!pipe.steps[2].partials) pipe.steps[2].partials=[];
+    pipe.steps[2].partials.push({amount:pAmt,date:today,method:method||''});
+    var totalSent=pipe.steps[2].partials.reduce(function(s,p){return s+p.amount;},0);
+    pipe.steps[2].amount=totalSent;
+    pipe.steps[2].date=today;
+    pipe.steps[2].method=method||'';
+    // Mark complete if within $1 of expected
+    if(totalSent>=parseFloat(expectedAmt)-1){
+      pipe.steps[2].status='done';
+      toast('Transfer complete — '+fmt(totalSent)+' sent to '+pipe.to,'success');
+      pipe.steps[2].confirmedBy=state.currentUser;
+    } else {
+      pipe.steps[2].status='partial';
+      toast('Partial: '+fmt(pAmt)+' sent ('+fmt(totalSent)+' of '+fmt(parseFloat(expectedAmt))+')','info',5000);
+    }
+    // Create transfer transaction
+    var trTxn={id:'tr_'+Date.now(),date:today,desc:(pipe.steps[2].status==='partial'?'Partial transfer':'Transfer')+' to '+pipe.to,type:'Transfer',amount:pAmt,who:pipe.from,transferTo:pipe.to,month:pipe.month,notes:method?'Via '+method:'',pipelineId:pipeId};
+    state.transactions.push(trTxn);
+  }
+  logActivity('edit','Pipeline advanced: Step '+(stepIdx+1)+'/3 for '+fmt(pipe.totalAmount),{by:state.currentUser});
+  save();renderPartners();if(state.currentTab==='payouts')renderPayouts();
+}
+
+function undoPipelineStep(pipeId){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe||!_pipelineUndoStack[pipeId])return;
+  pipe.steps=_pipelineUndoStack[pipeId];
+  delete _pipelineUndoStack[pipeId];
+  toast('Step reverted','success');
+  save();renderPartners();
+}
+
+function togglePipeExpand(pipeId){
+  _pipelineExpanded[pipeId]=!_pipelineExpanded[pipeId];
+  renderPartners();
+}
+
+function getPipelineStep(pipe){
+  if(!pipe||!pipe.steps)return 0;
+  var done=pipe.steps.filter(function(s){return s.status==='done';}).length;
+  return done;
+}
+function getPipelinePartialPct(pipe){
+  if(!pipe||!pipe.steps||!pipe.steps[2]||!pipe.steps[2].partials)return 0;
+  var expected=pipe.totalAmount/2;
+  var sent=pipe.steps[2].partials.reduce(function(s,p){return s+p.amount;},0);
+  return Math.min(100,Math.round(sent/expected*100));
+}
+
+function renderPipelineDots(pipe){
+  if(!pipe)return '';
+  var dots='<div class="pipe-dots">';
+  pipe.steps.forEach(function(s,i){
+    var cls=s.status==='done'?'done':(i===getPipelineStep(pipe)?'active':'pending');
+    var color=i===0?'#EFB43C':i===1?'#64A0F0':'#58C88C';
+    dots+='<div class="pipe-dot '+cls+'" style="'+(cls==='done'?'background:'+color:'')+'"></div>';
+  });
+  return dots+'</div>';
+}
+
+function renderPipelineTimeline(pipe){
+  var h='<div class="pipe-tl">';
+  var labels=['Paid from Fanvue','In '+pipe.from+'\'s bank','Transferred to '+pipe.to];
+  var colors=['#EFB43C','#64A0F0','#58C88C'];
+  var step=getPipelineStep(pipe);
+  pipe.steps.forEach(function(s,i){
+    var isDone=s.status==='done';
+    var isNext=i===step&&!isDone;
+    var cls=isDone?'':(isNext?'':'pending');
+    h+='<div class="pipe-step '+cls+'">';
+    h+='<div class="pipe-step-dot" style="'+(isDone?'background:'+colors[i]:'border-color:'+colors[i])+'"></div>';
+    h+='<div class="pipe-step-t" style="color:'+colors[i]+'">'+labels[i]+'</div>';
+    if(isDone){
+      h+='<div class="pipe-step-d">'+fmt(s.amount)+' — '+fmtD(s.date)+(s.method?' <span class="pipe-method">'+s.method+'</span>':'')+'</div>';
+      if(s.note) h+='<div class="pipe-step-note">'+s.note+'</div>';
+      if(i===2&&isDone){
+        if(s.confirmedBy) h+='<div style="font-size:8px;color:#58C88C;margin-top:3px">&#x2713; Confirmed by '+s.confirmedBy+(s.confirmedAt?' — '+fmtD(s.confirmedAt):'')+'</div>';
+        else if(state.currentUser===pipe.to) h+='<span class="pipe-step-btn" style="border-color:#58C88C44;color:#58C88C;background:#58C88C0A;margin-top:4px" onclick="event.stopPropagation();confirmPipelineReceived(\x27'+pipe.id+'\x27)">Confirm received</span>';
+        else h+='<div style="font-size:8px;color:var(--dim);margin-top:3px">Awaiting '+pipe.to+' confirmation</div>';
+      }
+      if(i===step-1&&_pipelineUndoStack[pipe.id]) h+='<span class="pipe-undo" onclick="event.stopPropagation();undoPipelineStep(\''+pipe.id+'\')">Undo</span>';
+    } else if(isNext){
+      h+='<div class="pipe-step-d" style="opacity:1">Pending</div>';
+      h+='<span class="pipe-step-btn" style="border-color:'+colors[i]+'44;color:'+colors[i]+';background:'+colors[i]+'0A" onclick="event.stopPropagation();advancePipeline(\''+pipe.id+'\','+i+')">'+(i===1?'Mark received':'Mark sent')+'</span>';
+    } else {
+      h+='<div class="pipe-step-d">Pending</div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderPipelineRows(){
+  initPipelines();
+  var mf=resolveMonth(document.getElementById('ptf-month').value);
+  var pipes=(state.pipelines||[]).filter(function(p){return !mf||p.month===mf;}).sort(function(a,b){return(b.createdAt||'').localeCompare(a.createdAt||'');});
+  // Monthly summary
+  var curMonth=activeMths().slice(-1)[0]||'';
+  var monthPipes=(state.pipelines||[]).filter(function(p){return p.month===curMonth;});
+  var completed=monthPipes.filter(function(p){return getPipelineStep(p)===3;});
+  var pending=monthPipes.filter(function(p){return getPipelineStep(p)<3;});
+  var completedAmt=completed.reduce(function(s,p){return s+(p.steps[2]?p.steps[2].amount:0);},0);
+  var pendingAmt=pending.reduce(function(s,p){return s+p.totalAmount;},0);
+  var summaryHTML='';
+  if(monthPipes.length){
+    summaryHTML='<div class="pipe-summary">'+curMonth+': <b>'+completed.length+'</b> transfer'+(completed.length!==1?'s':'')+' completed'+(completedAmt?' (<b>'+fmt(completedAmt)+'</b>)':'')+', <b>'+pending.length+'</b> pending'+(pendingAmt?' (<b>'+fmt(pendingAmt)+'</b>)':'')+'</div>';
+  }
+  // Pending badge on tab
+  var tabBtns=document.querySelectorAll('.nav-item[data-tab="partners"],.bnav-item[data-tab="partners"]');
+  tabBtns.forEach(function(btn){
+    var badge=btn.querySelector('.tab-badge');
+    if(pending.length){
+      if(!badge){badge=document.createElement('span');badge.className='tab-badge';btn.appendChild(badge);}
+    } else {
+      if(badge) badge.remove();
+    }
+  });
+  var html=summaryHTML;
+  if(!pipes.length) return html+'<div style="font-size:11px;color:var(--dim);padding:4px 0 8px">No transfer pipelines yet.</div>';
+  html+=pipes.map(function(p){
+    var step=getPipelineStep(p);
+    var stepCls=step>=3?'step-3':step>=2?'step-2':'step-1';
+    var statusLabel=step>=3?'Complete':('Step '+step+' of 3');
+    var statusColor=step>=3?'#58C88C':step>=2?'#64A0F0':'#EFB43C';
+    var expanded=_pipelineExpanded[p.id];
+    var modelTags=(p.models||[]).map(function(m){return '<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(180,158,224,0.08);color:var(--muted);margin-left:3px">'+m+'</span>';}).join('');
+    var h='<div class="pipe-row '+stepCls+'">';
+    h+='<div class="pipe-main" onclick="togglePipeExpand(\''+p.id+'\')">';
+    h+='<div class="pipe-icon" style="background:'+statusColor+'15;color:'+statusColor+'">'+(step>=3?'&#x2713;':'&#x21C4;')+'</div>';
+    h+='<div class="pipe-body"><div class="pipe-title">'+fmt(p.totalAmount)+' '+modelTags+' <span class="pipe-badge" style="background:'+statusColor+'15;color:'+statusColor+'">'+statusLabel+'</span></div>';
+    h+='<div class="pipe-meta">'+fmtD(p.createdAt)+' &middot; '+p.from+' &rarr; '+p.to+'</div></div>';
+    h+=renderPipelineDots(p);
+    h+='<span style="color:var(--dim);font-size:10px">'+(expanded?'&#x25BC;':'&#x25B6;')+'</span>';
+    h+='</div>';
+    if(expanded){
+      h+='<div class="pipe-expand">'+renderPipelineTimeline(p)+'</div>';
+    }
+    h+='</div>';
+    return h;
+  }).join('');
+  return html;
+}
+
+// Swipe to advance pipeline step on mobile
+var _pipeSwipeX=0,_pipeSwipeEl=null,_pipeSwipeId='',_pipeSwipeIdx=0;
+function initPipeSwipe(el,pipeId,stepIdx){
+  el.addEventListener('touchstart',function(e){
+    _pipeSwipeX=e.touches[0].clientX;_pipeSwipeEl=el;_pipeSwipeId=pipeId;_pipeSwipeIdx=stepIdx;
+  },{passive:true});
+  el.addEventListener('touchmove',function(e){
+    if(!_pipeSwipeX)return;
+    var dx=e.touches[0].clientX-_pipeSwipeX;
+    var bg=el.querySelector('.pipe-step-swipe-bg');
+    if(bg&&dx<-20) bg.style.transform='translateX('+Math.max(dx+100,0)+'%)';
+  },{passive:true});
+  el.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-_pipeSwipeX;
+    var bg=el.querySelector('.pipe-step-swipe-bg');
+    if(bg) bg.style.transform='translateX(100%)';
+    if(dx<-80){advancePipeline(_pipeSwipeId,_pipeSwipeIdx);}
+    _pipeSwipeX=0;_pipeSwipeEl=null;
+  },{passive:true});
+}
+
+function confirmPipelineReceived(pipeId){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe||!pipe.steps[2]||pipe.steps[2].status!=='done')return;
+  pipe.steps[2].confirmedBy=state.currentUser;
+  pipe.steps[2].confirmedAt=new Date().toISOString().split('T')[0];
+  logActivity('edit',state.currentUser+' confirmed receiving '+fmt(pipe.steps[2].amount),{by:state.currentUser});
+  save();renderPartners();
+  toast('Receipt confirmed','success');
+}
+
+function batchLinkPipeline(payoutId){
+  initPipelines();
+  var pending=(state.pipelines||[]).filter(function(p){return getPipelineStep(p)<3;});
+  if(!pending.length){toast('No pending pipelines to link to','info');return;}
+  var opts=pending.map(function(p,i){return (i+1)+'. '+fmt(p.totalAmount)+' ('+fmtD(p.createdAt)+') — Step '+getPipelineStep(p)+'/3';}).join('\n');
+  var choice=prompt('Link this payout to an existing pipeline:\n'+opts+'\n\nEnter number:');
+  if(!choice||isNaN(parseInt(choice)))return;
+  var idx=parseInt(choice)-1;
+  if(idx<0||idx>=pending.length)return;
+  var pipe=pending[idx];
+  if(!pipe.payoutIds) pipe.payoutIds=[];
+  pipe.payoutIds.push(payoutId);
+  // Update total amount
+  var linkedPayouts=state.transactions.filter(function(t){return pipe.payoutIds.indexOf(t.id)>=0;});
+  pipe.totalAmount=linkedPayouts.reduce(function(s,t){return s+t.amount;},0);
+  pipe.steps[0].amount=pipe.totalAmount;
+  // Merge model tags
+  var allModels=[];
+  linkedPayouts.forEach(function(t){if(t.models)(t.models).forEach(function(m){if(allModels.indexOf(m)<0)allModels.push(m);});});
+  pipe.models=allModels;
+  toast('Payout linked to pipeline — total now '+fmt(pipe.totalAmount),'success');
+  logActivity('edit','Linked payout to pipeline — new total '+fmt(pipe.totalAmount),{by:state.currentUser});
+  save();renderPartners();if(state.currentTab==='payouts')renderPayouts();
+}
 
 function openSettings(){
   renderSyncLog();renderIconGrid();loadPrefsUI();
@@ -3933,6 +4418,7 @@ function stripAttachmentData(txns){
 function getSharedState(){
   return{
     _requiredBuild:_BUILD,
+    pipelines:state.pipelines||[],
     transactions:stripAttachmentData(state.transactions),
     months:state.months,
     monthlyEarnings:state.monthlyEarnings,
@@ -4057,6 +4543,7 @@ function mergeRemoteState(remote){
     return merged;
   };
   state.transactions=mergeArray(state.transactions,remote.transactions||[],'id');
+  state.pipelines=remote.pipelines||[];
   state.subscriptions=mergeArray(state.subscriptions,remote.subscriptions||[],'id');
   state.staffMembers=mergeArray(state.staffMembers,remote.staffMembers||[],'id');
   state.workers=mergeArray(state.workers,remote.workers||[],'id');
@@ -4674,8 +5161,8 @@ function getChartColors(){
   return{
     text:isLight?'rgba(80,65,30,0.4)':'rgba(255,248,220,0.35)',
     grid:isLight?'rgba(138,116,48,0.06)':'rgba(255,255,255,0.03)',
-    earn:isLight?'rgba(138,116,48,0.6)':'rgba(208,184,104,0.55)',
-    earnBorder:isLight?'rgba(138,116,48,0.8)':'rgba(208,184,104,0.8)',
+    earn:isLight?'rgba(138,116,48,0.6)':'rgba(180,158,224,0.55)',
+    earnBorder:isLight?'rgba(138,116,48,0.8)':'rgba(180,158,224,0.8)',
     exp:isLight?'rgba(176,74,74,0.35)':'rgba(235,88,88,0.3)',
     expBorder:isLight?'rgba(176,74,74,0.6)':'rgba(235,88,88,0.6)',
     legend:isLight?'rgba(80,65,30,0.4)':'rgba(255,255,255,0.35)'
@@ -5020,8 +5507,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='2.7.1';
-var _BUILD='1775625834';
+var SERAPHIM_VERSION='3.1.0';
+var _BUILD='1776028813';
 var _initDone=false;
 function init(){
   if(_initDone) return;
@@ -5038,7 +5525,7 @@ function init(){
       Chart.defaults.elements.bar.borderRadius=4;
       Chart.defaults.elements.bar.borderSkipped=false;
       Chart.defaults.plugins.tooltip.backgroundColor='rgba(12,10,16,0.92)';
-      Chart.defaults.plugins.tooltip.titleColor='rgba(208,184,104,0.9)';
+      Chart.defaults.plugins.tooltip.titleColor='rgba(180,158,224,0.9)';
       Chart.defaults.plugins.tooltip.bodyColor='rgba(255,252,240,0.8)';
       Chart.defaults.plugins.tooltip.borderColor='rgba(180,158,224,0.15)';
       Chart.defaults.plugins.tooltip.borderWidth=1;
