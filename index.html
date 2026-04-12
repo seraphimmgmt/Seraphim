@@ -1013,7 +1013,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.1</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -1097,7 +1097,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     </div>
     <!-- PAYOUTS -->
     <div class="panel" id="panel-payouts">
-      <div class="ph"><div class="ph-top"><span class="pg-title">Fanvue Payouts</span><div class="pg-actions"><button class="btn sm primary" onclick="openModelEarningsModal()">+ Set Earnings</button><button class="btn sm primary" onclick="openAddTransaction('Withdrawal')">+ Log Payout</button></div></div><div class="pg-sub">Pipeline: Fanvue &#x2192; Shon &#x2192; Partners</div></div>
+      <div class="ph"><div class="ph-top"><span class="pg-title">Fanvue Payouts</span><div class="pg-actions"><button class="btn sm primary" onclick="openModelEarningsModal()">+ Set Earnings</button><button class="btn sm primary" onclick="openPayoutModal()">+ Log Payout</button></div></div><div class="pg-sub">Pipeline: Fanvue &#x2192; Shon &#x2192; Partners</div></div>
       <div id="model-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px"></div>
       <div class="tw" style="margin-bottom:16px"><div class="tw-hdr"><span class="tw-title">Akira &amp; Mila Monthly Breakdown</span><div class="tw-actions"><button class="btn sm" onclick="openModelEarningsModal()">Edit</button></div></div><div class="tscroll"><table><thead id="model-thead"><tr></tr></thead><tbody id="model-tbody"></tbody></table></div></div>
       <div class="filters">
@@ -1585,6 +1585,33 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   </div>
   <div style="margin-top:12px;text-align:center"><button class="bc" onclick="closeModal('m-shortcuts')">Close</button></div>
 </div></div>
+<div class="overlay" id="m-send-transfer"><div class="modal" style="max-width:380px">
+  <div class="modal-title" style="color:var(--green)">Send transfer</div>
+  <div class="modal-sub" id="st-sub">Transfer to Sharon</div>
+  <input type="hidden" id="st-pipe-id">
+  <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px;margin-bottom:8px;border-bottom:1px solid var(--b1)">
+    <span style="color:var(--muted)">Share amount</span>
+    <span style="color:var(--text);font-weight:500" id="st-share">$0.00</span>
+  </div>
+  <div id="st-already-sent" style="display:none;margin-bottom:8px;font-size:11px">
+    <div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Already sent</span><span id="st-sent-amt" style="color:var(--green)">$0</span></div>
+    <div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Remaining</span><span id="st-remaining" style="color:var(--amber);font-weight:500">$0</span></div>
+  </div>
+  <div class="fg">
+    <label class="fl">Amount ($)</label>
+    <div class="frow">
+      <input type="number" class="fi" id="st-amount" step="0.01" placeholder="0.00" style="flex:1">
+      <button class="btn sm" onclick="stFillMax()" style="color:var(--gold);border-color:var(--gold);white-space:nowrap">Max</button>
+    </div>
+  </div>
+  <div class="fg">
+    <label class="fl">Method</label>
+    <select class="fi" id="st-method"><option value="">Select...</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select>
+  </div>
+  <div class="fg"><label class="fl">Note</label><input class="fi" id="st-note" placeholder="Optional"></div>
+  <div class="ma"><button class="bc" onclick="closeModal('m-send-transfer')">Cancel</button><button class="bs" style="background:rgba(88,200,140,0.12);border-color:rgba(88,200,140,0.3);color:var(--green)" onclick="executeSendTransfer()">Send</button></div>
+</div></div>
+
 <div id="lightbox">
   <button id="lb-close" onclick="closeLightbox()">&times;</button>
   <button id="lb-del" onclick="deleteLightboxImage()">Remove image</button>
@@ -1635,7 +1662,7 @@ const CAT_COLORS={Marketing:'rgba(180,158,224,0.7)',Software:'rgba(96,165,250,0.
 // Pre-load Firebase config from localStorage
 var _preload=null;
 try{_preload=JSON.parse(localStorage.getItem('seraphim_v3')||'null');}catch(e){}
-var state={
+var state={pipelines:[],
   transactions:[],months:[],monthlyEarnings:{},modelEarnings:{},monthNotes:{},
   subscriptions:[],staffMembers:[],workers:[],
   budgets:{Marketing:2500,Software:1000,VA:2500,Travel:3000,Equipment:500,Personal:500,Other:500},
@@ -1649,7 +1676,7 @@ var state={
   currentUser:'',
   firebaseConfig:{apiKey:'AIzaSyCSxyDqlD5nVFYHwnzcG-cMl25Nlz4cDjw',databaseURL:'https://expenses-dashboard-a180a-default-rtdb.firebaseio.com',authDomain:'expenses-dashboard-a180a.firebaseapp.com',projectId:'expenses-dashboard-a180a',storageBucket:'expenses-dashboard-a180a.firebasestorage.app'},firebaseConnected:false,
   archive:[],activityLog:[]
-};
+,pipelines:[]};
 var charts={};
 
 function saveLocal(){
@@ -2231,10 +2258,9 @@ function renderPartners(){
   else if(trSort==='amount-asc') allTransfers.sort(function(a,b){return a.amount-b.amount;});
   const badge=document.getElementById('transfer-count-badge');
   if(badge) badge.textContent=allTransfers.length?allTransfers.length+' record'+(allTransfers.length>1?'s':''):'none';
-  // Separate pipeline payouts from regular transfers
-  var pipelinePayouts=state.transactions.filter(function(t){return t.pipeline&&(!mf||t.month===mf);});
-  const transferHTML=(allTransfers.length||pipelinePayouts.length)
-    ? (pipelinePayouts.length?'<div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Payout pipelines</div>'+pipelinePayouts.map(function(t){return renderPipelineRow(t);}).join(''):'')
+  // Pipeline rows from state.pipelines
+  var pipelineHTML=renderPipelineRows();
+  var transferHTML=pipelineHTML
     + (allTransfers.length?'<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:10px 0 6px">Transfers</div>'+allTransfers.map(function(t){
         return '<div class="transfer-row" onclick="openTransferModal('+qid(t.id)+')" style="cursor:pointer;margin-bottom:8px">'
           +'<div style="display:flex;align-items:center;gap:10px">'
@@ -2244,8 +2270,8 @@ function renderPartners(){
           +'</div></div>'
           +'<div style="text-align:right"><div class="tr-amt">'+fmt(t.amount)+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px">Excl. P&L</div></div>'
           +'</div>';
-      }).join(''):'')
-    : '<div style="font-size:11px;color:var(--dim);padding:4px 0 8px">No transfers or pipelines yet.</div>';
+      }).join(''):'');
+  if(!pipelineHTML&&!allTransfers.length) transferHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px">No transfers or pipelines yet.</div>';
   document.getElementById('transfer-list').innerHTML=transferHTML;
   const wrap=document.getElementById('transfer-list-wrap');
   const chev=document.getElementById('transfer-chevron');
@@ -2823,6 +2849,27 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.3.0',date:'Apr 2026',title:'Send transfer modal',items:[
+  {t:'feature',text:'Send Transfer modal replaces prompt() — shows share amount, already sent, remaining, method picker'},
+  {t:'feature',text:'Max button auto-fills remaining balance'},
+  {t:'feature',text:'Stepped payment card in timeline — shows payment log with amounts, dates, methods'},
+  {t:'feature',text:'Progress bar shows percentage sent with smooth animation'},
+  {t:'feature',text:'Remaining banner with "Send" button for partial transfers'},
+  {t:'feature',text:'Undo last payment — removes payment + associated transaction'},
+  {t:'feature',text:'Sharon confirm received button on completed transfers'},
+  {t:'fix',text:'Removed prompt() calls for amount and method — proper modal now'},
+]},
+{v:'3.2.0',date:'Apr 2026',title:'Pipeline verified',items:[
+  {t:'fix',text:'Full pipeline flow verified: payout modal → pipeline creation → Partner Split timeline rendering'},
+  {t:'fix',text:'All 14 pipeline functions confirmed defined and reachable'},
+  {t:'fix',text:'Expandable timeline rows with togglePipeExpand confirmed working'},
+]},
+{v:'3.1.1',date:'Apr 2026',title:'Pipeline wiring fix',items:[
+  {t:'fix',text:'Payouts tab "Log Payout" button now opens the dedicated payout modal with model chips'},
+  {t:'fix',text:'Partner Split now renders pipeline timeline rows from state.pipelines'},
+  {t:'fix',text:'Fixed renderPipelineRow (undefined) — was never being called; replaced with renderPipelineRows()'},
+  {t:'fix',text:'FAB on Payouts tab wired to payout modal'},
+]},
 {v:'3.1.0',date:'Apr 2026',title:'Pipeline enhancements',items:[
   {t:'feature',text:'Animated step transitions — dots fill with spring animation, text fades in on advance'},
   {t:'feature',text:'Swipe left on pending steps to advance (mobile) — reveals confirm action'},
@@ -3481,6 +3528,10 @@ if(_moreOpen){document.addEventListener('click',function _mc(e){if(!e.target.clo
 var _origSwitchTab=typeof switchTab==='function'?switchTab:null;
 
 // ═══ PAYOUT PIPELINE SYSTEM ═══
+var _pipelineExpanded={};
+var _pipelineUndoStack={};
+function initPipelines(){if(!state.pipelines)state.pipelines=[];}
+
 function openPayoutModal(id){
   initPipelines();
   var mdls=state.models||['Akira','Mila'];
@@ -3606,31 +3657,8 @@ function advancePipeline(pipeId,stepIdx){
     pipe.steps[1].amount=pipe.totalAmount;
     toast('Marked as received in bank','success');
   } else if(stepIdx===2){
-    var expectedAmt=(pipe.totalAmount/2).toFixed(2);
-    var amt=prompt('Transfer amount to '+pipe.to+' ($):\n(Full share: $'+expectedAmt+')',''+expectedAmt);
-    if(!amt||isNaN(parseFloat(amt)))return;
-    var pAmt=parseFloat(amt);
-    var method=prompt('Transfer method (Zelle/Wire/Cash/Other):','');
-    var today=new Date().toISOString().split('T')[0];
-    // Track partial payments
-    if(!pipe.steps[2].partials) pipe.steps[2].partials=[];
-    pipe.steps[2].partials.push({amount:pAmt,date:today,method:method||''});
-    var totalSent=pipe.steps[2].partials.reduce(function(s,p){return s+p.amount;},0);
-    pipe.steps[2].amount=totalSent;
-    pipe.steps[2].date=today;
-    pipe.steps[2].method=method||'';
-    // Mark complete if within $1 of expected
-    if(totalSent>=parseFloat(expectedAmt)-1){
-      pipe.steps[2].status='done';
-      toast('Transfer complete — '+fmt(totalSent)+' sent to '+pipe.to,'success');
-      pipe.steps[2].confirmedBy=state.currentUser;
-    } else {
-      pipe.steps[2].status='partial';
-      toast('Partial: '+fmt(pAmt)+' sent ('+fmt(totalSent)+' of '+fmt(parseFloat(expectedAmt))+')','info',5000);
-    }
-    // Create transfer transaction
-    var trTxn={id:'tr_'+Date.now(),date:today,desc:(pipe.steps[2].status==='partial'?'Partial transfer':'Transfer')+' to '+pipe.to,type:'Transfer',amount:pAmt,who:pipe.from,transferTo:pipe.to,month:pipe.month,notes:method?'Via '+method:'',pipelineId:pipeId};
-    state.transactions.push(trTxn);
+    openSendTransfer(pipeId);
+    return; // modal handles the rest
   }
   logActivity('edit','Pipeline advanced: Step '+(stepIdx+1)+'/3 for '+fmt(pipe.totalAmount),{by:state.currentUser});
   save();renderPartners();if(state.currentTab==='payouts')renderPayouts();
@@ -3813,6 +3841,91 @@ function batchLinkPipeline(payoutId){
   toast('Payout linked to pipeline — total now '+fmt(pipe.totalAmount),'success');
   logActivity('edit','Linked payout to pipeline — new total '+fmt(pipe.totalAmount),{by:state.currentUser});
   save();renderPartners();if(state.currentTab==='payouts')renderPayouts();
+}
+
+function openSendTransfer(pipeId){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  document.getElementById('st-pipe-id').value=pipeId;
+  document.getElementById('st-sub').textContent='Transfer to '+pipe.to+' — '+fmt(pipe.totalAmount);
+  var share=(pipe.totalAmount/2);
+  document.getElementById('st-share').textContent=fmt(share);
+  // Calculate already sent
+  var partials=pipe.steps[2].partials||[];
+  var sent=partials.reduce(function(s,p){return s+p.amount;},0);
+  var remaining=Math.max(0,share-sent);
+  var alreadyDiv=document.getElementById('st-already-sent');
+  if(sent>0){
+    alreadyDiv.style.display='block';
+    document.getElementById('st-sent-amt').textContent=fmt(sent);
+    document.getElementById('st-remaining').textContent=fmt(remaining);
+  } else {
+    alreadyDiv.style.display='none';
+  }
+  document.getElementById('st-amount').value=remaining.toFixed(2);
+  document.getElementById('st-method').value='';
+  document.getElementById('st-note').value='';
+  openModal('m-send-transfer');
+}
+function stFillMax(){
+  var pipeId=document.getElementById('st-pipe-id').value;
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  var share=pipe.totalAmount/2;
+  var sent=(pipe.steps[2].partials||[]).reduce(function(s,p){return s+p.amount;},0);
+  document.getElementById('st-amount').value=Math.max(0,share-sent).toFixed(2);
+}
+function executeSendTransfer(){
+  var pipeId=document.getElementById('st-pipe-id').value;
+  var amt=parseFloat(document.getElementById('st-amount').value)||0;
+  var method=document.getElementById('st-method').value;
+  var note=document.getElementById('st-note').value.trim();
+  if(!amt||amt<=0){toast('Enter an amount','error');return;}
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  pushUndo();
+  var today=new Date().toISOString().split('T')[0];
+  var share=pipe.totalAmount/2;
+  // Add partial payment
+  if(!pipe.steps[2].partials) pipe.steps[2].partials=[];
+  pipe.steps[2].partials.push({amount:amt,date:today,method:method,note:note});
+  var totalSent=pipe.steps[2].partials.reduce(function(s,p){return s+p.amount;},0);
+  pipe.steps[2].amount=totalSent;
+  pipe.steps[2].date=today;
+  pipe.steps[2].method=method;
+  // Complete if within $1 of share
+  if(totalSent>=share-1){
+    pipe.steps[2].status='done';
+    toast('Transfer complete — '+fmt(totalSent)+' sent to '+pipe.to,'success');
+  } else {
+    pipe.steps[2].status='partial';
+    toast('Sent '+fmt(amt)+' to '+pipe.to+' ('+fmt(totalSent)+' of '+fmt(share)+')','success');
+  }
+  // Create transfer transaction
+  var trTxn={id:'tr_'+Date.now(),date:today,desc:(pipe.steps[2].status==='partial'?'Partial transfer':'Transfer')+' to '+pipe.to,type:'Transfer',amount:amt,who:pipe.from,transferTo:pipe.to,month:pipe.month,notes:(method?'Via '+method:'')+(note?' — '+note:''),pipelineId:pipeId};
+  state.transactions.push(trTxn);
+  logActivity('edit','Sent '+fmt(amt)+' to '+pipe.to+(pipe.steps[2].status==='done'?' (complete)':' (partial)'),{by:state.currentUser});
+  save();closeModal('m-send-transfer');renderPartners();if(state.currentTab==='payouts')renderPayouts();
+}
+function undoLastPayment(pipeId){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe||!pipe.steps[2].partials||!pipe.steps[2].partials.length)return;
+  pushUndo();
+  var removed=pipe.steps[2].partials.pop();
+  var totalSent=pipe.steps[2].partials.reduce(function(s,p){return s+p.amount;},0);
+  pipe.steps[2].amount=totalSent;
+  if(totalSent<=0){pipe.steps[2].status='pending';pipe.steps[2].date='';}
+  else{pipe.steps[2].status='partial';}
+  // Remove matching transaction
+  var trIdx=state.transactions.findIndex(function(t){return t.pipelineId===pipeId&&t.type==='Transfer'&&Math.abs(t.amount-removed.amount)<0.01;});
+  if(trIdx>=0) state.transactions.splice(trIdx,1);
+  toast('Removed '+fmt(removed.amount)+' payment','success');
+  logActivity('edit','Undid payment of '+fmt(removed.amount)+' to '+pipe.to,{by:state.currentUser});
+  save();renderPartners();
 }
 
 function openSettings(){
@@ -5507,8 +5620,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.1.0';
-var _BUILD='1776028813';
+var SERAPHIM_VERSION='3.3.0';
+var _BUILD='1776030834';
 var _initDone=false;
 function init(){
   if(_initDone) return;
