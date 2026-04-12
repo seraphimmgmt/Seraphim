@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1014,7 +1013,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.1</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -2155,7 +2154,7 @@ function renderPayouts(){
       '<td><span class="pill '+t.who.toLowerCase()+'">'+t.who+'</span></td>'+
       '<td class="td-muted">'+t.month+'</td>'+
       '<td class="td-muted" style="font-size:11px;max-width:150px;white-space:normal">'+(t.notes||'')+'</td>'+
-      '<td class="flex-actions">'+miniDots+transferBtn+'<button class="btn sm" onclick="editTxn('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
+      '<td class="flex-actions">'+miniDots+transferBtn+'<button class="btn sm" onclick="openPayoutModal('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
       '</tr>';
   }).join(''):'<tr><td colspan="7"><div class="empty">No payouts logged yet.<br><button class="btn sm" onclick="openPayoutModal()" style="margin-top:8px">+ Log Payout</button></div></td></tr>';
 }
@@ -2850,6 +2849,10 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.3.1',date:'Apr 2026',title:'Pipeline fixes',items:[
+  {t:'fix',text:'Payout edit button opens payout modal with model chips instead of generic form'},
+  {t:'fix',text:'Pipeline always flows Fanvue to Shon bank to Sharon regardless of who field'},
+]},
 {v:'3.3.0',date:'Apr 2026',title:'Send transfer modal',items:[
   {t:'feature',text:'Send Transfer modal replaces prompt() — shows share amount, already sent, remaining, method picker'},
   {t:'feature',text:'Max button auto-fills remaining balance'},
@@ -3621,7 +3624,7 @@ function savePayout(){
   var startPipe=document.getElementById('po-pipe-check').dataset.on==='1';
   if(startPipe&&!id){
     var quick=document.getElementById('po-quick').checked;
-    var pipe={id:'pipe_'+Date.now(),payoutIds:[txn.id],totalAmount:total,from:who,to:who==='Shon'?'Sharon':'Shon',models:models,modelAmounts:amounts,month:txn.month,createdAt:new Date().toISOString(),
+    var pipe={id:'pipe_'+Date.now(),payoutIds:[txn.id],totalAmount:total,from:'Shon',to:'Sharon',models:models,modelAmounts:amounts,month:txn.month,createdAt:new Date().toISOString(),
       steps:[
         {status:'done',date:date,amount:total,note:models.map(function(m){return m+' $'+(amounts[m.toLowerCase()]||0).toFixed(2);}).join(' + ')},
         {status:quick?'done':'pending',date:quick?(document.getElementById('po-q-bank-date').value||date):'',amount:total,note:''},
@@ -5621,8 +5624,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.3.0';
-var _BUILD='1776030834';
+var SERAPHIM_VERSION='3.3.1';
+var _BUILD='1776033450';
 var _initDone=false;
 function init(){
   if(_initDone) return;
