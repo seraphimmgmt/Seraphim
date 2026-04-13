@@ -1590,6 +1590,26 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     </div>
     <input type="file" id="tr-att-input" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple style="display:none" onchange="handleModalFiles(this,'tr')">
   </div>
+  <div id="tr-pipe-status-wrap" style="display:none;background:rgba(180,158,224,0.04);border:1px solid rgba(180,158,224,0.12);border-radius:7px;padding:12px 14px;margin-bottom:14px">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--dim);margin-bottom:8px">Pipeline status — where is the money right now?</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;padding:6px 8px;border-radius:5px;border:1px solid rgba(180,158,224,0.1);background:rgba(180,158,224,0.03)">
+        <input type="radio" name="tr-pipe-step" value="1" checked style="accent-color:#EFB43C">
+        <span style="width:8px;height:8px;border-radius:50%;background:#EFB43C;flex-shrink:0"></span>
+        <span style="color:var(--text)">Paid from Fanvue <span style="color:var(--dim);font-size:10px">— money left Fanvue, not yet in bank</span></span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;padding:6px 8px;border-radius:5px;border:1px solid rgba(180,158,224,0.1);background:rgba(180,158,224,0.03)">
+        <input type="radio" name="tr-pipe-step" value="2" style="accent-color:#64A0F0">
+        <span style="width:8px;height:8px;border-radius:50%;background:#64A0F0;flex-shrink:0"></span>
+        <span style="color:var(--text)">In bank <span style="color:var(--dim);font-size:10px">— received in partner's bank, not yet transferred</span></span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;padding:6px 8px;border-radius:5px;border:1px solid rgba(180,158,224,0.1);background:rgba(180,158,224,0.03)">
+        <input type="radio" name="tr-pipe-step" value="3" style="accent-color:#58C88C">
+        <span style="width:8px;height:8px;border-radius:50%;background:#58C88C;flex-shrink:0"></span>
+        <span style="color:var(--text)">Transferred <span style="color:var(--dim);font-size:10px">— money sent to other partner</span></span>
+      </label>
+    </div>
+  </div>
   <div style="background:rgba(180,158,224,0.06);border:1px solid rgba(180,158,224,0.15);border-radius:7px;padding:10px 14px;font-size:11.5px;color:var(--teal);margin-bottom:18px">
     This transfer will appear in Partner Split under <strong>Partner Transfers</strong>. It does <strong>not</strong> affect earnings, expenses, or the 50/50 split calculation.
   </div>
@@ -1681,12 +1701,13 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   <div class="modal-sub" id="st-sub">Transfer to Sharon</div>
   <input type="hidden" id="st-pipe-id">
   <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px;margin-bottom:8px;border-bottom:1px solid var(--b1)">
-    <span style="color:var(--muted)">Share amount</span>
+    <span style="color:var(--muted)">Transfer amount</span>
     <span style="color:var(--text);font-weight:500" id="st-share">$0.00</span>
   </div>
   <div id="st-already-sent" style="display:none;margin-bottom:8px;font-size:11px">
     <div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Already sent</span><span id="st-sent-amt" style="color:var(--green)">$0</span></div>
     <div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Remaining</span><span id="st-remaining" style="color:var(--amber);font-weight:500">$0</span></div>
+    <button class="btn sm" onclick="resetPipePartials()" style="font-size:9px;margin-top:6px;color:var(--dim);border-color:var(--b1);width:100%">Reset payment history</button>
   </div>
   <div class="fg">
     <label class="fl">Amount ($)</label>
@@ -1840,7 +1861,7 @@ function dateToMonth(dateStr){
 }
 function fmt(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const fmtS=n=>{const a=Math.abs(n);return(n<0?'-':'')+(a>=1000?'$'+(a/1000).toFixed(1)+'k':'$'+a.toFixed(0));};
-function fmtD(d){return d?new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'';}
+function fmtD(d){if(!d)return '';var dt=new Date(d+'T12:00:00');return isNaN(dt.getTime())?'':dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
 
 // SUBSCRIPTION ENGINE
 function mIdx(key){const[m,y]=key.split('-');return parseInt(y)*12+MS.indexOf(m);}
@@ -2275,6 +2296,7 @@ function openTransferFromPayout(payoutId){
   const p=state.transactions.find(t=>t.id===payoutId);
   if(!p) return;
   document.getElementById('m-transfer').dataset.editPipelineId='';
+  document.getElementById('m-transfer').dataset.batchPayoutIds='';
   var title=document.querySelector('#m-transfer .modal-title');
   if(title) title.innerHTML='&#x21C4; Transfer from Payout';
   var sub=document.querySelector('#m-transfer .modal-sub');
@@ -2291,6 +2313,8 @@ function openTransferFromPayout(payoutId){
   onTransferFromChange(null);
   // Store the payout id so we can link them on save
   document.getElementById('m-transfer').dataset.linkedPayoutId=payoutId;
+  document.getElementById('tr-pipe-status-wrap').style.display='block';
+  document.querySelector('input[name="tr-pipe-step"][value="1"]').checked=true;
   loadExistingAttsToModal('tr','');
   openModal('m-transfer');
 }
@@ -2298,10 +2322,12 @@ function openTransferModal(id){
   const t=id?state.transactions.find(t=>t.id===id):null;
   document.getElementById('m-transfer').dataset.editPipelineId='';
   document.getElementById('m-transfer').dataset.linkedPayoutId='';
+  document.getElementById('m-transfer').dataset.batchPayoutIds='';
   var title=document.querySelector('#m-transfer .modal-title');
   if(title) title.innerHTML='&#x21C4; Partner Transfer';
   var sub=document.querySelector('#m-transfer .modal-sub');
   if(sub) sub.innerHTML='Move money between partners — excluded from P&amp;L';
+  document.getElementById('tr-pipe-status-wrap').style.display='none';
   document.getElementById('tr-id').value=id||'';
   document.getElementById('tr-desc').value=t?t.desc:'';
   document.getElementById('tr-from').value=t?t.who:'Sharon';
@@ -2339,7 +2365,36 @@ function saveTransfer(){
       pipe.totalAmount=newAmt;
       pipe.fromBankId=(document.getElementById('tr-from-bank')||{}).value||pipe.fromBankId||'';
       pipe.toBankId=(document.getElementById('tr-to-bank')||{}).value||pipe.toBankId||'';
-      // Reset title/sub
+      // Update step status from selector
+      var stepRadio=document.querySelector('input[name="tr-pipe-step"]:checked');
+      if(stepRadio){
+        var newStep=parseInt(stepRadio.value)||1;
+        var safeDate=document.getElementById('tr-date').value||new Date().toISOString().split('T')[0];
+        if(pipe.steps&&pipe.steps.length>=3){
+          pipe.steps[0].status='done';
+          // Step 2
+          if(newStep>=2){
+            pipe.steps[1].status='done';
+            if(!pipe.steps[1].date) pipe.steps[1].date=safeDate;
+            pipe.steps[1].amount=newAmt;
+          } else {
+            pipe.steps[1].status='pending';
+            pipe.steps[1].date='';
+            pipe.steps[1].amount=0;
+          }
+          // Step 3 — clear partials when stepping backward
+          if(newStep>=3){
+            pipe.steps[2].status='done';
+            if(!pipe.steps[2].date) pipe.steps[2].date=safeDate;
+          } else {
+            pipe.steps[2].status='pending';
+            pipe.steps[2].date='';
+            pipe.steps[2].amount=0;
+            pipe.steps[2].partials=[];
+            pipe.steps[2].method='';
+          }
+        }
+      }
       var title=document.querySelector('#m-transfer .modal-title');
       if(title) title.innerHTML='&#x21C4; Partner Transfer';
       var sub=document.querySelector('#m-transfer .modal-sub');
@@ -2351,34 +2406,32 @@ function saveTransfer(){
       return;
     }
   }
-  const id=document.getElementById('tr-id').value;
-  const txn={
-    id:id||'tr_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
-    date:document.getElementById('tr-date').value,
-    desc:document.getElementById('tr-desc').value.trim()||'Partner Transfer',
-    type:'Transfer',
-    amount:parseFloat(document.getElementById('tr-amount').value)||0,
-    who:document.getElementById('tr-from').value,
-    transferTo:document.getElementById('tr-to').value,
-    month:document.getElementById('tr-month').value,
-    notes:document.getElementById('tr-notes').value.trim(),
-    cat:'',
-    fromBank:(document.getElementById('tr-from-bank')||{}).value||'',
-    toBank:(document.getElementById('tr-to-bank')||{}).value||''
-  };
+  var id=document.getElementById('tr-id').value;
+  var fromVal=document.getElementById('tr-from').value;
+  var toVal=document.getElementById('tr-to').value;
+  var amtVal=parseFloat(document.getElementById('tr-amount').value)||0;
+  var dateVal=document.getElementById('tr-date').value;
+  var descVal=document.getElementById('tr-desc').value.trim()||'Partner Transfer';
+  var monthVal=document.getElementById('tr-month').value;
+  var notesVal=document.getElementById('tr-notes').value.trim();
+  var methodVal=(document.getElementById('tr-method')||{}).value||'';
+  var fromBankVal=(document.getElementById('tr-from-bank')||{}).value||'';
+  var toBankVal=(document.getElementById('tr-to-bank')||{}).value||'';
   var trAtts=getAndClearPendingAtts('tr');
-  if(trAtts.length) txn.attachments=trAtts;
-  if(!txn.amount) return;
-  // Check for linked payouts from picker
+  if(!amtVal) return;
+
+  // Collect linked payout IDs from ALL sources
   var linkedPayoutIds=[];
-  document.querySelectorAll('.tr-payout-cb:checked').forEach(function(cb){linkedPayoutIds.push(cb.value);});
-  // Old single-link support
+  // Source 1: batch link (checked payouts on payouts tab)
+  var batchRaw=document.getElementById('m-transfer').dataset.batchPayoutIds||'';
+  if(batchRaw){try{var batchIds=JSON.parse(batchRaw);batchIds.forEach(function(bid){if(linkedPayoutIds.indexOf(bid)<0)linkedPayoutIds.push(bid);});}catch(e){}}
+  document.getElementById('m-transfer').dataset.batchPayoutIds='';
+  // Source 2: single payout link (Transfer button on one payout row)
   var linkedId=document.getElementById('m-transfer').dataset.linkedPayoutId;
   if(linkedId&&!id&&linkedPayoutIds.indexOf(linkedId)<0) linkedPayoutIds.push(linkedId);
   document.getElementById('m-transfer').dataset.linkedPayoutId='';
-  if(id){var i=state.transactions.findIndex(function(t){return t.id===id;});if(i>=0){if(state.transactions[i].isRecurring)txn._edited=true;state.transactions[i]=txn;}logActivity('edit','Edited transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});}
-  else{state.transactions.push(txn);logActivity('transfer','Transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});}
-  // Create pipeline if payouts were linked
+
+  // ═══ PATH A: Payout-linked → Pipeline ONLY (no old Transfer transaction) ═══
   if(linkedPayoutIds.length&&!id){
     initPipelines();
     var linkedPayouts=state.transactions.filter(function(t){return linkedPayoutIds.indexOf(t.id)>=0;});
@@ -2389,16 +2442,49 @@ function saveTransfer(){
       if(p.models) p.models.forEach(function(m){if(allModels.indexOf(m)<0)allModels.push(m);});
       if(p.modelAmounts) Object.keys(p.modelAmounts).forEach(function(k){allAmounts[k]=(allAmounts[k]||0)+p.modelAmounts[k];});
     });
-    var pipe={id:'pipe_'+Date.now(),payoutIds:linkedPayoutIds,totalAmount:pipeTotal,from:txn.who||'Shon',to:txn.transferTo||'Sharon',fromBankId:txn.fromBank||'',toBankId:txn.toBank||'',models:allModels,modelAmounts:allAmounts,month:txn.month,createdAt:new Date().toISOString().split('T')[0],
+    // Read user-selected pipeline step
+    var selectedStep=1;
+    var stepRadio=document.querySelector('input[name="tr-pipe-step"]:checked');
+    if(stepRadio) selectedStep=parseInt(stepRadio.value)||1;
+    var today=new Date().toISOString().split('T')[0];
+    var payoutDate=linkedPayouts[0]?linkedPayouts[0].date:today;
+    var safeDate=dateVal||today;
+    var pipe={id:'pipe_'+Date.now(),payoutIds:linkedPayoutIds,totalAmount:pipeTotal,
+      from:fromVal,to:toVal,fromBankId:fromBankVal,toBankId:toBankVal,
+      models:allModels,modelAmounts:allAmounts,month:monthVal||dateToMonth(payoutDate),
+      createdAt:today,
       steps:[
-        {status:'done',date:linkedPayouts[0]?linkedPayouts[0].date:txn.date,amount:pipeTotal,note:allModels.length?allModels.join(' + '):''},
-        {status:'done',date:txn.date,amount:pipeTotal},
-        {status:'done',date:txn.date,amount:txn.amount,method:txn.notes||'',partials:[{amount:txn.amount,date:txn.date,method:txn.notes||''}]}
+        {status:'done',date:payoutDate,amount:pipeTotal,note:allModels.length?allModels.join(' + '):''},
+        {status:selectedStep>=2?'done':'pending',date:selectedStep>=2?safeDate:'',amount:selectedStep>=2?pipeTotal:0},
+        {status:selectedStep>=3?'done':'pending',date:selectedStep>=3?safeDate:'',amount:0,method:selectedStep>=3?(methodVal||notesVal||''):'',partials:[]}
       ]
     };
+    if(trAtts.length) pipe.attachments=trAtts;
     state.pipelines.push(pipe);
-    txn.pipelineId=pipe.id;
-    logActivity('add','Pipeline created from '+linkedPayoutIds.length+' payouts — '+fmt(pipeTotal),{by:state.currentUser});
+    var stepLabels=['Paid from Fanvue','In bank','Transferred'];
+    logActivity('add','Pipeline created: '+fromVal+' → '+toVal+' '+fmt(pipeTotal)+' — '+stepLabels[selectedStep-1]+' ('+linkedPayoutIds.length+' payout'+(linkedPayoutIds.length>1?'s':'')+')',{by:state.currentUser,month:pipe.month});
+    save();closeModal('m-transfer');
+    toast('Pipeline created — '+stepLabels[selectedStep-1]+' — '+fmt(pipeTotal),'success');
+    if(state.currentTab==='partners') renderPartners();
+    if(state.currentTab==='payouts') renderPayouts();
+    return;
+  }
+
+  // ═══ PATH B: Standalone transfer (no linked payouts) — old Transfer transaction ═══
+  var txn={
+    id:id||'tr_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    date:dateVal,desc:descVal,type:'Transfer',amount:amtVal,
+    who:fromVal,transferTo:toVal,month:monthVal,notes:notesVal,cat:'',
+    fromBank:fromBankVal,toBank:toBankVal,method:methodVal
+  };
+  if(trAtts.length) txn.attachments=trAtts;
+  if(id){
+    var i=state.transactions.findIndex(function(t){return t.id===id;});
+    if(i>=0){if(state.transactions[i].isRecurring)txn._edited=true;state.transactions[i]=txn;}
+    logActivity('edit','Edited transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});
+  } else {
+    state.transactions.push(txn);
+    logActivity('transfer','Standalone transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});
   }
   save();closeModal('m-transfer');
   toast('Transfer logged — '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),'success');
@@ -3016,7 +3102,35 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[{v:'3.6.3',date:'2026-04-13',items:[
+var CHANGELOG=[{v:'3.6.9',date:'2026-04-13',items:[
+{t:'fix',text:'Send Transfer now uses full pipeline amount — not half. Max fills full remaining balance.'},
+{t:'fix',text:'Completion check uses full amount — pipeline completes when full payout is transferred'},
+{t:'ui',text:'Renamed "Share amount" to "Transfer amount" in Send Transfer modal'}
+]},{v:'3.6.8',date:'2026-04-13',items:[
+{t:'fix',text:'Editing pipeline step backward now clears step 3 partials, amount, and method'},
+{t:'fix',text:'Send Transfer auto-detects corrupted partials on pending steps and clears them on open'}
+]},{v:'3.6.7',date:'2026-04-13',items:[
+{t:'fix',text:'Pipeline step 3 no longer creates fake partials — "Already sent" starts at $0 so you track real payments'},
+{t:'feature',text:'Reset payment history button in Send Transfer modal — clears corrupted data from older pipeline versions'},
+{t:'fix',text:'fmtD returns empty for invalid dates instead of "Invalid Date"'}
+]},{v:'3.6.6',date:'2026-04-13',items:[
+{t:'feature',text:'Pipeline step selector — choose where money is (Paid from Fanvue / In bank / Transferred) when creating or editing a pipeline'},
+{t:'fix',text:'Pipelines no longer auto-complete all 3 steps — defaults to Step 1 so you can advance manually'},
+{t:'fix',text:'Invalid Date bug fixed — fmtD now returns empty string for invalid/missing dates instead of "Invalid Date"'},
+{t:'fix',text:'Step selector shown when editing pipelines with current step pre-selected'},
+{t:'fix',text:'Pipeline dates use safe fallbacks (today) when date field is empty'}
+]},{v:'3.6.5',date:'2026-04-13',items:[
+{t:'fix',text:'ACTUALLY FIXED: Link & Transfer now works — batch payout IDs stored via dataset.batchPayoutIds instead of phantom .tr-payout-cb checkboxes that never existed'},
+{t:'fix',text:'Both single-payout and batch flows now reliably trigger Path A (pipeline only)'},
+{t:'fix',text:'openBatchTransfer pre-fills amount and description from selected payouts'},
+{t:'fix',text:'Modal title shows payout count when batch linking'}
+]},{v:'3.6.4',date:'2026-04-13',items:[
+{t:'fix',text:'BREAKING: Payout-linked transfers now create ONLY a pipeline — no more duplicate old Transfer transactions'},
+{t:'fix',text:'Removed old Transfer transaction from savePayout quick mode — pipeline is the sole record'},
+{t:'fix',text:'Removed old Transfer transaction from executeSendTransfer — pipeline partials track payments'},
+{t:'fix',text:'saveTransfer split into two clear paths: Path A (payout-linked = pipeline only) vs Path B (standalone = Transfer only)'},
+{t:'fix',text:'Legacy undoLastPayment still cleans up old Transfer transactions from previous versions'}
+]},{v:'3.6.3',date:'2026-04-13',items:[
 {t:'feature',text:'Bank Account modal — proper form replaces browser prompt() popups, grouped by owner with remove confirmation'},
 {t:'feature',text:'+ Add new bank option in transfer modal bank dropdowns — opens bank modal inline'},
 {t:'feature',text:'Bank IDs stored on pipelines (fromBankId, toBankId) — persists through edits'},
@@ -3895,12 +4009,7 @@ function savePayout(){
       ]
     };
     state.pipelines.push(pipe);
-    // If quick mode, also create the transfer transaction
-    if(quick){
-      var trAmt=parseFloat(document.getElementById('po-q-transfer-amt').value)||total/2;
-      var trTxn={id:'tr_'+Date.now(),date:pipe.steps[2].date,desc:'Transfer to '+(who==='Shon'?'Sharon':'Shon'),type:'Transfer',amount:trAmt,who:who,transferTo:who==='Shon'?'Sharon':'Shon',month:txn.month,notes:pipe.steps[2].method?'Via '+pipe.steps[2].method:'',linkedPayoutId:txn.id,pipelineId:pipe.id};
-      state.transactions.push(trTxn);
-    }
+    // Pipeline is the sole record — no separate Transfer transaction needed
   }
   logActivity('add','Payout: '+fmt(total)+' ('+models.join(', ')+')'+(startPipe?' — pipeline started':''),{month:txn.month,by:state.currentUser});
   save();closeModal('m-payout');toast('Payout logged — '+fmt(total),'success');refreshCurrent();
@@ -3953,9 +4062,9 @@ function getPipelineStep(pipe){
 }
 function getPipelinePartialPct(pipe){
   if(!pipe||!pipe.steps||!pipe.steps[2]||!pipe.steps[2].partials)return 0;
-  var expected=pipe.totalAmount/2;
+  var target=pipe.totalAmount;
   var sent=pipe.steps[2].partials.reduce(function(s,p){return s+p.amount;},0);
-  return Math.min(100,Math.round(sent/expected*100));
+  return Math.min(100,Math.round(sent/target*100));
 }
 
 function renderPipelineDots(pipe){
@@ -4123,12 +4232,19 @@ function openSendTransfer(pipeId){
   if(!pipe)return;
   document.getElementById('st-pipe-id').value=pipeId;
   document.getElementById('st-sub').textContent='Transfer to '+pipe.to+' — '+fmt(pipe.totalAmount);
-  var share=(pipe.totalAmount/2);
-  document.getElementById('st-share').textContent=fmt(share);
-  // Calculate already sent
+  var target=pipe.totalAmount;
+  document.getElementById('st-share').textContent=fmt(target);
+  // Calculate already sent — auto-fix corrupted data from old versions
   var partials=pipe.steps[2].partials||[];
+  // If step 3 is pending but has partials, clear them (corruption from old auto-complete)
+  if(pipe.steps[2].status==='pending'&&partials.length){
+    pipe.steps[2].partials=[];
+    pipe.steps[2].amount=0;
+    partials=[];
+    save();
+  }
   var sent=partials.reduce(function(s,p){return s+p.amount;},0);
-  var remaining=Math.max(0,share-sent);
+  var remaining=Math.max(0,target-sent);
   var alreadyDiv=document.getElementById('st-already-sent');
   if(sent>0){
     alreadyDiv.style.display='block';
@@ -4147,9 +4263,26 @@ function stFillMax(){
   initPipelines();
   var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
   if(!pipe)return;
-  var share=pipe.totalAmount/2;
+  var target=pipe.totalAmount;
   var sent=(pipe.steps[2].partials||[]).reduce(function(s,p){return s+p.amount;},0);
-  document.getElementById('st-amount').value=Math.max(0,share-sent).toFixed(2);
+  document.getElementById('st-amount').value=Math.max(0,target-sent).toFixed(2);
+}
+function resetPipePartials(){
+  var pipeId=document.getElementById('st-pipe-id').value;
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  pushUndo();
+  pipe.steps[2].partials=[];
+  pipe.steps[2].amount=0;
+  pipe.steps[2].status='pending';
+  pipe.steps[2].date='';
+  var target=pipe.totalAmount;
+  document.getElementById('st-already-sent').style.display='none';
+  document.getElementById('st-amount').value=target.toFixed(2);
+  save();
+  toast('Payment history cleared — enter the actual amount sent','success');
+  logActivity('edit','Reset payment history on pipeline '+fmt(pipe.totalAmount),{by:state.currentUser});
 }
 function executeSendTransfer(){
   var pipeId=document.getElementById('st-pipe-id').value;
@@ -4162,7 +4295,7 @@ function executeSendTransfer(){
   if(!pipe)return;
   pushUndo();
   var today=new Date().toISOString().split('T')[0];
-  var share=pipe.totalAmount/2;
+  var target=pipe.totalAmount;
   // Add partial payment
   if(!pipe.steps[2].partials) pipe.steps[2].partials=[];
   pipe.steps[2].partials.push({amount:amt,date:today,method:method,note:note});
@@ -4170,17 +4303,15 @@ function executeSendTransfer(){
   pipe.steps[2].amount=totalSent;
   pipe.steps[2].date=today;
   pipe.steps[2].method=method;
-  // Complete if within $1 of share
-  if(totalSent>=share-1){
+  // Complete if within $1 of full amount
+  if(totalSent>=target-1){
     pipe.steps[2].status='done';
     toast('Transfer complete — '+fmt(totalSent)+' sent to '+pipe.to,'success');
   } else {
     pipe.steps[2].status='partial';
-    toast('Sent '+fmt(amt)+' to '+pipe.to+' ('+fmt(totalSent)+' of '+fmt(share)+')','success');
+    toast('Sent '+fmt(amt)+' to '+pipe.to+' ('+fmt(totalSent)+' of '+fmt(target)+')','success');
   }
-  // Create transfer transaction
-  var trTxn={id:'tr_'+Date.now(),date:today,desc:(pipe.steps[2].status==='partial'?'Partial transfer':'Transfer')+' to '+pipe.to,type:'Transfer',amount:amt,who:pipe.from,transferTo:pipe.to,month:pipe.month,notes:(method?'Via '+method:'')+(note?' — '+note:''),pipelineId:pipeId};
-  state.transactions.push(trTxn);
+  // Pipeline partials are the sole record — no separate Transfer transaction
   logActivity('edit','Sent '+fmt(amt)+' to '+pipe.to+(pipe.steps[2].status==='done'?' (complete)':' (partial)'),{by:state.currentUser});
   save();closeModal('m-send-transfer');renderPartners();if(state.currentTab==='payouts')renderPayouts();
 }
@@ -4194,7 +4325,7 @@ function undoLastPayment(pipeId){
   pipe.steps[2].amount=totalSent;
   if(totalSent<=0){pipe.steps[2].status='pending';pipe.steps[2].date='';}
   else{pipe.steps[2].status='partial';}
-  // Remove matching transaction
+  // Remove matching legacy transaction if any exist from older versions
   var trIdx=state.transactions.findIndex(function(t){return t.pipelineId===pipeId&&t.type==='Transfer'&&Math.abs(t.amount-removed.amount)<0.01;});
   if(trIdx>=0) state.transactions.splice(trIdx,1);
   toast('Removed '+fmt(removed.amount)+' payment','success');
@@ -4206,7 +4337,7 @@ function deletePipeline(pipeId){
   initPipelines();
   var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
   if(!pipe)return;
-  confirmAction('Delete Pipeline','Delete the transfer pipeline for '+fmt(pipe.totalAmount)+'?<br><span style="font-size:11px;color:var(--dim)">Associated transfer transactions will remain.</span>','Delete',function(){
+  confirmAction('Delete Pipeline','Delete the transfer pipeline for '+fmt(pipe.totalAmount)+'?','Delete',function(){
     pushUndo();
     state.pipelines=state.pipelines.filter(function(p){return p.id!==pipeId;});
     delete _pipelineExpanded[pipeId];
@@ -4230,6 +4361,11 @@ function editPipeline(pipeId){
   var sel=document.getElementById('tr-month');
   sel.innerHTML=state.months.map(function(m){return '<option value="'+m+'"'+(m===pipe.month?' selected':'')+'>'+m+'</option>';}).join('');
   onTransferFromChange(pipe.to||null);
+  // Show step selector with current status
+  document.getElementById('tr-pipe-status-wrap').style.display='block';
+  var curStep=getPipelineStep(pipe);
+  var stepRadio=document.querySelector('input[name="tr-pipe-step"][value="'+(curStep||1)+'"]');
+  if(stepRadio) stepRadio.checked=true;
   // Pre-select banks if stored on pipeline
   setTimeout(function(){
     var fb=document.getElementById('tr-from-bank');
@@ -4270,17 +4406,25 @@ function openBatchTransfer(){
   var checked=document.querySelectorAll('.payout-link-cb:checked');
   if(!checked.length){toast('Select payouts to link first','info');return;}
   var ids=[];
-  checked.forEach(function(cb){ids.push(cb.value);});
-  // Open transfer modal with these pre-selected
+  var total=0;
+  var descs=[];
+  checked.forEach(function(cb){
+    ids.push(cb.value);
+    var p=state.transactions.find(function(t){return t.id===cb.value;});
+    if(p){total+=p.amount;descs.push(p.desc);}
+  });
+  // Store batch IDs directly — no phantom checkboxes
   openTransferModal();
-  // After modal opens, check the matching payouts in the picker
-  setTimeout(function(){
-    ids.forEach(function(id){
-      var cb=document.querySelector('.tr-payout-cb[value="'+id+'"]');
-      if(cb){cb.checked=true;}
-    });
-    trUpdateFromPayouts();
-  },100);
+  document.getElementById('m-transfer').dataset.batchPayoutIds=JSON.stringify(ids);
+  document.getElementById('tr-pipe-status-wrap').style.display='block';
+  document.querySelector('input[name="tr-pipe-step"][value="1"]').checked=true;
+  document.getElementById('tr-amount').value=total.toFixed(2);
+  document.getElementById('tr-desc').value=descs.join(' + ');
+  document.getElementById('tr-desc').dataset.auto='1';
+  var title=document.querySelector('#m-transfer .modal-title');
+  if(title) title.innerHTML='&#x21C4; Link '+ids.length+' Payout'+(ids.length>1?'s':'')+' to Pipeline';
+  var sub=document.querySelector('#m-transfer .modal-sub');
+  if(sub) sub.innerHTML='Creating pipeline for <b>'+fmt(total)+'</b> from '+ids.length+' payout'+(ids.length>1?'s':'');
 }
 
 
@@ -6069,8 +6213,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.6.3';
-var _BUILD='1776083629';
+var SERAPHIM_VERSION='3.6.9';
+var _BUILD='1776085148';
 var _initDone=false;
 function init(){
   if(_initDone) return;
