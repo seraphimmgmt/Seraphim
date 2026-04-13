@@ -1069,7 +1069,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.4</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.5</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -1563,7 +1563,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="tr-date"></div>
   </div>
   <div class="fg"><label class="fl">Month</label><select class="fi" id="tr-month"></select></div>
-  <div class="frow"><div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div><div class="fg" style="max-width:140px"><label class="fl">Method</label><select class="fi" id="tr-method"><option value="">None</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select></div></div</div>
+  <div class="frow"><div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div><div class="fg" style="max-width:140px"><label class="fl">Method</label><select class="fi" id="tr-method"><option value="">None</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select></div></div></div>
   <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="tr-att-zone" onclick="document.getElementById('tr-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'tr')">
       <span class="att-placeholder" id="tr-att-placeholder">Drop files here — images, PDFs, invoices</span>
@@ -2906,6 +2906,11 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.3.5',date:'Apr 2026',title:'THE fix — broken HTML tag',items:[
+  {t:'fix',text:'Missing > in </div</div> inside transfer modal — broke EVERY modal after it in the DOM'},
+  {t:'fix',text:'Confirm modal, changelog, and quickadd were all nested inside m-transfer (display:none)'},
+  {t:'fix',text:'Delete, restore, and all confirmations now work across every tab'},
+]},
 {v:'3.3.4',date:'Apr 2026',title:'Modal fix — haptic crash',items:[
   {t:'fix',text:'openModal wrapped haptic() in try-catch — modal ALWAYS opens even if haptic throws'},
   {t:'fix',text:'_prefs initialization wrapped in try-catch with {} fallback'},
@@ -5732,8 +5737,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.3.4';
-var _BUILD='1776044713';
+var SERAPHIM_VERSION='3.3.5';
+var _BUILD='1776045249';
 var _initDone=false;
 function init(){
   if(_initDone) return;
