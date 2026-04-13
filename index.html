@@ -1069,7 +1069,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.5</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.6</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -2906,6 +2906,10 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.3.6',date:'Apr 2026',title:'Edit payout fix',items:[
+  {t:'fix',text:'Edit payout now pre-fills model amounts, date, who, and notes from existing transaction'},
+  {t:'fix',text:'Model chips reflect which models were in the original payout'},
+]},
 {v:'3.3.5',date:'Apr 2026',title:'THE fix — broken HTML tag',items:[
   {t:'fix',text:'Missing > in </div</div> inside transfer modal — broke EVERY modal after it in the DOM'},
   {t:'fix',text:'Confirm modal, changelog, and quickadd were all nested inside m-transfer (display:none)'},
@@ -3635,10 +3639,22 @@ function openPayoutModal(id){
   document.getElementById('po-date').value=p?p.date:new Date().toISOString().split('T')[0];
   document.getElementById('po-who').value=p?p.who:'Shon';
   document.getElementById('po-notes').value=p?(p.notes||''):'';
-  // Model chips
-  var chipHTML=mdls.map(function(m){return '<div class="model-chip on" data-model="'+m+'" onclick="toggleModelChip(this)">'+m+'</div>';}).join('');
+  // Model chips — activate only models from existing payout
+  var activeModels=p&&p.models?p.models:mdls;
+  var chipHTML=mdls.map(function(m){
+    var isOn=activeModels.indexOf(m)>=0;
+    return '<div class="model-chip'+(isOn?' on':'')+'" data-model="'+m+'" onclick="toggleModelChip(this)">'+m+'</div>';
+  }).join('');
   document.getElementById('po-model-chips').innerHTML=chipHTML;
   renderModelAmounts();
+  // Pre-fill amounts from existing payout
+  if(p&&p.modelAmounts){
+    Object.keys(p.modelAmounts).forEach(function(k){
+      var inp=document.getElementById('po-amt-'+k);
+      if(inp&&p.modelAmounts[k]) inp.value=p.modelAmounts[k];
+    });
+    updatePayoutTotal();
+  }
   // Reset pipeline opt
   document.getElementById('po-pipe-check').style.cssText='width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(180,158,224,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0';
   document.getElementById('po-pipe-check').dataset.on='';
@@ -5737,8 +5753,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.3.5';
-var _BUILD='1776045249';
+var SERAPHIM_VERSION='3.3.6';
+var _BUILD='1776045639';
 var _initDone=false;
 function init(){
   if(_initDone) return;
