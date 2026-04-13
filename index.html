@@ -2214,15 +2214,15 @@ function renderPayouts(){
   const mf=resolveMonth(document.getElementById('pf-month').value),wf=document.getElementById('pf-who').value;
   const payouts=state.transactions.filter(t=>t.type==='Withdrawal'&&(!mf||t.month===mf)&&(!wf||t.who===wf)).sort((a,b)=>b.date.localeCompare(a.date));
   document.getElementById('payout-tbody').innerHTML=payouts.length?payouts.map(function(t){
-    const isLinked=state.transactions.some(function(x){return x.type==='Transfer'&&x.linkedPayoutId===t.id;});
+    var isLinked=state.transactions.some(function(x){return x.type==='Transfer'&&x.linkedPayoutId===t.id;});
     var pipeDots='';
-    if(t.pipeline){var ps=getPipelineStep(t);var dc=['#EFB43C','#64A0F0','#58C88C'];pipeDots='<span style="display:inline-flex;gap:2px;margin-left:6px">'+t.pipeline.steps.map(function(s,i){return '<span style="width:5px;height:5px;border-radius:50%;background:'+(s.status==='complete'?dc[i]:'rgba(180,158,224,0.15)')+'"></span>';}).join('')+'</span>';}
-    var modelTags=(t.models||[]).map(function(m){return '<span class="model-tag">'+m.name+'</span>';}).join(' ');
-    const transferBtn=isLinked
+    try{if(t.pipeline&&t.pipeline.steps&&Array.isArray(t.pipeline.steps)){var dc=['#EFB43C','#64A0F0','#58C88C'];pipeDots='<span style="display:inline-flex;gap:2px;margin-left:6px">'+t.pipeline.steps.map(function(s,i){return '<span style="width:5px;height:5px;border-radius:50%;background:'+(s.status==='complete'?dc[i]:'rgba(180,158,224,0.15)')+'"></span>';}).join('')+'</span>';}}catch(e){}
+    var transferBtn=isLinked
       ? '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--teal);cursor:default" title="Transfer already logged">&#x21C4; Linked</button>'
       : '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--gold)" onclick="openTransferFromPayout('+qid(t.id)+')" title="Log as partner transfer">&#x21C4; Transfer</button>';
-    var linkedPipe=(state.pipelines||[]).find(function(p){return p.payoutIds&&p.payoutIds.indexOf(t.id)>=0;});
-    var miniDots=linkedPipe?renderPipelineDots(linkedPipe):'';
+    var linkedPipe=null;
+    try{linkedPipe=(state.pipelines||[]).find(function(p){return p.payoutIds&&p.payoutIds.indexOf(t.id)>=0;})||null;}catch(e){}
+    var dots=linkedPipe?renderPipelineDots(linkedPipe):'';
     return '<tr'+rowDragAttrs(t.id)+(isLinked?' style="opacity:0.78"':'')+'>'+
       '<td style="width:30px"><input type="checkbox" class="payout-link-cb" value="'+t.id+'" style="accent-color:var(--gold)" onclick="event.stopPropagation()"></td>'+
       '<td class="td-muted">'+fmtD(t.date)+'</td>'+
@@ -2231,7 +2231,7 @@ function renderPayouts(){
       '<td><span class="pill '+t.who.toLowerCase()+'">'+t.who+'</span></td>'+
       '<td class="td-muted">'+t.month+'</td>'+
       '<td class="td-muted" style="font-size:11px;max-width:150px;white-space:normal">'+(t.notes||'')+'</td>'+
-      '<td class="flex-actions">'+miniDots+transferBtn+'<button class="btn sm" onclick="openPayoutModal('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
+      '<td class="flex-actions">'+dots+transferBtn+'<button class="btn sm" onclick="openPayoutModal('+qid(t.id)+')">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')">Del</button></td>'+
       '</tr>';
   }).join(''):'<tr><td colspan="7"><div class="empty">No payouts logged yet.<br><button class="btn sm" onclick="openPayoutModal()" style="margin-top:8px">+ Log Payout</button></div></td></tr>';
 }
@@ -2954,7 +2954,12 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[
+var CHANGELOG=[{v:'3.6.1',date:'2026-04-13',items:[
+{t:'fix',text:'Fixed miniDots ReferenceError on Payouts tab — guarded all pipeline data access with try-catch and Array.isArray checks'},
+{t:'fix',text:'Hardened renderPipelineDots against missing/corrupt pipeline steps data'},
+{t:'fix',text:'Removed unused modelTags variable from payout row builder'},
+{t:'fix',text:'Replaced const with var in payout map callback for broader browser compatibility'}
+]},
 {v:'3.6.0',date:'Apr 2026',title:'Bank accounts + edit audit',items:[
   {t:'feature',text:'Bank accounts system — add/remove accounts in Settings, stored in Firebase'},
   {t:'feature',text:'From/To bank dropdowns on transfer modal — populated per partner'},
@@ -3877,7 +3882,7 @@ function getPipelinePartialPct(pipe){
 }
 
 function renderPipelineDots(pipe){
-  if(!pipe)return '';
+  if(!pipe||!pipe.steps||!Array.isArray(pipe.steps))return '';
   var dots='<div class="pipe-dots">';
   pipe.steps.forEach(function(s,i){
     var cls=s.status==='done'?'done':(i===getPipelineStep(pipe)?'active':'pending');
@@ -5904,8 +5909,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.6.0';
-var _BUILD='1776080269';
+var SERAPHIM_VERSION='3.6.1';
+var _BUILD='1776082579';
 var _initDone=false;
 function init(){
   if(_initDone) return;
