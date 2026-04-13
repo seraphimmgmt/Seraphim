@@ -1595,6 +1595,21 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   </div>
   <div class="ma"><button class="bc" onclick="closeModal('m-transfer')">Cancel</button><button class="bs" style="background:rgba(180,158,224,0.12);border-color:rgba(180,158,224,0.35);color:var(--teal)" onclick="saveTransfer()">Save Transfer</button></div>
 </div></div>
+
+<div class="overlay" id="m-add-bank"><div class="modal" style="max-width:380px">
+  <div class="modal-title" style="color:var(--gold)">&#x1F3E6; Bank Accounts</div>
+  <div class="modal-sub">Manage bank accounts for both partners</div>
+  <div id="bank-modal-list" style="margin-bottom:14px"></div>
+  <div style="background:rgba(180,158,224,0.04);border:1px solid rgba(180,158,224,0.1);border-radius:7px;padding:12px 14px">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--dim);margin-bottom:8px">Add new account</div>
+    <div class="fg" style="margin-bottom:8px"><input class="fi" id="new-bank-name" placeholder="e.g. BoFA Checking, Wise USD"></div>
+    <div class="frow" style="margin-bottom:0">
+      <div class="fg" style="flex:1"><select class="fi" id="new-bank-owner"><option value="Shon">Shon</option><option value="Sharon">Sharon</option></select></div>
+      <div class="fg" style="flex:0"><button class="bs" style="white-space:nowrap;background:rgba(88,200,140,0.1);border-color:rgba(88,200,140,0.25);color:var(--green)" onclick="saveNewBank()">+ Add</button></div>
+    </div>
+  </div>
+  <div class="ma" style="margin-top:14px"><button class="bc" onclick="closeModal('m-add-bank')" style="width:100%">Done</button></div>
+</div></div>
 <div id="qa-bg" onclick="closeQuickAdd()"></div>
 <div id="quickadd">
   <input id="qa-input" placeholder="e.g. IG Ads 200 Shon Software" onkeydown="if(event.key==='Enter')submitQuickAdd();if(event.key==='Escape')closeQuickAdd();">
@@ -2214,19 +2229,29 @@ function renderPayouts(){
   const mf=resolveMonth(document.getElementById('pf-month').value),wf=document.getElementById('pf-who').value;
   const payouts=state.transactions.filter(t=>t.type==='Withdrawal'&&(!mf||t.month===mf)&&(!wf||t.who===wf)).sort((a,b)=>b.date.localeCompare(a.date));
   document.getElementById('payout-tbody').innerHTML=payouts.length?payouts.map(function(t){
-    var isLinked=state.transactions.some(function(x){return x.type==='Transfer'&&x.linkedPayoutId===t.id;});
-    var pipeDots='';
-    try{if(t.pipeline&&t.pipeline.steps&&Array.isArray(t.pipeline.steps)){var dc=['#EFB43C','#64A0F0','#58C88C'];pipeDots='<span style="display:inline-flex;gap:2px;margin-left:6px">'+t.pipeline.steps.map(function(s,i){return '<span style="width:5px;height:5px;border-radius:50%;background:'+(s.status==='complete'?dc[i]:'rgba(180,158,224,0.15)')+'"></span>';}).join('')+'</span>';}}catch(e){}
-    var transferBtn=isLinked
-      ? '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--teal);cursor:default" title="Transfer already logged">&#x21C4; Linked</button>'
-      : '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--gold)" onclick="openTransferFromPayout('+qid(t.id)+')" title="Log as partner transfer">&#x21C4; Transfer</button>';
     var linkedPipe=null;
     try{linkedPipe=(state.pipelines||[]).find(function(p){return p.payoutIds&&p.payoutIds.indexOf(t.id)>=0;})||null;}catch(e){}
+    var oldLinked=state.transactions.some(function(x){return x.type==='Transfer'&&x.linkedPayoutId===t.id;});
+    var isLinked=!!linkedPipe||oldLinked;
+    var pipeDots='';
+    try{if(t.pipeline&&t.pipeline.steps&&Array.isArray(t.pipeline.steps)){var dc=['#EFB43C','#64A0F0','#58C88C'];pipeDots='<span style="display:inline-flex;gap:2px;margin-left:6px">'+t.pipeline.steps.map(function(s,i){return '<span style="width:5px;height:5px;border-radius:50%;background:'+(s.status==='complete'?dc[i]:'rgba(180,158,224,0.15)')+'"></span>';}).join('')+'</span>';}}catch(e){}
     var dots=linkedPipe?renderPipelineDots(linkedPipe):'';
+    var pipeStep=linkedPipe?getPipelineStep(linkedPipe):0;
+    var pipeStatusLabel=linkedPipe?(pipeStep>=3?'Complete':'Step '+pipeStep+'/3'):'';
+    var pipeStatusColor=pipeStep>=3?'#58C88C':pipeStep>=2?'#64A0F0':'#EFB43C';
+    var linkBadge='';
+    if(linkedPipe){
+      linkBadge=' <span style="font-size:9px;color:'+pipeStatusColor+';background:'+pipeStatusColor+'12;border:1px solid '+pipeStatusColor+'30;border-radius:4px;padding:1px 6px;cursor:pointer" onclick="event.stopPropagation();switchTab(\'partners\');setTimeout(function(){togglePipeExpand(\''+linkedPipe.id+'\')},200)" title="View pipeline">&#x21C4; Pipeline — '+pipeStatusLabel+'</span>';
+    } else if(oldLinked){
+      linkBadge=' <span style="font-size:9px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(180,158,224,0.2);border-radius:4px;padding:1px 5px">&#x21C4; transferred (legacy)</span>';
+    }
+    var transferBtn=isLinked
+      ? '<button class="btn sm" style="border-color:'+pipeStatusColor+'30;color:'+pipeStatusColor+';cursor:pointer" onclick="'+(linkedPipe?'switchTab(\'partners\');setTimeout(function(){togglePipeExpand(\''+linkedPipe.id+'\')},200)':'')+'">&#x21C4; '+(linkedPipe?pipeStatusLabel:'Linked')+'</button>'
+      : '<button class="btn sm" style="border-color:rgba(180,158,224,0.3);color:var(--gold)" onclick="openTransferFromPayout('+qid(t.id)+')" title="Log as partner transfer">&#x21C4; Transfer</button>';
     return '<tr'+rowDragAttrs(t.id)+(isLinked?' style="opacity:0.78"':'')+'>'+
       '<td style="width:30px"><input type="checkbox" class="payout-link-cb" value="'+t.id+'" style="accent-color:var(--gold)" onclick="event.stopPropagation()"></td>'+
       '<td class="td-muted">'+fmtD(t.date)+'</td>'+
-      '<td><strong>'+t.desc+'</strong><div class="att-thumbs">'+attachmentThumbs(t)+'</div>'+(isLinked?' <span style="font-size:9px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(180,158,224,0.2);border-radius:4px;padding:1px 5px">&#x21C4; transferred</span>':'')+'</td>'+
+      '<td><strong>'+t.desc+'</strong>'+linkBadge+'<div class="att-thumbs">'+attachmentThumbs(t)+'</div></td>'+
       '<td class="amt pos">'+fmt(t.amount)+'</td>'+
       '<td><span class="pill '+t.who.toLowerCase()+'">'+t.who+'</span></td>'+
       '<td class="td-muted">'+t.month+'</td>'+
@@ -2249,6 +2274,11 @@ function toggleTransferList(){
 function openTransferFromPayout(payoutId){
   const p=state.transactions.find(t=>t.id===payoutId);
   if(!p) return;
+  document.getElementById('m-transfer').dataset.editPipelineId='';
+  var title=document.querySelector('#m-transfer .modal-title');
+  if(title) title.innerHTML='&#x21C4; Transfer from Payout';
+  var sub=document.querySelector('#m-transfer .modal-sub');
+  if(sub) sub.innerHTML='Link payout <b>'+p.desc+'</b> ('+fmt(p.amount)+') to a partner transfer';
   // Pre-fill transfer modal from the payout
   document.getElementById('tr-id').value='';
   document.getElementById('tr-desc').value=p.desc||'Partner Transfer';
@@ -2266,6 +2296,12 @@ function openTransferFromPayout(payoutId){
 }
 function openTransferModal(id){
   const t=id?state.transactions.find(t=>t.id===id):null;
+  document.getElementById('m-transfer').dataset.editPipelineId='';
+  document.getElementById('m-transfer').dataset.linkedPayoutId='';
+  var title=document.querySelector('#m-transfer .modal-title');
+  if(title) title.innerHTML='&#x21C4; Partner Transfer';
+  var sub=document.querySelector('#m-transfer .modal-sub');
+  if(sub) sub.innerHTML='Move money between partners — excluded from P&amp;L';
   document.getElementById('tr-id').value=id||'';
   document.getElementById('tr-desc').value=t?t.desc:'';
   document.getElementById('tr-from').value=t?t.who:'Sharon';
@@ -2289,6 +2325,32 @@ function onTransferFromChange(forceTo){
 }
 function saveTransfer(){
   pushUndo();
+  // Pipeline edit mode — update existing pipeline
+  var editPipeId=document.getElementById('m-transfer').dataset.editPipelineId||'';
+  if(editPipeId){
+    document.getElementById('m-transfer').dataset.editPipelineId='';
+    initPipelines();
+    var pipe=state.pipelines.find(function(p){return p.id===editPipeId;});
+    if(pipe){
+      pipe.from=document.getElementById('tr-from').value;
+      pipe.to=document.getElementById('tr-to').value;
+      pipe.month=document.getElementById('tr-month').value;
+      var newAmt=parseFloat(document.getElementById('tr-amount').value)||pipe.totalAmount;
+      pipe.totalAmount=newAmt;
+      pipe.fromBankId=(document.getElementById('tr-from-bank')||{}).value||pipe.fromBankId||'';
+      pipe.toBankId=(document.getElementById('tr-to-bank')||{}).value||pipe.toBankId||'';
+      // Reset title/sub
+      var title=document.querySelector('#m-transfer .modal-title');
+      if(title) title.innerHTML='&#x21C4; Partner Transfer';
+      var sub=document.querySelector('#m-transfer .modal-sub');
+      if(sub) sub.innerHTML='Move money between partners — excluded from P&amp;L';
+      logActivity('edit','Edited pipeline: '+pipe.from+' → '+pipe.to+' '+fmt(newAmt),{by:state.currentUser});
+      save();closeModal('m-transfer');
+      toast('Pipeline updated — '+pipe.from+' → '+pipe.to+' '+fmt(newAmt),'success');
+      renderPartners();if(state.currentTab==='payouts')renderPayouts();
+      return;
+    }
+  }
   const id=document.getElementById('tr-id').value;
   const txn={
     id:id||'tr_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
@@ -2327,7 +2389,7 @@ function saveTransfer(){
       if(p.models) p.models.forEach(function(m){if(allModels.indexOf(m)<0)allModels.push(m);});
       if(p.modelAmounts) Object.keys(p.modelAmounts).forEach(function(k){allAmounts[k]=(allAmounts[k]||0)+p.modelAmounts[k];});
     });
-    var pipe={id:'pipe_'+Date.now(),payoutIds:linkedPayoutIds,totalAmount:pipeTotal,from:'Shon',to:'Sharon',models:allModels,modelAmounts:allAmounts,month:txn.month,createdAt:new Date().toISOString().split('T')[0],
+    var pipe={id:'pipe_'+Date.now(),payoutIds:linkedPayoutIds,totalAmount:pipeTotal,from:txn.who||'Shon',to:txn.transferTo||'Sharon',fromBankId:txn.fromBank||'',toBankId:txn.toBank||'',models:allModels,modelAmounts:allAmounts,month:txn.month,createdAt:new Date().toISOString().split('T')[0],
       steps:[
         {status:'done',date:linkedPayouts[0]?linkedPayouts[0].date:txn.date,amount:pipeTotal,note:allModels.length?allModels.join(' + '):''},
         {status:'done',date:txn.date,amount:pipeTotal},
@@ -2370,7 +2432,7 @@ function renderPartners(){
         return '<div class="transfer-row" style="margin-bottom:8px">'
           +'<div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="openTransferModal('+qid(t.id)+')">'
           +'<div style="width:30px;height:30px;border-radius:50%;background:rgba(180,158,224,0.12);border:1px solid rgba(180,158,224,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">&#x21C4;</div>'
-          +'<div style="flex:1;min-width:0"><div class="tr-label">'+t.desc+'</div>'
+          +'<div style="flex:1;min-width:0"><div class="tr-label">'+t.desc+(t.pipelineId?' <span style="font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(88,200,140,0.1);color:#58C88C;border:1px solid rgba(88,200,140,0.2)">pipeline</span>':'')+'</div>'
           +'<div class="tr-meta">'+fmtD(t.date)+' &middot; '+t.who+bankName(t.fromBank)+' &rarr; '+(t.transferTo||'Partner')+bankName(t.toBank)+' &middot; '+t.month+(t.method?' &middot; <span style="font-size:8px;color:var(--muted)">'+t.method+'</span>':'')+'</div></div>'
           +'<div style="text-align:right;flex-shrink:0"><div class="tr-amt">'+fmt(t.amount)+'</div></div>'
           +'</div>'
@@ -2954,7 +3016,22 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[{v:'3.6.1',date:'2026-04-13',items:[
+var CHANGELOG=[{v:'3.6.3',date:'2026-04-13',items:[
+{t:'feature',text:'Bank Account modal — proper form replaces browser prompt() popups, grouped by owner with remove confirmation'},
+{t:'feature',text:'+ Add new bank option in transfer modal bank dropdowns — opens bank modal inline'},
+{t:'feature',text:'Bank IDs stored on pipelines (fromBankId, toBankId) — persists through edits'},
+{t:'feature',text:'Pipeline timeline shows actual bank names instead of generic "bank"'},
+{t:'feature',text:'Pipeline row metadata in Partner Split shows bank account names'},
+{t:'fix',text:'Bank removal now requires confirmation via confirmAction modal'}
+]},{v:'3.6.2',date:'2026-04-13',items:[
+{t:'fix',text:'Payout rows now correctly detect pipeline links — checks state.pipelines[].payoutIds instead of old Transfer.linkedPayoutId'},
+{t:'feature',text:'Pipeline status badge on payout rows — shows colored Step X/3 or Complete badge that clicks through to Partner Split'},
+{t:'feature',text:'Pipeline badge on legacy Transfer rows in Partner Split'},
+{t:'feature',text:'Edit Pipeline button on pipeline rows — opens transfer modal pre-filled with pipeline data'},
+{t:'fix',text:'Transfer button on linked payouts now shows pipeline status and navigates to pipeline view'},
+{t:'fix',text:'Modal title updates contextually: Transfer from Payout vs Edit Pipeline vs Partner Transfer'},
+{t:'fix',text:'editPipelineId flag properly cleared across all modal open/close paths'}
+]},{v:'3.6.1',date:'2026-04-13',items:[
 {t:'fix',text:'Fixed miniDots ReferenceError on Payouts tab — guarded all pipeline data access with try-catch and Array.isArray checks'},
 {t:'fix',text:'Hardened renderPipelineDots against missing/corrupt pipeline steps data'},
 {t:'fix',text:'Removed unused modelTags variable from payout row builder'},
@@ -3894,7 +3971,9 @@ function renderPipelineDots(pipe){
 
 function renderPipelineTimeline(pipe){
   var h='<div class="pipe-tl">';
-  var labels=['Paid from Fanvue','In '+pipe.from+'\'s bank','Transferred to '+pipe.to];
+  var fromBankLabel=pipe.fromBankId?bankName(pipe.fromBankId).replace(/[()]/g,''):'bank';
+  var toBankLabel=pipe.toBankId?bankName(pipe.toBankId).replace(/[()]/g,''):'bank';
+  var labels=['Paid from Fanvue','In '+pipe.from+'\'s '+fromBankLabel,'Transferred to '+pipe.to+(pipe.toBankId?' ('+toBankLabel+')':'')];
   var colors=['#EFB43C','#64A0F0','#58C88C'];
   var step=getPipelineStep(pipe);
   pipe.steps.forEach(function(s,i){
@@ -3963,9 +4042,12 @@ function renderPipelineRows(){
     h+='<div class="pipe-main" onclick="togglePipeExpand(\''+p.id+'\')">';
     h+='<div class="pipe-icon" style="background:'+statusColor+'15;color:'+statusColor+'">'+(step>=3?'&#x2713;':'&#x21C4;')+'</div>';
     h+='<div class="pipe-body"><div class="pipe-title">'+fmt(p.totalAmount)+' '+modelTags+' <span class="pipe-badge" style="background:'+statusColor+'15;color:'+statusColor+'">'+statusLabel+'</span></div>';
-    h+='<div class="pipe-meta">'+fmtD(p.createdAt)+' &middot; '+p.from+' &rarr; '+p.to+'</div></div>';
+    var fromBk=p.fromBankId?bankName(p.fromBankId):'';
+    var toBk=p.toBankId?bankName(p.toBankId):'';
+    h+='<div class="pipe-meta">'+fmtD(p.createdAt)+' &middot; '+p.from+fromBk+' &rarr; '+p.to+toBk+'</div></div>';
     h+=renderPipelineDots(p);
     h+='<span style="color:var(--dim);font-size:10px">'+(expanded?'&#x25BC;':'&#x25B6;')+'</span>';
+    h+='<button class="btn sm" onclick="event.stopPropagation();editPipeline(\x27'+p.id+'\x27)" style="font-size:8px;padding:2px 5px;margin-left:4px;color:var(--gold);border-color:rgba(180,158,224,0.2)">Edit</button>';
     h+='<button class="btn sm danger" onclick="event.stopPropagation();deletePipeline(\x27'+p.id+'\x27)" style="font-size:8px;padding:2px 5px;margin-left:4px">Del</button>';
     h+='<span style="color:var(--dim);font-size:10px;cursor:pointer;margin-left:6px" onclick="event.stopPropagation();deletePipeline(\x27'+p.id+'\x27)" title="Delete pipeline">&#x2715;</span>';
     h+='</div>';
@@ -4134,6 +4216,39 @@ function deletePipeline(pipeId){
   });
 }
 
+function editPipeline(pipeId){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  // Pre-fill transfer modal with pipeline data
+  document.getElementById('tr-id').value='';
+  document.getElementById('tr-desc').value='Pipeline Transfer';
+  document.getElementById('tr-from').value=pipe.from||'Shon';
+  document.getElementById('tr-amount').value=pipe.totalAmount||0;
+  document.getElementById('tr-date').value=pipe.createdAt?pipe.createdAt.split('T')[0]:'';
+  document.getElementById('tr-notes').value='';
+  var sel=document.getElementById('tr-month');
+  sel.innerHTML=state.months.map(function(m){return '<option value="'+m+'"'+(m===pipe.month?' selected':'')+'>'+m+'</option>';}).join('');
+  onTransferFromChange(pipe.to||null);
+  // Pre-select banks if stored on pipeline
+  setTimeout(function(){
+    var fb=document.getElementById('tr-from-bank');
+    var tb=document.getElementById('tr-to-bank');
+    if(fb&&pipe.fromBankId) fb.value=pipe.fromBankId;
+    if(tb&&pipe.toBankId) tb.value=pipe.toBankId;
+  },50);
+  // Set edit mode flag
+  document.getElementById('m-transfer').dataset.editPipelineId=pipeId;
+  document.getElementById('m-transfer').dataset.linkedPayoutId='';
+  // Update title
+  var title=document.querySelector('#m-transfer .modal-title');
+  if(title) title.innerHTML='&#x21C4; Edit Pipeline Transfer';
+  var sub=document.querySelector('#m-transfer .modal-sub');
+  if(sub) sub.innerHTML='Editing pipeline — '+fmt(pipe.totalAmount)+' &middot; '+(pipe.payoutIds||[]).length+' linked payout'+(pipe.payoutIds&&pipe.payoutIds.length!==1?'s':'');
+  loadExistingAttsToModal('tr','');
+  openModal('m-transfer');
+}
+
 
 function trUpdateFromPayouts(){
   var checks=document.querySelectorAll('.tr-payout-cb:checked');
@@ -4181,27 +4296,50 @@ function populateBankDropdowns(){
   var fromBank=document.getElementById('tr-from-bank');
   var toBank=document.getElementById('tr-to-bank');
   if(fromBank){
-    fromBank.innerHTML='<option value="">—</option>'+banks.filter(function(b){return b.owner===fromWho;}).map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
+    fromBank.innerHTML='<option value="">—</option>'+banks.filter(function(b){return b.owner===fromWho;}).map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('')+'<option value="__add__" style="color:var(--gold)">+ Add new bank…</option>';
   }
   if(toBank){
-    toBank.innerHTML='<option value="">—</option>'+banks.filter(function(b){return b.owner===toWho;}).map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
+    toBank.innerHTML='<option value="">—</option>'+banks.filter(function(b){return b.owner===toWho;}).map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('')+'<option value="__add__" style="color:var(--gold)">+ Add new bank…</option>';
   }
 }
+document.addEventListener('change',function(e){
+  if((e.target.id==='tr-from-bank'||e.target.id==='tr-to-bank')&&e.target.value==='__add__'){
+    e.target.value='';
+    openBankModal();
+  }
+});
 function addBankAccount(){
-  var name=prompt('Bank account name (e.g. BoFA Checking):');
-  if(!name)return;
-  var owner=prompt('Owner (Shon or Sharon):','Shon');
-  if(owner!=='Shon'&&owner!=='Sharon'){toast('Owner must be Shon or Sharon','error');return;}
+  openBankModal();
+}
+function openBankModal(){
+  renderBankModalList();
+  document.getElementById('new-bank-name').value='';
+  openModal('m-add-bank');
+}
+function saveNewBank(){
+  var name=(document.getElementById('new-bank-name').value||'').trim();
+  var owner=document.getElementById('new-bank-owner').value;
+  if(!name){toast('Enter a bank name','error');return;}
   if(!state.bankAccounts) state.bankAccounts=[];
-  state.bankAccounts.push({id:'ba_'+Date.now(),name:name.trim(),owner:owner});
-  save();toast('Bank account added: '+name,'success');
+  state.bankAccounts.push({id:'ba_'+Date.now(),name:name,owner:owner});
+  save();toast('Bank added: '+name,'success');
+  document.getElementById('new-bank-name').value='';
+  renderBankModalList();
   populateBankDropdowns();
   renderBankList();
+  logActivity('add','Bank account added: '+name+' ('+owner+')',{by:state.currentUser});
 }
 function removeBankAccount(id){
-  state.bankAccounts=(state.bankAccounts||[]).filter(function(b){return b.id!==id;});
-  save();toast('Bank account removed','success');
-  renderBankList();
+  var b=(state.bankAccounts||[]).find(function(a){return a.id===id;});
+  var bName=b?b.name:'Bank';
+  confirmAction('Remove Bank','Remove <b>'+bName+'</b>?<br><span style="font-size:11px;color:var(--dim)">Existing transactions referencing this bank will keep their history.</span>','Remove',function(){
+    state.bankAccounts=(state.bankAccounts||[]).filter(function(a){return a.id!==id;});
+    save();toast('Removed: '+bName,'success');
+    renderBankModalList();
+    renderBankList();
+    populateBankDropdowns();
+    logActivity('delete','Bank account removed: '+bName,{by:state.currentUser});
+  });
 }
 function renderBankList(){
   var el=document.getElementById('bank-list');
@@ -4210,6 +4348,28 @@ function renderBankList(){
   el.innerHTML=banks.length?banks.map(function(b){
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--b1)"><span style="font-size:11px;color:var(--text)">'+b.name+' <span style="font-size:9px;color:var(--dim)">('+b.owner+')</span></span><button class="btn sm danger" onclick="removeBankAccount('+qid(b.id)+')" style="font-size:8px;padding:1px 5px">x</button></div>';
   }).join(''):'<div style="font-size:10px;color:var(--dim)">No bank accounts yet</div>';
+}
+function renderBankModalList(){
+  var el=document.getElementById('bank-modal-list');
+  if(!el)return;
+  var banks=state.bankAccounts||[];
+  if(!banks.length){el.innerHTML='<div style="font-size:11px;color:var(--dim);padding:8px 0">No bank accounts yet — add one below.</div>';return;}
+  var sharonBanks=banks.filter(function(b){return b.owner==='Sharon';});
+  var shonBanks=banks.filter(function(b){return b.owner==='Shon';});
+  var html='';
+  if(shonBanks.length){
+    html+='<div style="font-size:9px;text-transform:uppercase;letter-spacing:0.06em;color:var(--amber);margin-bottom:4px">Shon</div>';
+    html+=shonBanks.map(function(b){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(180,158,224,0.04);border:1px solid var(--b1);border-radius:6px;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">&#x1F3E6;</span><span style="font-size:12px;color:var(--text)">'+b.name+'</span></div><button class="btn sm danger" onclick="removeBankAccount('+qid(b.id)+')" style="font-size:8px;padding:2px 6px">Remove</button></div>';
+    }).join('');
+  }
+  if(sharonBanks.length){
+    html+='<div style="font-size:9px;text-transform:uppercase;letter-spacing:0.06em;color:var(--purple);margin:8px 0 4px">Sharon</div>';
+    html+=sharonBanks.map(function(b){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(180,158,224,0.04);border:1px solid var(--b1);border-radius:6px;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">&#x1F3E6;</span><span style="font-size:12px;color:var(--text)">'+b.name+'</span></div><button class="btn sm danger" onclick="removeBankAccount('+qid(b.id)+')" style="font-size:8px;padding:2px 6px">Remove</button></div>';
+    }).join('');
+  }
+  el.innerHTML=html;
 }
 
 function openSettings(){
@@ -5909,8 +6069,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.6.1';
-var _BUILD='1776082579';
+var SERAPHIM_VERSION='3.6.3';
+var _BUILD='1776083629';
 var _initDone=false;
 function init(){
   if(_initDone) return;
