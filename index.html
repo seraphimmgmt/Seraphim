@@ -3102,7 +3102,12 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[{v:'3.7.0',date:'2026-04-13',items:[
+var CHANGELOG=[{v:'3.7.1',date:'2026-04-13',items:[
+{t:'fix',text:'Pipelines and bank accounts now included in first-sync full replace — fixes partner not seeing transfers after refresh'},
+{t:'fix',text:'First sync handles Firebase object→array conversion for all data types including nested pipeline arrays'},
+{t:'fix',text:'mergeArray now converts Firebase objects to arrays instead of silently dropping them'},
+{t:'fix',text:'Fixed variable shadowing bug in mergeArray that could corrupt merge results'}
+]},{v:'3.7.0',date:'2026-04-13',items:[
 {t:'fix',text:'Firebase pipeline sync — pipelines now visible to both partners. Firebase converts arrays to objects with numeric keys; all pipeline data (steps, partials, payoutIds, models) is now properly converted back to arrays on receive.'},
 {t:'fix',text:'Bank accounts also fixed for Firebase object-to-array conversion'},
 {t:'fix',text:'getSharedState ensures clean arrays before pushing to Firebase'},
@@ -5212,7 +5217,22 @@ function mergeRemoteState(remote){
   if(!_initialSyncDone){
     console.log('[Sync] First sync — full replace from remote');
     var arrayKeys=['transactions','subscriptions','staffMembers','workers','archive','todos','activityLog'];
-    arrayKeys.forEach(function(k){if(Array.isArray(remote[k])) state[k]=remote[k];});
+    arrayKeys.forEach(function(k){
+      if(remote[k]!==undefined){
+        state[k]=Array.isArray(remote[k])?remote[k]:remote[k]?Object.values(remote[k]):[];
+      }
+    });
+    // Pipelines and bank accounts — always from remote, with Firebase object→array fix
+    state.pipelines=Array.isArray(remote.pipelines)?remote.pipelines:remote.pipelines?Object.values(remote.pipelines):[];
+    state.pipelines.forEach(function(p){
+      if(p.steps&&!Array.isArray(p.steps)) p.steps=Object.values(p.steps);
+      if(p.payoutIds&&!Array.isArray(p.payoutIds)) p.payoutIds=Object.values(p.payoutIds);
+      if(p.models&&!Array.isArray(p.models)) p.models=Object.values(p.models);
+      if(p.steps) p.steps.forEach(function(s){
+        if(s.partials&&!Array.isArray(s.partials)) s.partials=Object.values(s.partials);
+      });
+    });
+    state.bankAccounts=Array.isArray(remote.bankAccounts)?remote.bankAccounts:remote.bankAccounts?Object.values(remote.bankAccounts):[];
     var simpleKeys=['months','monthlyEarnings','modelEarnings','monthNotes','budgets','models'];
     simpleKeys.forEach(function(k){if(remote[k]!==undefined) state[k]=remote[k];});
     _initialSyncDone=true;
@@ -5224,30 +5244,27 @@ function mergeRemoteState(remote){
     return;
   }
   var changed=false;
-  var mergeArray=function(local,remote,key){
-    if(!Array.isArray(remote)) return local;
+  var mergeArray=function(local,remoteArr,key){
+    if(!remoteArr) return local;
+    if(!Array.isArray(remoteArr)) remoteArr=Object.values(remoteArr);
     // Remote is source of truth — use remote array but preserve local-only items
     // that were created AFTER the last push (unsaved local changes)
     var remoteIds={};
-    remote.forEach(function(item){if(item&&(item.id||item.text)) remoteIds[item.id||item.text]=true;});
+    remoteArr.forEach(function(item){if(item&&(item.id||item.text)) remoteIds[item.id||item.text]=true;});
     var localIds={};
     local.forEach(function(item){if(item&&(item.id||item.text)) localIds[item.id||item.text]=true;});
     // Start with remote items (includes edits + new items from partner)
-    var merged=remote.slice();
+    var merged=remoteArr.slice();
     // Add local items created AFTER last push (not in remote yet)
     // These are items we created locally that haven't been synced
     local.forEach(function(item){
       if(!item) return;
       var id=item.id||item.text;
       if(!remoteIds[id]){
-        // Item exists locally but not remotely
-        // If it was created after last push, keep it (local new item)
-        // If it existed before last push, it was deleted remotely — remove it
         var createdAfterPush=item._localNew||false;
         if(createdAfterPush){
           merged.push(item);
         }
-        // Otherwise: deleted remotely — don't add back
       }
     });
     if(merged.length!==local.length||JSON.stringify(merged.map(function(i){return i.id||i.text;}).sort())!==JSON.stringify(local.map(function(i){return i.id||i.text;}).sort())) changed=true;
@@ -6233,8 +6250,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.7.0';
-var _BUILD='1776113482';
+var SERAPHIM_VERSION='3.7.1';
+var _BUILD='1776113910';
 var _initDone=false;
 function init(){
   if(_initDone) return;
