@@ -795,157 +795,9 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 /* ══════════════════════════════════════════
    MOBILE — 640px and below
    ══════════════════════════════════════════ */
-@media(max-width:640px){
-  html,body{height:auto;overflow:auto;margin:0;padding:0;width:100%}
-  #hdr{position:fixed;top:0;left:0;right:0;height:44px;z-index:200;padding:0 10px;gap:4px}
-  #topnav{display:none !important}
-  #bottom-nav{display:flex !important;height:56px}
-  #app{display:block;position:relative;height:auto;padding:44px 0 56px 0;overflow:visible}
-  #main{width:100%;overflow:visible}
-  .panel{padding:10px 12px;width:100%;box-sizing:border-box}
-  #fab-btn{position:fixed !important;bottom:66px !important;right:14px !important;width:40px !important;height:40px !important;font-size:18px !important;z-index:150}
 
-  .brand{font-size:clamp(9px,2.5vw,12px);letter-spacing:0.08em}
-  #hdr-month,.zoom-wrap{display:none !important}
-  .hbtn{font-size:9px !important;padding:3px 8px !important}
-  #changelog-btn{display:none !important}
-  #sync-label{display:none}
-  #hdr-user{font-size:9px}
-  .logout-btn{font-size:9px !important;padding:2px 6px !important}
 
-  .overlay{align-items:flex-start;padding-top:50px}
-  .modal{max-width:92vw !important;max-height:75vh !important;margin:0 auto;overflow-y:auto}
-  .modal-title{font-size:16px}
-  .frow{flex-direction:column;gap:8px}
-  .fi{font-size:13px;padding:8px 10px;width:100%;box-sizing:border-box}
-  .fsel{font-size:12px;width:100%}
 
-  .hero{padding:12px 14px;overflow:hidden}
-  .hero-amount{font-size:clamp(20px,6vw,30px)}
-  .hero-stats{flex-wrap:wrap;gap:8px}
-  .hero-stat{min-width:60px}
-  .hero-stat-val{font-size:13px}
-
-  .kpis,.mini-kpis{grid-template-columns:1fr 1fr;gap:8px}
-  .kpi{padding:10px}
-  .kpi-v{font-size:16px}
-  .kpi-l,.mk-l{font-size:8px}
-
-  #panel-overview div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important}
-  #panel-overview div[style*="grid-column:1/-1"]{grid-template-columns:1fr !important}
-  .charts-row{grid-template-columns:1fr !important}
-
-  .partner-row,.partner-grid{grid-template-columns:1fr !important}
-  .p-card{padding:12px 14px}
-  .p-card-stat-val{font-size:13px}
-  #total-remaining-card{flex-direction:column;gap:6px;text-align:center}
-
-  .timeline{gap:6px;padding:0 2px 8px}
-  .t-card{min-width:90px;padding:8px 10px}
-  .t-card-earn{font-size:13px}
-  .t-card-exp,.t-card-net{font-size:9px}
-
-  .recent-row{padding:5px 6px;gap:4px}
-  .recent-desc{font-size:10px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .recent-amt{font-size:10px;min-width:55px;text-align:right}
-  .recent-who{font-size:8px;min-width:32px}
-  .recent-date{font-size:8px;min-width:50px}
-
-  .chart-card{padding:10px}
-  .chart-wrap{height:130px}
-
-  .staff-grid,.sub-grid{grid-template-columns:1fr}
-  .worker-card,.staff-card{padding:12px}
-  .sc-name{font-size:13px}
-  .sc-stat{font-size:10px}
-  .sc-actions{flex-wrap:wrap;gap:4px}
-  .sc-actions .btn{font-size:9px;padding:3px 7px}
-
-  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:500px}
-  th,td{padding:5px 6px;font-size:10px}
-  .filters{flex-wrap:wrap;gap:6px}
-  .fsearch{font-size:11px;flex:1}
-
-  .login-card{max-width:90vw;padding:20px}
-  .login-field{font-size:14px;padding:10px 14px}
-
-  .settings-tabs{flex-wrap:wrap;gap:4px}
-  .pill-filter{font-size:10px;padding:4px 10px}
-
-  .pcard{padding:12px}
-  .pstat{font-size:10px}
-
-  .pg-title{font-size:15px}
-  .pg-actions{flex-wrap:wrap;gap:4px}
-  .pg-actions .btn{font-size:9px;padding:3px 7px}
-
-  .section-label{font-size:9px}
-  .btn{font-size:10px;padding:4px 10px}
-  #al-list{max-height:60vh}
-
-  /* Pipeline mobile */
-  .pipe-row{margin-bottom:8px}
-  .pipe-main{padding:8px 10px;gap:6px;flex-wrap:wrap}
-  .pipe-icon{width:24px;height:24px;font-size:10px}
-  .pipe-title{font-size:11px;flex-wrap:wrap}
-  .pipe-meta{font-size:8px}
-  .pipe-badge{font-size:7px;padding:1px 4px}
-  .pipe-dots{margin-left:4px}
-  .pipe-dot{width:5px;height:5px}
-  .pipe-expand{padding:0 10px 10px}
-  .pipe-tl{padding-left:18px}
-  .pipe-step-t,.pipe-step-d{font-size:10px}
-  .pipe-step-btn{font-size:8px;padding:3px 8px}
-  .pipe-undo{font-size:7px}
-  .transfer-row{padding:8px 10px}
-  .tr-label{font-size:11px}
-  .tr-meta{font-size:8px}
-  .tr-amt{font-size:12px}
-  .modal .frow{flex-direction:column;gap:8px}
-  #m-send-transfer .modal{max-width:92vw}
-  #m-payout .modal{max-width:92vw}
-  #m-transfer .modal{max-width:92vw}
-  #m-confirm .modal{max-width:90vw}
-  .pcard{padding:10px 12px}
-  .pcard-name{font-size:12px}
-  .pstat{font-size:10px;padding:4px 0}
-
-  /* Pipeline mobile */
-  .pipe-row{margin-bottom:8px}
-  .pipe-main{padding:8px 10px;gap:6px}
-  .pipe-icon{width:24px;height:24px;font-size:10px}
-  .pipe-title{font-size:11px}
-  .pipe-meta{font-size:8px}
-  .pipe-badge{font-size:7px;padding:1px 4px}
-  .pipe-dots{gap:2px}
-  .pipe-dot{width:5px;height:5px}
-  .pipe-expand{padding:0 10px 10px}
-  .pipe-tl{padding-left:18px}
-  .pipe-step{padding:4px 0 4px 10px}
-  .pipe-step-dot{width:8px;height:8px;left:-18px}
-  .pipe-step-t{font-size:10px}
-  .pipe-step-d{font-size:8px}
-  .pipe-step-btn{font-size:8px;padding:3px 8px}
-  .pipe-summary{font-size:10px;padding:6px 8px}
-  /* Transfer rows mobile */
-  .transfer-row{padding:8px 10px;flex-direction:column;gap:6px;align-items:stretch}
-  .transfer-row>div{width:100%}
-  .tr-amt{font-size:12px}
-  .tr-label{font-size:11px}
-  .tr-meta{font-size:8px}
-  /* Send modal mobile */
-  #m-send-transfer .modal{max-width:95vw}
-  /* Payout modal mobile */
-  #m-payout .modal{max-width:95vw}
-}
-
-@media(max-width:380px){
-  .kpis,.mini-kpis{grid-template-columns:1fr}
-  .recent-who,.recent-date{display:none}
-  table{min-width:400px}
-  .bnav-item span{font-size:8px}
-}
 
 
 /* Pipeline animations */
@@ -1008,6 +860,166 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
 .tab-badge{position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#EFB43C}
 .nav-item{position:relative}
 
+
+/* ═══ MOBILE 640px ═══ */
+@media(max-width:640px){
+  /* Layout frame */
+  html,body{height:auto;overflow:auto;margin:0;padding:0;width:100%}
+  #hdr{position:fixed;top:0;left:0;right:0;height:44px;z-index:200;padding:0 10px;gap:4px}
+  #topnav{display:none !important}
+  #bottom-nav{display:flex !important}
+  #app{display:block;position:relative;height:auto;padding:44px 0 56px 0;overflow:visible}
+  #main{width:100%;overflow:visible;padding:0}
+  .panel{padding:10px 12px;width:100%;box-sizing:border-box;overflow-x:hidden}
+
+  /* FAB */
+  #fab-btn{position:fixed !important;bottom:66px !important;right:14px !important;width:44px !important;height:44px !important;font-size:20px !important;z-index:150}
+
+  /* Header */
+  .brand{font-size:clamp(9px,2.5vw,12px);letter-spacing:0.08em}
+  #hdr-month,.zoom-wrap{display:none !important}
+  .hbtn{font-size:9px !important;padding:3px 8px !important}
+  #changelog-btn{display:none !important}
+  #sync-label{display:none}
+  #hdr-user{font-size:9px}
+  .logout-btn{font-size:9px !important;padding:2px 6px !important}
+
+  /* Tables — critical fix */
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;display:block}
+  table{min-width:600px;width:max-content;table-layout:auto}
+  th,td{padding:5px 6px;font-size:10px;white-space:nowrap}
+  td .btn{font-size:8px !important;padding:2px 5px !important}
+  .flex-actions{gap:2px !important;flex-wrap:nowrap}
+  .flex-actions .btn{font-size:8px !important;padding:2px 4px !important;white-space:nowrap}
+
+  /* Transaction filters */
+  .filters{flex-wrap:wrap;gap:6px}
+  .fsearch{font-size:11px;flex:1;min-width:120px}
+  .fsel{font-size:11px;min-width:80px}
+
+  /* Page headers */
+  .ph{padding:0}
+  .ph-top{flex-wrap:wrap;gap:6px}
+  .pg-title{font-size:15px}
+  .pg-sub{font-size:10px}
+  .pg-actions{flex-wrap:wrap;gap:4px}
+  .pg-actions .btn{font-size:9px;padding:3px 7px}
+
+  /* Modals */
+  .overlay{align-items:flex-start;padding-top:50px}
+  .modal{max-width:92vw !important;max-height:75vh !important;margin:0 auto;overflow-y:auto;width:92vw}
+  .modal.wide{max-width:92vw !important}
+  .modal-title{font-size:16px}
+  .frow{flex-direction:column;gap:8px}
+  .fi{font-size:13px;padding:8px 10px;width:100%;box-sizing:border-box}
+  .fsel{font-size:12px;width:100%}
+  .ma{flex-wrap:wrap;gap:6px;justify-content:center}
+  #m-transfer .modal{max-width:92vw !important}
+  #m-confirm .modal{max-width:90vw !important}
+
+  /* Hero */
+  .hero{padding:12px 14px;overflow:hidden}
+  .hero-amount{font-size:clamp(20px,6vw,30px)}
+  .hero-stats{flex-wrap:wrap;gap:8px}
+  .hero-stat{min-width:60px}
+  .hero-stat-val{font-size:13px}
+
+  /* KPIs */
+  .kpis,.mini-kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:10px}
+  .kpi-v{font-size:16px}
+  .kpi-l,.mk-l{font-size:8px}
+
+  /* Overview grid */
+  #panel-overview div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important}
+  #panel-overview div[style*="grid-column:1/-1"]{grid-template-columns:1fr !important}
+  .charts-row{grid-template-columns:1fr !important}
+
+  /* Partners */
+  .partner-row,.partner-grid{grid-template-columns:1fr !important}
+  .p-card,.pcard{padding:12px 14px}
+  .p-card-stat-val{font-size:13px}
+  .pstat{font-size:10px}
+  #total-remaining-card{flex-direction:column;gap:6px;text-align:center}
+
+  /* Transfer rows */
+  .transfer-row{flex-direction:column;align-items:stretch !important}
+  .transfer-row>div{width:100%}
+  .tr-label{font-size:11px}
+  .tr-meta{font-size:9px}
+  .tr-amt{font-size:12px}
+
+  /* Pipeline */
+  .pipe-row{margin-bottom:8px}
+  .pipe-main{padding:8px 10px;gap:6px}
+  .pipe-title{font-size:11px;flex-wrap:wrap}
+  .pipe-meta{font-size:8px}
+  .pipe-expand{padding:0 10px 10px}
+  .pipe-tl{padding-left:18px}
+
+  /* Timeline */
+  .timeline{gap:6px;padding:0 2px 8px}
+  .t-card{min-width:90px;padding:8px 10px}
+  .t-card-earn{font-size:13px}
+  .t-card-exp,.t-card-net{font-size:9px}
+
+  /* Recent */
+  .recent-row{padding:5px 6px;gap:4px}
+  .recent-desc{font-size:10px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .recent-amt{font-size:10px;min-width:55px;text-align:right}
+  .recent-who{font-size:8px;min-width:32px}
+  .recent-date{font-size:8px;min-width:50px}
+
+  /* Charts */
+  .chart-card{padding:10px}
+  .chart-wrap{height:130px}
+
+  /* Team */
+  .staff-grid,.sub-grid{grid-template-columns:1fr}
+  .worker-card,.staff-card{padding:12px}
+  .sc-name{font-size:13px}
+  .sc-stat{font-size:10px}
+  .sc-actions{flex-wrap:wrap;gap:4px}
+  .sc-actions .btn{font-size:9px;padding:3px 7px}
+
+  /* Login */
+  .login-card{max-width:90vw;padding:20px}
+  .login-field{font-size:14px;padding:10px 14px}
+
+  /* Settings */
+  .settings-tabs{flex-wrap:wrap;gap:4px}
+  .pill-filter{font-size:10px;padding:4px 10px}
+
+  /* Section labels, buttons */
+  .section-label{font-size:9px}
+  .btn{font-size:10px;padding:4px 10px}
+  #al-list{max-height:60vh}
+
+  /* Monthly breakdown table */
+  .model-breakdown{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .model-breakdown table{min-width:400px}
+
+  /* Payout picker in transfer modal */
+  #tr-payout-picker{max-height:100px}
+  #tr-payout-picker label{padding:6px;font-size:10px}
+  /* Batch checkbox column */
+  .payout-link-cb{width:16px;height:16px}
+  /* Ensure all tables scroll */
+  .tw{overflow:hidden;margin:0 -12px}
+  .tw .tscroll{padding:0 12px}
+  /* Pipe step card */
+  .pipe-expand *{max-width:100%;box-sizing:border-box}
+}
+
+/* ═══ MOBILE 380px ═══ */
+@media(max-width:380px){
+  .kpis,.mini-kpis{grid-template-columns:1fr}
+  .recent-who,.recent-date{display:none}
+  table{min-width:400px}
+  .bnav-item span{font-size:8px}
+  .hero-amount{font-size:20px}
+  .pg-actions .btn{font-size:8px;padding:2px 5px}
+}
 </style>
 
 
@@ -1069,7 +1081,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.6</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.6</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -1153,7 +1165,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     </div>
     <!-- PAYOUTS -->
     <div class="panel" id="panel-payouts">
-      <div class="ph"><div class="ph-top"><span class="pg-title">Fanvue Payouts</span><div class="pg-actions"><button class="btn sm primary" onclick="openModelEarningsModal()">+ Set Earnings</button><button class="btn sm primary" onclick="openPayoutModal()">+ Log Payout</button></div></div><div class="pg-sub">Pipeline: Fanvue &#x2192; Shon &#x2192; Partners</div></div>
+      <div class="ph"><div class="ph-top"><span class="pg-title">Fanvue Payouts</span><div class="pg-actions"><button class="btn sm primary" onclick="openModelEarningsModal()">+ Set Earnings</button><button class="btn sm primary" onclick="openPayoutModal()">+ Log Payout</button><button class="btn sm" onclick="openBatchTransfer()" style="border-color:rgba(180,158,224,0.3);color:var(--teal)">&#x21C4; Link &amp; Transfer</button></div></div><div class="pg-sub">Pipeline: Fanvue &#x2192; Shon &#x2192; Partners</div></div>
       <div id="model-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px"></div>
       <div class="tw" style="margin-bottom:16px"><div class="tw-hdr"><span class="tw-title">Akira &amp; Mila Monthly Breakdown</span><div class="tw-actions"><button class="btn sm" onclick="openModelEarningsModal()">Edit</button></div></div><div class="tscroll"><table><thead id="model-thead"><tr></tr></thead><tbody id="model-tbody"></tbody></table></div></div>
       <div class="filters">
@@ -1529,6 +1541,10 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   <div class="modal-sub">Record a Fanvue withdrawal</div>
   <input type="hidden" id="po-id">
   <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="po-date"></div>
+    <div class="fg" style="margin-top:16px"><label class="fl">Bank accounts</label>
+    <div id="bank-list" style="margin-bottom:8px"></div>
+    <button class="btn sm" onclick="addBankAccount()" style="font-size:10px">+ Add bank account</button>
+  </div>
   <div class="fg"><label class="fl">Models</label>
     <div id="po-model-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
     <div id="po-model-amounts"></div>
@@ -1559,11 +1575,15 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <div class="fg"><label class="fl">To</label><select class="fi" id="tr-to"><option value="Shon">Shon</option><option value="Sharon">Sharon</option></select></div>
   </div>
   <div class="frow">
+    <div class="fg"><label class="fl">From bank</label><select class="fi" id="tr-from-bank"><option value="">—</option></select></div>
+    <div class="fg"><label class="fl">To bank</label><select class="fi" id="tr-to-bank"><option value="">—</option></select></div>
+  </div>
+  <div class="frow">
     <div class="fg"><label class="fl">Amount ($)</label><input type="number" class="fi" id="tr-amount" placeholder="0.00" step="0.01"></div>
     <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="tr-date"></div>
   </div>
   <div class="fg"><label class="fl">Month</label><select class="fi" id="tr-month"></select></div>
-  <div class="frow"><div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div><div class="fg" style="max-width:140px"><label class="fl">Method</label><select class="fi" id="tr-method"><option value="">None</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select></div></div></div>
+  <div class="frow"><div class="fg"><label class="fl">Reason / Notes</label><input class="fi" id="tr-notes" placeholder="e.g. Covering rent, repaying advance..."></div><div class="fg" style="max-width:140px"><label class="fl">Method</label><select class="fi" id="tr-method"><option value="">None</option><option>Zelle</option><option>Wire</option><option>Cash</option><option>Crypto</option><option>Other</option></select></div></div>
   <div class="fg"><label class="fl">Invoices &amp; receipts</label>
     <div class="modal-att-zone" id="tr-att-zone" onclick="document.getElementById('tr-att-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');handleModalDrop(event,'tr')">
       <span class="att-placeholder" id="tr-att-placeholder">Drop files here — images, PDFs, invoices</span>
@@ -1718,7 +1738,7 @@ const CAT_COLORS={Marketing:'rgba(180,158,224,0.7)',Software:'rgba(96,165,250,0.
 // Pre-load Firebase config from localStorage
 var _preload=null;
 try{_preload=JSON.parse(localStorage.getItem('seraphim_v3')||'null');}catch(e){}
-var state={pipelines:[],
+var state={pipelines:[],bankAccounts:[{id:"ba_1",name:"BoFA Checking",owner:"Shon"},{id:"ba_2",name:"Canada Account",owner:"Sharon"}],
   transactions:[],months:[],monthlyEarnings:{},modelEarnings:{},monthNotes:{},
   subscriptions:[],staffMembers:[],workers:[],
   budgets:{Marketing:2500,Software:1000,VA:2500,Travel:3000,Equipment:500,Personal:500,Other:500},
@@ -1737,7 +1757,7 @@ var charts={};
 
 function saveLocal(){
   invalidateCalcCache();
-  try{localStorage.setItem('seraphim_v3',JSON.stringify({transactions:state.transactions,pipelines:state.pipelines||[],months:state.months,monthlyEarnings:state.monthlyEarnings,modelEarnings:state.modelEarnings,monthNotes:state.monthNotes,subscriptions:state.subscriptions,staffMembers:state.staffMembers,workers:state.workers,budgets:state.budgets,models:state.models,todos:state.todos,currentUser:state.currentUser,firebaseConfig:state.firebaseConfig,archive:state.archive,activityLog:state.activityLog}));}catch(e){}
+  try{localStorage.setItem('seraphim_v3',JSON.stringify({transactions:state.transactions,pipelines:state.pipelines||[],bankAccounts:state.bankAccounts||[],months:state.months,monthlyEarnings:state.monthlyEarnings,modelEarnings:state.modelEarnings,monthNotes:state.monthNotes,subscriptions:state.subscriptions,staffMembers:state.staffMembers,workers:state.workers,budgets:state.budgets,models:state.models,todos:state.todos,currentUser:state.currentUser,firebaseConfig:state.firebaseConfig,archive:state.archive,activityLog:state.activityLog}));}catch(e){}
 }
 function save(){saveLocal();debouncedPush();}
 
@@ -1880,7 +1900,7 @@ function switchTab(tab,el,forceLatest){
 function fabAction(){
   var tab=state.currentTab||'overview';
   if(tab==='overview'||tab==='transactions'||tab==='monthly') openAddTransaction();
-  else if(tab==='payouts') openEditEarnings();
+  else if(tab==='payouts') openPayoutModal();
   else if(tab==='partners') openTransferModal();
   else if(tab==='staff') openModal('m-staff-member');
   else if(tab==='subscriptions') openModal('m-sub');
@@ -2204,6 +2224,7 @@ function renderPayouts(){
     var linkedPipe=(state.pipelines||[]).find(function(p){return p.payoutIds&&p.payoutIds.indexOf(t.id)>=0;});
     var miniDots=linkedPipe?renderPipelineDots(linkedPipe):'';
     return '<tr'+rowDragAttrs(t.id)+(isLinked?' style="opacity:0.78"':'')+'>'+
+      '<td style="width:30px"><input type="checkbox" class="payout-link-cb" value="'+t.id+'" style="accent-color:var(--gold)" onclick="event.stopPropagation()"></td>'+
       '<td class="td-muted">'+fmtD(t.date)+'</td>'+
       '<td><strong>'+t.desc+'</strong><div class="att-thumbs">'+attachmentThumbs(t)+'</div>'+(isLinked?' <span style="font-size:9px;color:var(--teal);background:rgba(180,158,224,0.1);border:1px solid rgba(180,158,224,0.2);border-radius:4px;padding:1px 5px">&#x21C4; transferred</span>':'')+'</td>'+
       '<td class="amt pos">'+fmt(t.amount)+'</td>'+
@@ -2264,6 +2285,7 @@ function onTransferFromChange(forceTo){
   const other=from==='Sharon'?'Shon':'Sharon';
   toEl.innerHTML='<option value="'+other+'">'+other+'</option><option value="'+from+'">'+from+' (self)</option>';
   if(forceTo) toEl.value=forceTo;
+  populateBankDropdowns();
 }
 function saveTransfer(){
   pushUndo();
@@ -2278,17 +2300,44 @@ function saveTransfer(){
     transferTo:document.getElementById('tr-to').value,
     month:document.getElementById('tr-month').value,
     notes:document.getElementById('tr-notes').value.trim(),
-    cat:''
+    cat:'',
+    fromBank:(document.getElementById('tr-from-bank')||{}).value||'',
+    toBank:(document.getElementById('tr-to-bank')||{}).value||''
   };
   var trAtts=getAndClearPendingAtts('tr');
   if(trAtts.length) txn.attachments=trAtts;
   if(!txn.amount) return;
-  // Link to payout if opened from payout row
-  const linkedId=document.getElementById('m-transfer').dataset.linkedPayoutId;
-  if(linkedId&&!id) txn.linkedPayoutId=linkedId;
+  // Check for linked payouts from picker
+  var linkedPayoutIds=[];
+  document.querySelectorAll('.tr-payout-cb:checked').forEach(function(cb){linkedPayoutIds.push(cb.value);});
+  // Old single-link support
+  var linkedId=document.getElementById('m-transfer').dataset.linkedPayoutId;
+  if(linkedId&&!id&&linkedPayoutIds.indexOf(linkedId)<0) linkedPayoutIds.push(linkedId);
   document.getElementById('m-transfer').dataset.linkedPayoutId='';
-  if(id){const i=state.transactions.findIndex(t=>t.id===id);if(i>=0){if(state.transactions[i].isRecurring)txn._edited=true;state.transactions[i]=txn;}logActivity('edit','Edited transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});}
+  if(id){var i=state.transactions.findIndex(function(t){return t.id===id;});if(i>=0){if(state.transactions[i].isRecurring)txn._edited=true;state.transactions[i]=txn;}logActivity('edit','Edited transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});}
   else{state.transactions.push(txn);logActivity('transfer','Transfer: '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),{month:txn.month});}
+  // Create pipeline if payouts were linked
+  if(linkedPayoutIds.length&&!id){
+    initPipelines();
+    var linkedPayouts=state.transactions.filter(function(t){return linkedPayoutIds.indexOf(t.id)>=0;});
+    var pipeTotal=linkedPayouts.reduce(function(s,t){return s+t.amount;},0);
+    var allModels=[];
+    var allAmounts={};
+    linkedPayouts.forEach(function(p){
+      if(p.models) p.models.forEach(function(m){if(allModels.indexOf(m)<0)allModels.push(m);});
+      if(p.modelAmounts) Object.keys(p.modelAmounts).forEach(function(k){allAmounts[k]=(allAmounts[k]||0)+p.modelAmounts[k];});
+    });
+    var pipe={id:'pipe_'+Date.now(),payoutIds:linkedPayoutIds,totalAmount:pipeTotal,from:'Shon',to:'Sharon',models:allModels,modelAmounts:allAmounts,month:txn.month,createdAt:new Date().toISOString().split('T')[0],
+      steps:[
+        {status:'done',date:linkedPayouts[0]?linkedPayouts[0].date:txn.date,amount:pipeTotal,note:allModels.length?allModels.join(' + '):''},
+        {status:'done',date:txn.date,amount:pipeTotal},
+        {status:'done',date:txn.date,amount:txn.amount,method:txn.notes||'',partials:[{amount:txn.amount,date:txn.date,method:txn.notes||''}]}
+      ]
+    };
+    state.pipelines.push(pipe);
+    txn.pipelineId=pipe.id;
+    logActivity('add','Pipeline created from '+linkedPayoutIds.length+' payouts — '+fmt(pipeTotal),{by:state.currentUser});
+  }
   save();closeModal('m-transfer');
   toast('Transfer logged — '+txn.who+' → '+txn.transferTo+' '+fmt(txn.amount),'success');
   if(state.currentTab==='partners') renderPartners();
@@ -2322,7 +2371,7 @@ function renderPartners(){
           +'<div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="openTransferModal('+qid(t.id)+')">'
           +'<div style="width:30px;height:30px;border-radius:50%;background:rgba(180,158,224,0.12);border:1px solid rgba(180,158,224,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">&#x21C4;</div>'
           +'<div style="flex:1;min-width:0"><div class="tr-label">'+t.desc+'</div>'
-          +'<div class="tr-meta">'+fmtD(t.date)+' &middot; '+t.who+' &rarr; '+(t.transferTo||'Partner')+' &middot; '+t.month+(t.method?' &middot; <span style="font-size:8px;color:var(--muted)">'+t.method+'</span>':'')+'</div></div>'
+          +'<div class="tr-meta">'+fmtD(t.date)+' &middot; '+t.who+bankName(t.fromBank)+' &rarr; '+(t.transferTo||'Partner')+bankName(t.toBank)+' &middot; '+t.month+(t.method?' &middot; <span style="font-size:8px;color:var(--muted)">'+t.method+'</span>':'')+'</div></div>'
           +'<div style="text-align:right;flex-shrink:0"><div class="tr-amt">'+fmt(t.amount)+'</div></div>'
           +'</div>'
           +'<div style="display:flex;gap:4px;justify-content:flex-end;padding:4px 12px 8px"><button class="btn sm" onclick="openTransferModal('+qid(t.id)+')" style="font-size:9px">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')" style="font-size:9px">Delete</button></div>'
@@ -2906,6 +2955,31 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.6.0',date:'Apr 2026',title:'Bank accounts + edit audit',items:[
+  {t:'feature',text:'Bank accounts system — add/remove accounts in Settings, stored in Firebase'},
+  {t:'feature',text:'From/To bank dropdowns on transfer modal — populated per partner'},
+  {t:'feature',text:'Transfer rows show bank names (e.g. BoFA → Canada Account)'},
+  {t:'feature',text:'Default accounts: BoFA Checking (Shon) and Canada Account (Sharon)'},
+]},
+{v:'3.5.0',date:'Apr 2026',title:'Batch transfers + Invalid Date fix',items:[
+  {t:'fix',text:'Invalid Date on pipeline rows — fmtD now handles ISO timestamps by splitting on T'},
+  {t:'feature',text:'Payout picker in transfer modal — select unlinked payouts to combine into one transfer'},
+  {t:'feature',text:'Checkboxes on payout rows — select multiple then click "Link & Transfer" to batch them'},
+  {t:'feature',text:'Auto-creates pipeline when payouts linked — all 3 steps marked done for retroactive entries'},
+  {t:'fix',text:'Transfer modal notes/method row no longer breaks modal layout'},
+]},
+{v:'3.4.0',date:'Apr 2026',title:'Transfer modal + mobile fix',items:[
+  {t:'fix',text:'Transfer modal had extra closing div — invoices, info banner, and buttons were outside the modal'},
+  {t:'fix',text:'All modals verified outside m-transfer DOM nesting'},
+]},
+{v:'3.4.0',date:'Apr 2026',title:'Mobile CSS + FAB fix',items:[
+  {t:'fix',text:'FAB on Payouts tab now opens payout modal (was opening earnings editor)'},
+  {t:'fix',text:'Transaction table properly scrolls horizontally on mobile — no more clipping'},
+  {t:'fix',text:'All action buttons sized for mobile tap targets'},
+  {t:'fix',text:'Modals constrained to 92vw on mobile'},
+  {t:'fix',text:'Pipeline rows and transfer rows stack vertically on mobile'},
+  {t:'fix',text:'Clean single mobile CSS block — no conflicting media queries'},
+]},
 {v:'3.3.6',date:'Apr 2026',title:'Edit payout fix',items:[
   {t:'fix',text:'Edit payout now pre-fills model amounts, date, who, and notes from existing transaction'},
   {t:'fix',text:'Model chips reflect which models were in the original payout'},
@@ -4056,6 +4130,83 @@ function deletePipeline(pipeId){
 }
 
 
+function trUpdateFromPayouts(){
+  var checks=document.querySelectorAll('.tr-payout-cb:checked');
+  if(!checks.length) return;
+  var total=0;
+  var descs=[];
+  checks.forEach(function(cb){
+    var p=state.transactions.find(function(t){return t.id===cb.value;});
+    if(p){total+=p.amount;descs.push(p.desc);}
+  });
+  document.getElementById('tr-amount').value=total.toFixed(2);
+  if(!document.getElementById('tr-desc').value||document.getElementById('tr-desc').dataset.auto==='1'){
+    document.getElementById('tr-desc').value=descs.join(' + ');
+    document.getElementById('tr-desc').dataset.auto='1';
+  }
+}
+
+function openBatchTransfer(){
+  var checked=document.querySelectorAll('.payout-link-cb:checked');
+  if(!checked.length){toast('Select payouts to link first','info');return;}
+  var ids=[];
+  checked.forEach(function(cb){ids.push(cb.value);});
+  // Open transfer modal with these pre-selected
+  openTransferModal();
+  // After modal opens, check the matching payouts in the picker
+  setTimeout(function(){
+    ids.forEach(function(id){
+      var cb=document.querySelector('.tr-payout-cb[value="'+id+'"]');
+      if(cb){cb.checked=true;}
+    });
+    trUpdateFromPayouts();
+  },100);
+}
+
+
+function bankName(id){
+  if(!id)return '';
+  var b=(state.bankAccounts||[]).find(function(a){return a.id===id;});
+  return b?' ('+b.name+')':'';
+}
+function populateBankDropdowns(){
+  var banks=state.bankAccounts||[];
+  var fromWho=document.getElementById('tr-from').value;
+  var toWho=document.getElementById('tr-to').value;
+  var fromBank=document.getElementById('tr-from-bank');
+  var toBank=document.getElementById('tr-to-bank');
+  if(fromBank){
+    fromBank.innerHTML='<option value="">—</option>'+banks.filter(function(b){return b.owner===fromWho;}).map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
+  }
+  if(toBank){
+    toBank.innerHTML='<option value="">—</option>'+banks.filter(function(b){return b.owner===toWho;}).map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
+  }
+}
+function addBankAccount(){
+  var name=prompt('Bank account name (e.g. BoFA Checking):');
+  if(!name)return;
+  var owner=prompt('Owner (Shon or Sharon):','Shon');
+  if(owner!=='Shon'&&owner!=='Sharon'){toast('Owner must be Shon or Sharon','error');return;}
+  if(!state.bankAccounts) state.bankAccounts=[];
+  state.bankAccounts.push({id:'ba_'+Date.now(),name:name.trim(),owner:owner});
+  save();toast('Bank account added: '+name,'success');
+  populateBankDropdowns();
+  renderBankList();
+}
+function removeBankAccount(id){
+  state.bankAccounts=(state.bankAccounts||[]).filter(function(b){return b.id!==id;});
+  save();toast('Bank account removed','success');
+  renderBankList();
+}
+function renderBankList(){
+  var el=document.getElementById('bank-list');
+  if(!el)return;
+  var banks=state.bankAccounts||[];
+  el.innerHTML=banks.length?banks.map(function(b){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--b1)"><span style="font-size:11px;color:var(--text)">'+b.name+' <span style="font-size:9px;color:var(--dim)">('+b.owner+')</span></span><button class="btn sm danger" onclick="removeBankAccount('+qid(b.id)+')" style="font-size:8px;padding:1px 5px">x</button></div>';
+  }).join(''):'<div style="font-size:10px;color:var(--dim)">No bank accounts yet</div>';
+}
+
 function openSettings(){
   renderSyncLog();renderIconGrid();loadPrefsUI();
   var sue=document.getElementById('settings-user-email');
@@ -4071,7 +4222,7 @@ function openSettings(){
   document.getElementById('fb-pid').value=fc.projectId||'';
   document.getElementById('fb-key').value=fc.apiKey||'';
   updateFirebaseUI();
-  updateProfileButtons();openModal('m-settings');
+  renderBankList();updateProfileButtons();openModal('m-settings');
 }
 function saveSettings(){
   var mraw=document.getElementById('cfg-models').value;
@@ -4659,7 +4810,7 @@ function stripAttachmentData(txns){
 function getSharedState(){
   return{
     _requiredBuild:_BUILD,
-    pipelines:state.pipelines||[],
+    pipelines:state.pipelines||[],bankAccounts:state.bankAccounts||[],
     transactions:stripAttachmentData(state.transactions),
     months:state.months,
     monthlyEarnings:state.monthlyEarnings,
@@ -4784,7 +4935,7 @@ function mergeRemoteState(remote){
     return merged;
   };
   state.transactions=mergeArray(state.transactions,remote.transactions||[],'id');
-  state.pipelines=remote.pipelines||[];
+  state.pipelines=remote.pipelines||[];state.bankAccounts=remote.bankAccounts||state.bankAccounts||[];
   state.subscriptions=mergeArray(state.subscriptions,remote.subscriptions||[],'id');
   state.staffMembers=mergeArray(state.staffMembers,remote.staffMembers||[],'id');
   state.workers=mergeArray(state.workers,remote.workers||[],'id');
@@ -5753,8 +5904,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.3.6';
-var _BUILD='1776045639';
+var SERAPHIM_VERSION='3.6.0';
+var _BUILD='1776080269';
 var _initDone=false;
 function init(){
   if(_initDone) return;
