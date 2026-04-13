@@ -3102,7 +3102,12 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[{v:'3.6.9',date:'2026-04-13',items:[
+var CHANGELOG=[{v:'3.7.0',date:'2026-04-13',items:[
+{t:'fix',text:'Firebase pipeline sync — pipelines now visible to both partners. Firebase converts arrays to objects with numeric keys; all pipeline data (steps, partials, payoutIds, models) is now properly converted back to arrays on receive.'},
+{t:'fix',text:'Bank accounts also fixed for Firebase object-to-array conversion'},
+{t:'fix',text:'getSharedState ensures clean arrays before pushing to Firebase'},
+{t:'fix',text:'initPipelines handles Firebase object format gracefully'}
+]},{v:'3.6.9',date:'2026-04-13',items:[
 {t:'fix',text:'Send Transfer now uses full pipeline amount — not half. Max fills full remaining balance.'},
 {t:'fix',text:'Completion check uses full amount — pipeline completes when full payout is transferred'},
 {t:'ui',text:'Renamed "Share amount" to "Transfer amount" in Send Transfer modal'}
@@ -3899,7 +3904,10 @@ var _origSwitchTab=typeof switchTab==='function'?switchTab:null;
 // ═══ PAYOUT PIPELINE SYSTEM ═══
 var _pipelineExpanded={};
 var _pipelineUndoStack={};
-function initPipelines(){if(!state.pipelines)state.pipelines=[];}
+function initPipelines(){
+  if(!state.pipelines) state.pipelines=[];
+  if(!Array.isArray(state.pipelines)) state.pipelines=Object.values(state.pipelines);
+}
 
 function openPayoutModal(id){
   initPipelines();
@@ -5117,9 +5125,11 @@ function stripAttachmentData(txns){
   });
 }
 function getSharedState(){
+  var pipes=Array.isArray(state.pipelines)?state.pipelines:state.pipelines?Object.values(state.pipelines):[];
+  var banks=Array.isArray(state.bankAccounts)?state.bankAccounts:state.bankAccounts?Object.values(state.bankAccounts):[];
   return{
     _requiredBuild:_BUILD,
-    pipelines:state.pipelines||[],bankAccounts:state.bankAccounts||[],
+    pipelines:pipes,bankAccounts:banks,
     transactions:stripAttachmentData(state.transactions),
     months:state.months,
     monthlyEarnings:state.monthlyEarnings,
@@ -5244,7 +5254,17 @@ function mergeRemoteState(remote){
     return merged;
   };
   state.transactions=mergeArray(state.transactions,remote.transactions||[],'id');
-  state.pipelines=remote.pipelines||[];state.bankAccounts=remote.bankAccounts||state.bankAccounts||[];
+  state.pipelines=Array.isArray(remote.pipelines)?remote.pipelines:remote.pipelines?Object.values(remote.pipelines):[];
+  // Fix Firebase object→array conversion for nested pipeline data
+  state.pipelines.forEach(function(p){
+    if(p.steps&&!Array.isArray(p.steps)) p.steps=Object.values(p.steps);
+    if(p.payoutIds&&!Array.isArray(p.payoutIds)) p.payoutIds=Object.values(p.payoutIds);
+    if(p.models&&!Array.isArray(p.models)) p.models=Object.values(p.models);
+    if(p.steps) p.steps.forEach(function(s){
+      if(s.partials&&!Array.isArray(s.partials)) s.partials=Object.values(s.partials);
+    });
+  });
+  state.bankAccounts=Array.isArray(remote.bankAccounts)?remote.bankAccounts:remote.bankAccounts?Object.values(remote.bankAccounts):state.bankAccounts||[];
   state.subscriptions=mergeArray(state.subscriptions,remote.subscriptions||[],'id');
   state.staffMembers=mergeArray(state.staffMembers,remote.staffMembers||[],'id');
   state.workers=mergeArray(state.workers,remote.workers||[],'id');
@@ -6213,8 +6233,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.6.9';
-var _BUILD='1776085148';
+var SERAPHIM_VERSION='3.7.0';
+var _BUILD='1776113482';
 var _initDone=false;
 function init(){
   if(_initDone) return;
