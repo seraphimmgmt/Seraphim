@@ -141,7 +141,7 @@ tr:last-child td{border-bottom:none}
 .btn.danger:hover{background:rgba(239,68,68,0.08)}
 .btn.sm{padding:4px 10px;font-size:11px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
-  z-index:200;display:none;align-items:center;justify-content:center}
+  z-index:500;display:none;align-items:center;justify-content:center}
 .overlay.open{display:flex}
 .modal{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:28px;
   width:100%;max-width:500px;max-height:90vh;overflow-y:auto;
@@ -269,6 +269,7 @@ tr:last-child td{border-bottom:none}
 .arc-desc{color:var(--text);margin-bottom:2px}
 .arc-meta{font-size:10px;color:var(--dim)}
 .arc-actions{display:flex;gap:6px;flex-shrink:0}
+#m-confirm{z-index:9000 !important}
 #m-confirm .modal{border-color:rgba(235,87,87,0.25)}
 #m-confirm .modal-title{color:var(--red)}
 
@@ -882,6 +883,61 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   .section-label{font-size:9px}
   .btn{font-size:10px;padding:4px 10px}
   #al-list{max-height:60vh}
+
+  /* Pipeline mobile */
+  .pipe-row{margin-bottom:8px}
+  .pipe-main{padding:8px 10px;gap:6px;flex-wrap:wrap}
+  .pipe-icon{width:24px;height:24px;font-size:10px}
+  .pipe-title{font-size:11px;flex-wrap:wrap}
+  .pipe-meta{font-size:8px}
+  .pipe-badge{font-size:7px;padding:1px 4px}
+  .pipe-dots{margin-left:4px}
+  .pipe-dot{width:5px;height:5px}
+  .pipe-expand{padding:0 10px 10px}
+  .pipe-tl{padding-left:18px}
+  .pipe-step-t,.pipe-step-d{font-size:10px}
+  .pipe-step-btn{font-size:8px;padding:3px 8px}
+  .pipe-undo{font-size:7px}
+  .transfer-row{padding:8px 10px}
+  .tr-label{font-size:11px}
+  .tr-meta{font-size:8px}
+  .tr-amt{font-size:12px}
+  .modal .frow{flex-direction:column;gap:8px}
+  #m-send-transfer .modal{max-width:92vw}
+  #m-payout .modal{max-width:92vw}
+  #m-transfer .modal{max-width:92vw}
+  #m-confirm .modal{max-width:90vw}
+  .pcard{padding:10px 12px}
+  .pcard-name{font-size:12px}
+  .pstat{font-size:10px;padding:4px 0}
+
+  /* Pipeline mobile */
+  .pipe-row{margin-bottom:8px}
+  .pipe-main{padding:8px 10px;gap:6px}
+  .pipe-icon{width:24px;height:24px;font-size:10px}
+  .pipe-title{font-size:11px}
+  .pipe-meta{font-size:8px}
+  .pipe-badge{font-size:7px;padding:1px 4px}
+  .pipe-dots{gap:2px}
+  .pipe-dot{width:5px;height:5px}
+  .pipe-expand{padding:0 10px 10px}
+  .pipe-tl{padding-left:18px}
+  .pipe-step{padding:4px 0 4px 10px}
+  .pipe-step-dot{width:8px;height:8px;left:-18px}
+  .pipe-step-t{font-size:10px}
+  .pipe-step-d{font-size:8px}
+  .pipe-step-btn{font-size:8px;padding:3px 8px}
+  .pipe-summary{font-size:10px;padding:6px 8px}
+  /* Transfer rows mobile */
+  .transfer-row{padding:8px 10px;flex-direction:column;gap:6px;align-items:stretch}
+  .transfer-row>div{width:100%}
+  .tr-amt{font-size:12px}
+  .tr-label{font-size:11px}
+  .tr-meta{font-size:8px}
+  /* Send modal mobile */
+  #m-send-transfer .modal{max-width:95vw}
+  /* Payout modal mobile */
+  #m-payout .modal{max-width:95vw}
 }
 
 @media(max-width:380px){
@@ -1013,7 +1069,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <span id="auth-email-display"></span>
     <button class="logout-btn" onclick="doLogout()">Logout</button>
   </div>
-  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.1</button>
+  <button class="hbtn" onclick="openModal('m-changelog');renderChangelog();this.classList.remove('new-version');localStorage.setItem('seraphim_lastVersion',SERAPHIM_VERSION);" id="changelog-btn" title="What's new" style="font-size:10px;padding:4px 10px">&#x2728; v3.3.4</button>
   <button class="hbtn gold" onclick="openSettings()">&#x2699; Settings</button>
 </div>
 <div id="pull-indicator" style="position:fixed;top:0;left:0;right:0;z-index:300;display:flex;justify-content:center;pointer-events:none;transition:opacity 0.2s"><div id="pull-spinner" style="width:32px;height:32px;border-radius:50%;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;transform:translateY(-40px);transition:transform 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span id="pull-arrow" style="font-size:14px;color:var(--gold);transition:transform 0.2s">&#x2193;</span></div></div>
@@ -1651,7 +1707,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   <div id="confirm-msg" style="font-size:12.5px;color:var(--muted);margin:12px 0 22px;line-height:1.6"></div>
   <div class="ma" style="justify-content:center">
     <button class="bc" onclick="closeModal('m-confirm')">Cancel</button>
-    <button class="btn danger" id="confirm-action-btn" style="padding:8px 24px;font-size:13px">Delete</button>
+    <button class="btn danger" id="confirm-action-btn" style="padding:8px 24px;font-size:13px" onclick="doConfirm()">Delete</button>
   </div>
 </div></div>
 <script>
@@ -2262,13 +2318,14 @@ function renderPartners(){
   var pipelineHTML=renderPipelineRows();
   var transferHTML=pipelineHTML
     + (allTransfers.length?'<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:10px 0 6px">Transfers</div>'+allTransfers.map(function(t){
-        return '<div class="transfer-row" onclick="openTransferModal('+qid(t.id)+')" style="cursor:pointer;margin-bottom:8px">'
-          +'<div style="display:flex;align-items:center;gap:10px">'
+        return '<div class="transfer-row" style="margin-bottom:8px">'
+          +'<div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="openTransferModal('+qid(t.id)+')">'
           +'<div style="width:30px;height:30px;border-radius:50%;background:rgba(180,158,224,0.12);border:1px solid rgba(180,158,224,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">&#x21C4;</div>'
-          +'<div><div class="tr-label">'+t.desc+'</div>'
-          +'<div class="tr-meta">'+fmtD(t.date)+' &nbsp;&middot;&nbsp; <span style="color:var(--text);font-weight:500">'+t.who+'</span> <span style="color:var(--teal)">&rarr;</span> <span style="color:var(--text);font-weight:500">'+(t.transferTo||'Partner')+'</span> &nbsp;&middot;&nbsp; '+t.month+(t.notes?' &nbsp;&middot;&nbsp; <em style="color:var(--dim)">'+t.notes+'</em>':'')+(t.method?' &middot; <span style="font-size:8px;color:var(--muted)">'+t.method+'</span>':'')+'</div>'
-          +'</div></div>'
-          +'<div style="text-align:right"><div class="tr-amt">'+fmt(t.amount)+'</div><div style="font-size:9px;color:var(--dim);margin-top:2px">Excl. P&L</div></div>'
+          +'<div style="flex:1;min-width:0"><div class="tr-label">'+t.desc+'</div>'
+          +'<div class="tr-meta">'+fmtD(t.date)+' &middot; '+t.who+' &rarr; '+(t.transferTo||'Partner')+' &middot; '+t.month+(t.method?' &middot; <span style="font-size:8px;color:var(--muted)">'+t.method+'</span>':'')+'</div></div>'
+          +'<div style="text-align:right;flex-shrink:0"><div class="tr-amt">'+fmt(t.amount)+'</div></div>'
+          +'</div>'
+          +'<div style="display:flex;gap:4px;justify-content:flex-end;padding:4px 12px 8px"><button class="btn sm" onclick="openTransferModal('+qid(t.id)+')" style="font-size:9px">Edit</button><button class="btn sm danger" onclick="delTxn('+qid(t.id)+')" style="font-size:9px">Delete</button></div>'
           +'</div>';
       }).join(''):'');
   if(!pipelineHTML&&!allTransfers.length) transferHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px">No transfers or pipelines yet.</div>';
@@ -2849,6 +2906,35 @@ function renderSyncLog(){
 }
 
 var CHANGELOG=[
+{v:'3.3.4',date:'Apr 2026',title:'Modal fix — haptic crash',items:[
+  {t:'fix',text:'openModal wrapped haptic() in try-catch — modal ALWAYS opens even if haptic throws'},
+  {t:'fix',text:'_prefs initialization wrapped in try-catch with {} fallback'},
+  {t:'fix',text:'haptic() now null-checks _prefs before accessing .haptic property'},
+]},
+{v:'3.3.3',date:'Apr 2026',title:'Confirm modal nuclear fix',items:[
+  {t:'fix',text:'Confirm modal completely rewritten — doConfirm() called via HTML onclick, no JS event listeners'},
+  {t:'fix',text:'Global _confirmCB holds callback, doConfirm() reads and executes it'},
+  {t:'fix',text:'Fixes delete, restore, and all confirmation flows across every tab'},
+]},
+{v:'3.3.2',date:'Apr 2026',title:'Delete & restore fix',items:[
+  {t:'fix',text:'Confirm modal rebuilt — clone button removes stale event listeners, direct callback reference'},
+  {t:'fix',text:'Delete button added to partner transfer rows'},
+  {t:'fix',text:'Delete button added to pipeline rows'},
+  {t:'feature',text:'deletePipeline function — removes pipeline but keeps associated transactions'},
+]},
+{v:'3.3.2',date:'Apr 2026',title:'Delete & mobile fix',items:[
+  {t:'fix',text:'Confirm/delete modal z-index boosted to 9000 — no longer hidden behind nav or other overlays'},
+  {t:'fix',text:'All overlay modals z-index boosted to 500 — above header and bottom nav'},
+  {t:'feature',text:'Transfer rows on Partner Split now have Edit and Delete buttons'},
+  {t:'ui',text:'Pipeline rows, timeline steps, and transfer rows adapted for mobile screens'},
+  {t:'ui',text:'Send transfer and payout modals capped at 95vw on mobile'},
+]},
+{v:'3.3.2',date:'Apr 2026',title:'Delete + mobile',items:[
+  {t:'fix',text:'Transfer rows in Partner Split now have Edit and Delete buttons'},
+  {t:'fix',text:'Pipeline rows have X delete button — removes pipeline, keeps transactions'},
+  {t:'fix',text:'Pipeline, transfer, and modal elements adapted for mobile screens'},
+  {t:'feature',text:'deletePipeline function with confirm dialog and activity logging'},
+]},
 {v:'3.3.1',date:'Apr 2026',title:'Pipeline fixes',items:[
   {t:'fix',text:'Payout edit button opens payout modal with model chips instead of generic form'},
   {t:'fix',text:'Pipeline always flows Fanvue to Shon bank to Sharon regardless of who field'},
@@ -3320,7 +3406,7 @@ function loadSavedIcon(){
   applyAppIcon(v);
 }
 
-var _prefs=JSON.parse(localStorage.getItem('seraphim_prefs')||'{}');
+var _prefs;try{_prefs=JSON.parse(localStorage.getItem('seraphim_prefs')||'{}');}catch(e){_prefs={};}
 function applyPref(key,val){haptic();_prefs[key]=val;localStorage.setItem('seraphim_prefs',JSON.stringify(_prefs));applyAllPrefs();}
 function applyAllPrefs(){
   document.documentElement.setAttribute('data-compact',_prefs.compact?'true':'false');
@@ -3343,7 +3429,7 @@ function loadPrefsUI(){
   el=document.getElementById('pref-color-shon');if(el) el.value=_prefs.colorShon||'#F2C94C';
   el=document.getElementById('pref-backup-freq');if(el) el.value=_prefs.backupFreq||'30';
 }
-function haptic(s){if(!_prefs.haptic||!navigator.vibrate)return;navigator.vibrate(s==='heavy'?[20,30,20]:10);}
+function haptic(s){try{if(!_prefs||!_prefs.haptic||!navigator.vibrate)return;navigator.vibrate(s==='heavy'?[20,30,20]:10);}catch(e){}}
 var _pullY=0,_pulling=false,_pullDy=0;
 document.addEventListener('touchstart',function(e){
   if(!_prefs.pullRefresh)return;
@@ -3780,6 +3866,8 @@ function renderPipelineRows(){
     h+='<div class="pipe-meta">'+fmtD(p.createdAt)+' &middot; '+p.from+' &rarr; '+p.to+'</div></div>';
     h+=renderPipelineDots(p);
     h+='<span style="color:var(--dim);font-size:10px">'+(expanded?'&#x25BC;':'&#x25B6;')+'</span>';
+    h+='<button class="btn sm danger" onclick="event.stopPropagation();deletePipeline(\x27'+p.id+'\x27)" style="font-size:8px;padding:2px 5px;margin-left:4px">Del</button>';
+    h+='<span style="color:var(--dim);font-size:10px;cursor:pointer;margin-left:6px" onclick="event.stopPropagation();deletePipeline(\x27'+p.id+'\x27)" title="Delete pipeline">&#x2715;</span>';
     h+='</div>';
     if(expanded){
       h+='<div class="pipe-expand">'+renderPipelineTimeline(p)+'</div>';
@@ -3931,6 +4019,21 @@ function undoLastPayment(pipeId){
   logActivity('edit','Undid payment of '+fmt(removed.amount)+' to '+pipe.to,{by:state.currentUser});
   save();renderPartners();
 }
+
+function deletePipeline(pipeId){
+  initPipelines();
+  var pipe=state.pipelines.find(function(p){return p.id===pipeId;});
+  if(!pipe)return;
+  confirmAction('Delete Pipeline','Delete the transfer pipeline for '+fmt(pipe.totalAmount)+'?<br><span style="font-size:11px;color:var(--dim)">Associated transfer transactions will remain.</span>','Delete',function(){
+    pushUndo();
+    state.pipelines=state.pipelines.filter(function(p){return p.id!==pipeId;});
+    delete _pipelineExpanded[pipeId];
+    logActivity('delete','Deleted pipeline: '+fmt(pipe.totalAmount)+' '+pipe.from+' to '+pipe.to,{by:state.currentUser});
+    save();renderPartners();if(state.currentTab==='payouts')renderPayouts();
+    toast('Pipeline deleted','success');
+  });
+}
+
 
 function openSettings(){
   renderSyncLog();renderIconGrid();loadPrefsUI();
@@ -4219,7 +4322,7 @@ let toastT=null;
 function toast(msg,type,dur){const el=document.getElementById('toast'),icons={success:'&#x2713;',error:'&#x2715;',info:'&middot;'},colors={success:'var(--green)',error:'var(--red)',info:'var(--gold)'};document.getElementById('ti').innerHTML=icons[type]||'&middot;';document.getElementById('ti').style.color=colors[type]||'var(--muted)';document.getElementById('tm').textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),dur||3200);}
 
 // MODAL UTILS
-function openModal(id){haptic();document.getElementById(id).classList.add('open');}
+function openModal(id){try{haptic();}catch(e){}document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('lightbox').classList.contains('open'))return;document.querySelectorAll('.overlay.open').forEach(m=>m.classList.remove('open'));}});
@@ -5430,7 +5533,7 @@ function restoreLocalBackup(){
 }
 
 // CONFIRM MODAL
-var _confirmCallback=null;
+var _confirmCB=null;
 function confirmAction(title,msg,btnText,callback){
   document.getElementById('confirm-title').textContent=title||'Are you sure?';
   document.getElementById('confirm-msg').innerHTML=msg||'';
@@ -5438,9 +5541,14 @@ function confirmAction(title,msg,btnText,callback){
   btn.textContent=btnText||'Delete';
   btn.className=btnText==='Restore'?'btn primary':'btn danger';
   btn.style.padding='8px 24px';btn.style.fontSize='13px';
-  _confirmCallback=callback;
-  btn.onclick=function(){closeModal('m-confirm');if(_confirmCallback)_confirmCallback();_confirmCallback=null;};
+  _confirmCB=callback;
   openModal('m-confirm');
+}
+function doConfirm(){
+  closeModal('m-confirm');
+  var cb=_confirmCB;
+  _confirmCB=null;
+  if(typeof cb==='function') cb();
 }
 
 // ACTIVITY LOG
@@ -5624,8 +5732,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.3.1';
-var _BUILD='1776033450';
+var SERAPHIM_VERSION='3.3.4';
+var _BUILD='1776044713';
 var _initDone=false;
 function init(){
   if(_initDone) return;
