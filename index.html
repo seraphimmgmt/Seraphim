@@ -1167,7 +1167,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <div class="panel" id="panel-payouts">
       <div class="ph"><div class="ph-top"><span class="pg-title">Fanvue Payouts</span><div class="pg-actions"><button class="btn sm primary" onclick="openModelEarningsModal()">+ Set Earnings</button><button class="btn sm primary" onclick="openPayoutModal()">+ Log Payout</button><button class="btn sm" onclick="openBatchTransfer()" style="border-color:rgba(180,158,224,0.3);color:var(--teal)">&#x21C4; Link &amp; Transfer</button></div></div><div class="pg-sub">Pipeline: Fanvue &#x2192; Shon &#x2192; Partners</div></div>
       <div id="model-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px"></div>
-      <div class="tw" style="margin-bottom:16px"><div class="tw-hdr"><span class="tw-title">Akira &amp; Mila Monthly Breakdown</span><div class="tw-actions"><button class="btn sm" onclick="openModelEarningsModal()">Edit</button></div></div><div class="tscroll"><table><thead id="model-thead"><tr></tr></thead><tbody id="model-tbody"></tbody></table></div></div>
+      <div class="tw" style="margin-bottom:16px"><div class="tw-hdr"><span class="tw-title">Earnings by source</span><div class="tw-actions"><button class="btn sm" onclick="openModelEarningsModal()">Edit</button></div></div><div class="tscroll"><table><thead id="model-thead"><tr></tr></thead><tbody id="model-tbody"></tbody></table></div></div>
       <div class="filters">
         <select class="fsel" id="pf-month" onchange="renderPayouts()"><option value="">All Months</option></select>
         <select class="fsel" id="pf-who" onchange="renderPayouts()"><option value="">All People</option><option value="Sharon">Sharon</option><option value="Shon">Shon</option></select>
@@ -1333,6 +1333,11 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Notifications</div>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="notif-partner" style="accent-color:var(--gold)"> Alert when partner makes changes</label>
     <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="notif-sync" style="accent-color:var(--gold)"> Show sync status toasts</label>
+    <label style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="notif-pipeline" style="accent-color:var(--gold)"> Pipeline transfer notifications</label>
+    <div style="margin-top:8px">
+      <button class="btn sm" id="notif-perm-btn" onclick="requestNotifPermission()" style="font-size:10px;width:100%">Enable browser notifications</button>
+      <div id="notif-perm-status" style="font-size:9px;color:var(--dim);text-align:center;margin-top:4px"></div>
+    </div>
   </div>
   <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Session &amp; privacy</div>
@@ -1369,7 +1374,14 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
     </div>
   </div>
   </div><div class="settings-page" id="spage-2" style="display:none">
-  <div class="fg"><label class="fl">Models (comma-separated)</label><input class="fi" id="cfg-models" placeholder="Akira, Mila"></div>
+  <div class="fg"><label class="fl">Income sources</label>
+    <div id="cfg-model-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input class="fi" id="cfg-model-new" placeholder="New model name" style="flex:1;font-size:11px">
+      <button class="btn sm" onclick="addModelFromSettings()" style="font-size:10px;white-space:nowrap">+ Add</button>
+    </div>
+    <div style="font-size:9px;color:var(--dim);margin-top:4px">Referral is permanent. Models can be removed with confirmation.</div>
+  </div>
   <div style="background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:20px">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;font-size:12px;color:var(--muted)"><span>Backup reminder</span><select class="fi" id="pref-backup-freq" style="width:auto;font-size:11px;padding:4px 8px" onchange="applyPref('backupFreq',this.value)"><option value="7">Weekly</option><option value="14">Every 2 weeks</option><option value="30" selected>Monthly</option><option value="90">Quarterly</option></select></div>
     <div style="font-size:10px;font-weight:500;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px">Import data</div>
@@ -1463,7 +1475,7 @@ tbody tr:nth-child(even) td{background:rgba(180,158,224,0.02)}
   <div class="ma"><button class="bc" onclick="closeModal('m-edit-earn')">Cancel</button><button class="bs" onclick="saveEditEarnings()">Save</button></div>
 </div></div>
 <div class="overlay" id="m-model-earn"><div class="modal">
-  <div class="modal-title">Set Model Earnings</div><div class="modal-sub">Log Akira &amp; Mila per month</div>
+  <div class="modal-title">Set Earnings</div><div class="modal-sub">Model earnings + referral commission</div>
   <div class="fg"><label class="fl">Month</label><select class="fi" id="me-month" onchange="onMeMonthChange()"></select></div>
   <div id="me-inputs" class="frow"></div>
   <div id="me-preview" style="font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:14px"></div>
@@ -2235,17 +2247,26 @@ function renderTransactions(){
 
 // PAYOUTS
 function renderPayouts(){
-  const mdls=state.models||['Akira','Mila'];
-  const totalEarn=Object.values(state.monthlyEarnings).reduce((s,v)=>s+v,0);
-  document.getElementById('model-cards').innerHTML=mdls.map(mdl=>{
-    const total=Object.values(state.modelEarnings).reduce((s,me)=>s+(me[mdl.toLowerCase()]||0),0);
-    return '<div class="kpi"><div class="kpi-l">'+mdl+'</div><div class="kpi-v g">'+fmt(total||totalEarn/mdls.length)+'</div><div class="kpi-s">'+fmt((total||totalEarn/mdls.length)/2)+' per partner</div></div>';
-  }).join('')+'<div class="kpi"><div class="kpi-l">Total (All Models)</div><div class="kpi-v gold">'+fmt(totalEarn)+'</div><div class="kpi-s">Net after Fanvue 20% cut</div></div>';
-  const thead=document.getElementById('model-thead');
-  thead.innerHTML='<tr><th>Month</th>'+mdls.map(m=>'<th>'+m+'</th>').join('')+'<th>Combined</th><th>Each 50%</th></tr>';
-  document.getElementById('model-tbody').innerHTML=activeMths().map(month=>{
-    const me=state.modelEarnings[month]||{};var vals=mdls.map(md=>me[md.toLowerCase()]||0);if(vals.every(v=>v===0)&&(state.monthlyEarnings[month]||0)>0){var perM=(state.monthlyEarnings[month])/mdls.length;vals=mdls.map(()=>perM);}var combined=vals.reduce((s,v)=>s+v,0)||state.monthlyEarnings[month]||0;
-    return '<tr><td style="color:var(--gold)">'+month+'</td>'+vals.map((v,i)=>'<td class="amt" style="color:'+(i===0?'var(--green)':'var(--gold)')+'">'+( v?fmt(v):'<span style="color:var(--dim)">--</span>')+'</td>').join('')+'<td class="amt">'+(combined?fmt(combined):'<span style="color:var(--dim)">--</span>')+'</td><td class="amt td-muted">'+(combined?fmt(combined/2):'--')+'</td></tr>';
+  var mdls=state.models||['Akira','Mila'];
+  var allSources=mdls.concat(['Referral']);
+  var totalEarn=Object.values(state.monthlyEarnings).reduce(function(s,v){return s+v;},0);
+  var cardsHTML=mdls.map(function(mdl){
+    var total=Object.values(state.modelEarnings).reduce(function(s,me){return s+(me[mdl.toLowerCase()]||0);},0);
+    return '<div class="kpi"><div class="kpi-l">'+mdl+'</div><div class="kpi-v g">'+fmt(total)+'</div><div class="kpi-s">'+fmt(total/2)+' per partner</div></div>';
+  }).join('');
+  var refTotal=Object.values(state.modelEarnings).reduce(function(s,me){return s+(me.referral||0);},0);
+  cardsHTML+='<div class="kpi" style="border-color:rgba(45,212,191,0.2)"><div class="kpi-l" style="color:var(--teal)">Referral</div><div class="kpi-v" style="color:var(--teal)">'+fmt(refTotal)+'</div><div class="kpi-s">'+fmt(refTotal/2)+' per partner</div></div>';
+  cardsHTML+='<div class="kpi"><div class="kpi-l">Total (All Sources)</div><div class="kpi-v gold">'+fmt(totalEarn)+'</div><div class="kpi-s">Net after Fanvue 20% cut</div></div>';
+  document.getElementById('model-cards').innerHTML=cardsHTML;
+  var thead=document.getElementById('model-thead');
+  thead.innerHTML='<tr><th>Month</th>'+mdls.map(function(m){return '<th>'+m+'</th>';}).join('')+'<th style="color:var(--teal)">Referral</th><th>Combined</th><th>Each 50%</th></tr>';
+  document.getElementById('model-tbody').innerHTML=activeMths().map(function(month){
+    var me=state.modelEarnings[month]||{};
+    var vals=mdls.map(function(md){return me[md.toLowerCase()]||0;});
+    var refVal=me.referral||0;
+    var combined=vals.reduce(function(s,v){return s+v;},0)+refVal;
+    if(combined===0&&(state.monthlyEarnings[month]||0)>0) combined=state.monthlyEarnings[month];
+    return '<tr><td style="color:var(--gold)">'+month+'</td>'+vals.map(function(v,i){return '<td class="amt" style="color:'+(i===0?'var(--green)':'var(--gold)')+'">'+( v?fmt(v):'<span style="color:var(--dim)">--</span>')+'</td>';}).join('')+'<td class="amt" style="color:var(--teal)">'+(refVal?fmt(refVal):'<span style="color:var(--dim)">--</span>')+'</td><td class="amt">'+(combined?fmt(combined):'<span style="color:var(--dim)">--</span>')+'</td><td class="amt td-muted">'+(combined?fmt(combined/2):'--')+'</td></tr>';
   }).join('');
   const mf=resolveMonth(document.getElementById('pf-month').value),wf=document.getElementById('pf-who').value;
   const payouts=state.transactions.filter(t=>t.type==='Withdrawal'&&(!mf||t.month===mf)&&(!wf||t.who===wf)).sort((a,b)=>b.date.localeCompare(a.date));
@@ -2857,7 +2878,8 @@ function openAddMonth(){
   document.getElementById('nm-m').value=MS[nm];document.getElementById('nm-y').value=ny;
   document.getElementById('nm-total').value='';document.getElementById('nm-notes').value='';
   const models=state.models||['Akira','Mila'];
-  document.getElementById('nm-model-inputs').innerHTML=models.map(m=>'<div class="fg"><label class="fl">'+m+' ($)</label><input type="number" class="fi nm-model-inp" data-model="'+m.toLowerCase()+'" placeholder="0.00" step="0.01" oninput="nmUpdateTotal()"></div>').join('');
+  document.getElementById('nm-model-inputs').innerHTML=models.map(m=>'<div class="fg"><label class="fl">'+m+' ($)</label><input type="number" class="fi nm-model-inp" data-model="'+m.toLowerCase()+'" placeholder="0.00" step="0.01" oninput="nmUpdateTotal()"></div>').join('')
+    +'<div style="border-top:1px solid var(--b1);margin-top:8px;padding-top:8px"><div class="fg"><label class="fl" style="color:var(--teal)">Referral commission ($)</label><input type="number" class="fi nm-model-inp" data-model="referral" placeholder="0.00" step="0.01" oninput="nmUpdateTotal()" style="border-color:rgba(45,212,191,0.25)"></div></div>';
   openModal('m-month');
 }
 function nmUpdateTotal(){let t=0;document.querySelectorAll('.nm-model-inp').forEach(i=>{t+=parseFloat(i.value)||0;});if(t)document.getElementById('nm-total').value=t.toFixed(2);}
@@ -2882,7 +2904,8 @@ function openEditEarnings(){
   const models=state.models||['Akira','Mila'],me=state.modelEarnings[m]||{};
   document.getElementById('ee-title').textContent='Edit Earnings -- '+m;
   document.getElementById('ee-month').value=m;
-  document.getElementById('ee-model-inputs').innerHTML=models.map(mdl=>'<div class="fg"><label class="fl">'+mdl+' ($)</label><input type="number" class="fi ee-model-inp" data-model="'+mdl.toLowerCase()+'" value="'+(me[mdl.toLowerCase()]||'')+'" placeholder="0.00" step="0.01" oninput="eeUpdateTotal()"></div>').join('');
+  document.getElementById('ee-model-inputs').innerHTML=models.map(mdl=>'<div class="fg"><label class="fl">'+mdl+' ($)</label><input type="number" class="fi ee-model-inp" data-model="'+mdl.toLowerCase()+'" value="'+(me[mdl.toLowerCase()]||'')+'" placeholder="0.00" step="0.01" oninput="eeUpdateTotal()"></div>').join('')
+    +'<div style="border-top:1px solid var(--b1);margin-top:8px;padding-top:8px"><div class="fg"><label class="fl" style="color:var(--teal)">Referral commission ($)</label><input type="number" class="fi ee-model-inp" data-model="referral" value="'+(me.referral||'')+'" placeholder="0.00" step="0.01" oninput="eeUpdateTotal()" style="border-color:rgba(45,212,191,0.25)"></div></div>';
   const cur=models.reduce((s,md)=>s+(me[md.toLowerCase()]||0),0);
   document.getElementById('ee-total').value=cur||(state.monthlyEarnings[m]||'');
   document.getElementById('ee-notes').value=state.monthNotes[m]||'';
@@ -2904,11 +2927,12 @@ function saveEditEarnings(){
 
 // CRUD - MODEL EARNINGS
 function openModelEarningsModal(){
-  const models=state.models||['Akira','Mila'];
-  const sel=document.getElementById('me-month');
-  sel.innerHTML=activeMths().map(m=>'<option value="'+m+'">'+m+'</option>').join('');
+  var models=state.models||['Akira','Mila'];
+  var sel=document.getElementById('me-month');
+  sel.innerHTML=activeMths().map(function(m){return '<option value="'+m+'">'+m+'</option>';}).join('');
   sel.value=activeMths().slice(-1)[0]||'';
-  document.getElementById('me-inputs').innerHTML=models.map(md=>'<div class="fg"><label class="fl">'+md+' ($)</label><input type="number" class="fi me-inp" data-model="'+md.toLowerCase()+'" placeholder="0.00" step="0.01" oninput="mePreview()"></div>').join('');
+  document.getElementById('me-inputs').innerHTML=models.map(function(md){return '<div class="fg"><label class="fl">'+md+' ($)</label><input type="number" class="fi me-inp" data-model="'+md.toLowerCase()+'" placeholder="0.00" step="0.01" oninput="mePreview()"></div>';}).join('')
+    +'<div style="border-top:1px solid var(--b1);margin-top:8px;padding-top:8px"><div class="fg"><label class="fl" style="color:var(--teal)">Referral commission ($)</label><input type="number" class="fi me-inp" data-model="referral" placeholder="0.00" step="0.01" oninput="mePreview()" style="border-color:rgba(45,212,191,0.25)"></div></div>';
   onMeMonthChange();openModal('m-model-earn');
 }
 function onMeMonthChange(){const m=document.getElementById('me-month').value,me=state.modelEarnings[m]||{};document.querySelectorAll('.me-inp').forEach(inp=>{inp.value=me[inp.dataset.model]||'';});mePreview();}
@@ -3102,7 +3126,21 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[{v:'3.7.1',date:'2026-04-13',items:[
+var CHANGELOG=[{v:'3.7.3',date:'2026-04-23',items:[
+{t:'feature',text:'Referral commission — permanent income source baked in alongside Akira & Mila, with distinct teal styling'},
+{t:'feature',text:'Model safety net — models shown as chips in Settings with confirmation required to remove, warning if model has data'},
+{t:'feature',text:'Referral column in earnings table, dedicated KPI card, input in all earnings modals'},
+{t:'feature',text:'Referral chip always present in payout modal with dashed border styling'},
+{t:'ui',text:'Renamed Model Earnings to Earnings by Source'},
+{t:'fix',text:'Cannot delete last model, cannot add duplicate names, cannot add Referral as model'}
+]},{v:'3.7.2',date:'2026-04-13',items:[
+{t:'fix',text:'Pipeline sync now triggers auto-refresh — no more manual page reload needed'},
+{t:'fix',text:'Pipeline and bank account changes set changed flag, triggering re-render and saveLocal'},
+{t:'feature',text:'Browser push notifications for pipeline events — new transfers, step advances, and completion alerts'},
+{t:'feature',text:'Daily reminder notification for pending transfer confirmations'},
+{t:'feature',text:'Pipeline notification toggle and browser permission button in Settings'},
+{t:'fix',text:'mergeArray handles Firebase object format for all array data types'}
+]},{v:'3.7.1',date:'2026-04-13',items:[
 {t:'fix',text:'Pipelines and bank accounts now included in first-sync full replace — fixes partner not seeing transfers after refresh'},
 {t:'fix',text:'First sync handles Firebase object→array conversion for all data types including nested pipeline arrays'},
 {t:'fix',text:'mergeArray now converts Firebase objects to arrays instead of silently dropping them'},
@@ -3719,6 +3757,94 @@ function loadPrefsUI(){
   el=document.getElementById('pref-backup-freq');if(el) el.value=_prefs.backupFreq||'30';
 }
 function haptic(s){try{if(!_prefs||!_prefs.haptic||!navigator.vibrate)return;navigator.vibrate(s==='heavy'?[20,30,20]:10);}catch(e){}}
+
+// ═══ BROWSER NOTIFICATIONS ═══
+function requestNotifPermission(){
+  if(!('Notification' in window)){toast('Browser doesn\'t support notifications','error');return;}
+  Notification.requestPermission().then(function(perm){
+    updateNotifPermUI();
+    if(perm==='granted') toast('Notifications enabled','success');
+    else toast('Notifications blocked — enable in browser settings','info');
+  });
+}
+function updateNotifPermUI(){
+  var btn=document.getElementById('notif-perm-btn');
+  var status=document.getElementById('notif-perm-status');
+  if(!btn||!status) return;
+  if(!('Notification' in window)){
+    btn.style.display='none';
+    status.textContent='Not supported in this browser';
+    return;
+  }
+  var perm=Notification.permission;
+  if(perm==='granted'){
+    btn.textContent='Notifications enabled';
+    btn.style.borderColor='rgba(88,200,140,0.3)';btn.style.color='var(--green)';
+    status.textContent='You will receive alerts for pipeline transfers';
+  } else if(perm==='denied'){
+    btn.textContent='Notifications blocked';
+    btn.style.borderColor='rgba(235,88,88,0.3)';btn.style.color='var(--red)';
+    status.textContent='Unblock in browser settings → Site permissions';
+  } else {
+    btn.textContent='Enable browser notifications';
+    btn.style.borderColor='';btn.style.color='';
+    status.textContent='Required for transfer alerts on your phone';
+  }
+}
+function sendBrowserNotif(title,body,tag){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  var np=state.notifyPrefs||{};
+  if(np.pipelineAlerts===false) return;
+  try{
+    var n=new Notification(title,{body:body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="80">💸</text></svg>',tag:tag||'seraphim-'+Date.now(),requireInteraction:true});
+    n.onclick=function(){window.focus();n.close();};
+  }catch(e){console.log('Notification error:',e);}
+}
+function checkPipelineNotifications(remotePipes,who){
+  if(!state.currentUser||who===state.currentUser) return;
+  var np=state.notifyPrefs||{};
+  if(np.pipelineAlerts===false) return;
+  var localPipes=state.pipelines||[];
+  remotePipes.forEach(function(rp){
+    var lp=localPipes.find(function(p){return p.id===rp.id;});
+    // New pipeline targeting me
+    if(!lp&&rp.to===state.currentUser){
+      sendBrowserNotif('New transfer pipeline',who+' created a '+fmt(rp.totalAmount)+' transfer to you','pipe-new-'+rp.id);
+      return;
+    }
+    if(!lp) return;
+    // Step advanced
+    var oldStep=getPipelineStep(lp);
+    var newStep=getPipelineStep(rp);
+    if(newStep>oldStep){
+      var labels=['Paid from Fanvue','In bank','Transferred'];
+      if(rp.to===state.currentUser){
+        sendBrowserNotif('Transfer update: '+labels[newStep-1],who+' advanced pipeline — '+fmt(rp.totalAmount),'pipe-step-'+rp.id);
+      }
+    }
+    // Step 3 done — awaiting my confirmation
+    if(rp.to===state.currentUser&&rp.steps&&rp.steps[2]&&rp.steps[2].status==='done'&&(!lp.steps||!lp.steps[2]||lp.steps[2].status!=='done')){
+      sendBrowserNotif('Transfer complete — confirm receipt',fmt(rp.steps[2].amount)+' transferred to you by '+who,'pipe-confirm-'+rp.id);
+    }
+  });
+}
+var _lastPipeReminderKey='seraphim_lastPipeReminder';
+function checkDailyPipelineReminder(){
+  if(!state.currentUser) return;
+  var np=state.notifyPrefs||{};
+  if(np.pipelineAlerts===false) return;
+  var last=localStorage.getItem(_lastPipeReminderKey)||'';
+  var today=new Date().toISOString().split('T')[0];
+  if(last===today) return;
+  initPipelines();
+  var pending=state.pipelines.filter(function(p){
+    return p.to===state.currentUser&&p.steps&&p.steps[2]&&p.steps[2].status==='done'&&!p.steps[2].confirmedAt;
+  });
+  if(pending.length){
+    sendBrowserNotif('Pending confirmations',pending.length+' transfer'+(pending.length>1?'s':'')+' awaiting your confirmation','pipe-daily');
+    localStorage.setItem(_lastPipeReminderKey,today);
+  }
+}
 var _pullY=0,_pulling=false,_pullDy=0;
 document.addEventListener('touchstart',function(e){
   if(!_prefs.pullRefresh)return;
@@ -3928,6 +4054,9 @@ function openPayoutModal(id){
     var isOn=activeModels.indexOf(m)>=0;
     return '<div class="model-chip'+(isOn?' on':'')+'" data-model="'+m+'" onclick="toggleModelChip(this)">'+m+'</div>';
   }).join('');
+  // Permanent Referral chip
+  var refOn=p&&p.models&&p.models.indexOf('Referral')>=0;
+  chipHTML+='<div class="model-chip'+(refOn?' on':'')+'" data-model="Referral" onclick="toggleModelChip(this)" style="border-style:dashed;'+(refOn?'border-style:solid;':'')+'border-color:rgba(45,212,191,0.35);color:var(--teal)">Referral</div>';
   document.getElementById('po-model-chips').innerHTML=chipHTML;
   renderModelAmounts();
   // Pre-fill amounts from existing payout
@@ -4535,10 +4664,12 @@ function openSettings(){
   var sun=document.getElementById('settings-user-name');
   if(sue) sue.textContent=_authUser?_authUser.email:'Not signed in';
   if(sun) sun.textContent=state.currentUser||'Unknown';
-  document.getElementById('cfg-models').value=(state.models||['Akira','Mila']).join(', ');
-  var np=state.notifyPrefs||{partnerChanges:true,syncEvents:true};
+  renderModelSettingsList();
+  var np=state.notifyPrefs||{partnerChanges:true,syncEvents:true,pipelineAlerts:true};
   var npc=document.getElementById('notif-partner');if(npc)npc.checked=np.partnerChanges!==false;
   var nsc=document.getElementById('notif-sync');if(nsc)nsc.checked=np.syncEvents!==false;
+  var npl=document.getElementById('notif-pipeline');if(npl)npl.checked=np.pipelineAlerts!==false;
+  updateNotifPermUI();
   var fc=state.firebaseConfig||{};
   document.getElementById('fb-url').value=fc.databaseURL||'';
   document.getElementById('fb-pid').value=fc.projectId||'';
@@ -4547,11 +4678,11 @@ function openSettings(){
   renderBankList();updateProfileButtons();openModal('m-settings');
 }
 function saveSettings(){
-  var mraw=document.getElementById('cfg-models').value;
-  if(mraw.trim()) state.models=mraw.split(',').map(function(m){return m.trim();}).filter(Boolean);
+  // Models are now managed via the chip UI — no text input to parse
   var npc=document.getElementById('notif-partner');
   var nsc=document.getElementById('notif-sync');
-  state.notifyPrefs={partnerChanges:npc?npc.checked:true,syncEvents:nsc?nsc.checked:true};
+  var npl=document.getElementById('notif-pipeline');
+  state.notifyPrefs={partnerChanges:npc?npc.checked:true,syncEvents:nsc?nsc.checked:true,pipelineAlerts:npl?npl.checked:true};
   var url=document.getElementById('fb-url').value.trim().replace(/\/+$/,'');
   var key=document.getElementById('fb-key').value.trim();
   var pid=document.getElementById('fb-pid').value.trim();
@@ -4560,6 +4691,64 @@ function saveSettings(){
   save();closeModal('m-settings');toast('Settings saved','success');updateHeaderUser();
 }
 function confirmClear(){closeModal('m-settings');confirmAction('Factory Reset','<strong>This will delete ALL data — transactions, subscriptions, workers, earnings, everything.</strong><br><span style="font-size:11px;color:var(--red)">This cannot be undone. The page will reload with default data.</span>','Delete Everything',function(){localStorage.removeItem('seraphim_v3');toast('Cleared — reloading...','info',2000);setTimeout(function(){location.reload();},2000);});}
+
+function renderModelSettingsList(){
+  var el=document.getElementById('cfg-model-list');
+  if(!el) return;
+  var models=state.models||['Akira','Mila'];
+  var html=models.map(function(m){
+    var hasData=hasModelData(m);
+    return '<div style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;border:1px solid var(--b2);background:rgba(180,158,224,0.04);font-size:12px;color:var(--text)">'
+      +m
+      +'<span onclick="removeModelFromSettings('+qid(m)+')" style="cursor:pointer;color:var(--dim);font-size:10px;margin-left:2px" title="Remove '+(hasData?'(has data!)':'')+'">&#x2715;</span>'
+      +'</div>';
+  }).join('');
+  // Permanent Referral chip
+  html+='<div style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;border:1px dashed rgba(45,212,191,0.35);background:rgba(45,212,191,0.04);font-size:12px;color:var(--teal)">'
+    +'Referral <span style="font-size:8px;color:var(--dim);margin-left:2px">permanent</span>'
+    +'</div>';
+  el.innerHTML=html;
+}
+function hasModelData(modelName){
+  var key=modelName.toLowerCase();
+  var months=Object.keys(state.modelEarnings||{});
+  for(var i=0;i<months.length;i++){
+    if((state.modelEarnings[months[i]]||{})[key]) return true;
+  }
+  var txns=state.transactions||[];
+  for(var j=0;j<txns.length;j++){
+    if(txns[j].models&&txns[j].models.indexOf(modelName)>=0) return true;
+  }
+  return false;
+}
+function addModelFromSettings(){
+  var inp=document.getElementById('cfg-model-new');
+  var name=(inp.value||'').trim();
+  if(!name){toast('Enter a model name','error');return;}
+  if(!state.models) state.models=['Akira','Mila'];
+  if(name.toLowerCase()==='referral'){toast('Referral is already a permanent income source','info');inp.value='';return;}
+  if(state.models.some(function(m){return m.toLowerCase()===name.toLowerCase();})){toast(name+' already exists','info');inp.value='';return;}
+  state.models.push(name);
+  inp.value='';
+  save();renderModelSettingsList();
+  logActivity('add','Added model: '+name,{by:state.currentUser});
+  toast('Model added: '+name,'success');
+}
+function removeModelFromSettings(name){
+  if(!state.models||state.models.length<=1){toast('Must have at least one model','error');return;}
+  var hasData=hasModelData(name);
+  var msg='Remove <b>'+name+'</b> from income sources?';
+  if(hasData){
+    msg+='<br><br><span style="color:var(--red);font-weight:500">This model has existing earnings data and/or transactions tagged to it.</span>'
+      +'<br><span style="font-size:11px;color:var(--dim)">Historical data will be preserved but the model won\'t appear in new earnings or payouts.</span>';
+  }
+  confirmAction('Remove Model',msg,'Remove',function(){
+    state.models=state.models.filter(function(m){return m!==name;});
+    save();renderModelSettingsList();
+    logActivity('delete','Removed model: '+name+(hasData?' (had data)':''),{by:state.currentUser});
+    toast('Removed: '+name,'success');
+  });
+}
 
 
 var _exportSheets=null;
@@ -5271,9 +5460,9 @@ function mergeRemoteState(remote){
     return merged;
   };
   state.transactions=mergeArray(state.transactions,remote.transactions||[],'id');
-  state.pipelines=Array.isArray(remote.pipelines)?remote.pipelines:remote.pipelines?Object.values(remote.pipelines):[];
-  // Fix Firebase object→array conversion for nested pipeline data
-  state.pipelines.forEach(function(p){
+  // Pipelines — full replace from remote with change detection
+  var remotePipes=Array.isArray(remote.pipelines)?remote.pipelines:remote.pipelines?Object.values(remote.pipelines):[];
+  remotePipes.forEach(function(p){
     if(p.steps&&!Array.isArray(p.steps)) p.steps=Object.values(p.steps);
     if(p.payoutIds&&!Array.isArray(p.payoutIds)) p.payoutIds=Object.values(p.payoutIds);
     if(p.models&&!Array.isArray(p.models)) p.models=Object.values(p.models);
@@ -5281,7 +5470,17 @@ function mergeRemoteState(remote){
       if(s.partials&&!Array.isArray(s.partials)) s.partials=Object.values(s.partials);
     });
   });
-  state.bankAccounts=Array.isArray(remote.bankAccounts)?remote.bankAccounts:remote.bankAccounts?Object.values(remote.bankAccounts):state.bankAccounts||[];
+  var oldPipeHash=JSON.stringify((state.pipelines||[]).map(function(p){return p.id+'_'+getPipelineStep(p);}));
+  var newPipeHash=JSON.stringify(remotePipes.map(function(p){return p.id+'_'+getPipelineStep(p);}));
+  if(oldPipeHash!==newPipeHash){
+    changed=true;
+    checkPipelineNotifications(remotePipes,remote._by||'Partner');
+  }
+  state.pipelines=remotePipes;
+  // Bank accounts
+  var remoteBanks=Array.isArray(remote.bankAccounts)?remote.bankAccounts:remote.bankAccounts?Object.values(remote.bankAccounts):[];
+  if(JSON.stringify(remoteBanks)!==JSON.stringify(state.bankAccounts||[])) changed=true;
+  state.bankAccounts=remoteBanks;
   state.subscriptions=mergeArray(state.subscriptions,remote.subscriptions||[],'id');
   state.staffMembers=mergeArray(state.staffMembers,remote.staffMembers||[],'id');
   state.workers=mergeArray(state.workers,remote.workers||[],'id');
@@ -6250,8 +6449,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.7.1';
-var _BUILD='1776113910';
+var SERAPHIM_VERSION='3.7.3';
+var _BUILD='1776930208';
 var _initDone=false;
 function init(){
   if(_initDone) return;
@@ -6280,6 +6479,9 @@ function init(){
     if(!state.currentUser) setTimeout(function(){openSettings();},600);
     loadSavedIcon();applyAllPrefs();
     checkBackupReminder();checkStorageSize();
+    // Daily pipeline confirmation reminder
+    setTimeout(checkDailyPipelineReminder,3000);
+    setInterval(checkDailyPipelineReminder,3600000); // check hourly
     // AUTO-CONNECT FIREBASE — always attempt after init unless manually offline
     if(typeof firebase!=='undefined'&&state.firebaseConfig&&state.firebaseConfig.databaseURL&&state.firebaseConfig.apiKey){
       if(localStorage.getItem('seraphim_fb_manual_off')!=='true'&&!state.firebaseConnected){
