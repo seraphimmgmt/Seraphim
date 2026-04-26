@@ -1888,15 +1888,23 @@ function subFires(sub,mk){
 }
 function subTxnId(sid,mk){return'sub_'+sid+'_'+mk.replace('-','_');}
 function applySubsToMonth(mk){
-  let added=0;
-  state.subscriptions.filter(s=>!s.paused).forEach(sub=>{
+  var added=0;
+  state.subscriptions.forEach(function(sub){
+    // Skip if paused AND this month is at or after the pause date
+    if(sub.paused){
+      if(!sub.pausedAt) return; // paused without date = skip all (legacy)
+      var pauseIdx=mIdx(sub.pausedAt);
+      var monthIdx=mIdx(mk);
+      if(monthIdx>=pauseIdx) return; // month is at or after pause — skip
+      // month is before pause — still apply (they paid this)
+    }
     if(!subFires(sub,mk)) return;
-    const id=subTxnId(sub.id,mk);
-    if(state.transactions.find(t=>t.id===id)) return;
-    const{month:mo,year}=parseKey(mk);
-    const day=Math.min(sub.day||1,28);
-    const d=year+'-'+String(mo+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
-    state.transactions.push({id,date:d,desc:sub.name,type:'Expense',amount:sub.amount,who:sub.who,month:mk,notes:sub.notes||'',cat:sub.cat,isRecurring:true,subId:sub.id});
+    var id=subTxnId(sub.id,mk);
+    if(state.transactions.find(function(t){return t.id===id;})) return;
+    var parsed=parseKey(mk);
+    var day=Math.min(sub.day||1,28);
+    var d=parsed.year+'-'+String(parsed.month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    state.transactions.push({id:id,date:d,desc:sub.name,type:'Expense',amount:sub.amount,who:sub.who,month:mk,notes:sub.notes||'',cat:sub.cat,isRecurring:true,subId:sub.id});
     added++;
   });
   return added;
@@ -2976,7 +2984,7 @@ function saveSubscription(){
   else state.subscriptions.push(sub);
   logActivity(id?'edit':'add',(id?'Edited':'Added')+' subscription: '+sub.name+' — '+fmt(sub.amount),{who:sub.who});reapplyAllSubs();save();closeModal('m-sub');toast('"'+sub.name+'" '+(id?'updated':'added'),'success');renderSubscriptions();
 }
-function toggleSub(id){const s=state.subscriptions.find(s=>s.id===id);if(!s) return;s.paused=!s.paused;logActivity('edit',(s.paused?'Paused':'Resumed')+' subscription: '+s.name,{who:s.who});reapplyAllSubs();save();toast('"'+s.name+'" '+(s.paused?'paused':'resumed'),'info');renderSubscriptions();}
+function toggleSub(id){var s=state.subscriptions.find(function(x){return x.id===id;});if(!s) return;s.paused=!s.paused;if(s.paused){var now=new Date();var mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];s.pausedAt=mNames[now.getMonth()]+'-'+now.getFullYear();}else{delete s.pausedAt;}logActivity('edit',(s.paused?'Paused':'Resumed')+' subscription: '+s.name,{who:s.who});reapplyAllSubs();save();toast('"'+s.name+'" '+(s.paused?'paused':'resumed'),'info');renderSubscriptions();}
 function delSub(id){var s=state.subscriptions.find(function(x){return x.id===id;});if(!s) return;confirmAction('Delete Subscription','<strong>'+s.name+'</strong> — '+fmt(s.amount)+'<br><span style="font-size:11px;color:var(--dim)">Auto-generated transactions will be removed. The subscription will be moved to Archive.</span>','Delete',function(){state.subscriptions=state.subscriptions.filter(function(x){return x.id!==id;});state.transactions=state.transactions.filter(function(t){return t.subId!==id;});state.archive.push({itemType:'subscription',item:Object.assign({},s),deletedAt:new Date().toISOString()});logActivity('delete','Deleted subscription: '+s.name+' — '+fmt(s.amount)+'/'+FREQ_LABELS[s.freq],{who:s.who});save();toast('"'+s.name+'" archived','info');renderSubscriptions();});}
 
 // CRUD - STAFF
@@ -3126,7 +3134,10 @@ function renderSyncLog(){
   }).join('');
 }
 
-var CHANGELOG=[{v:'3.7.3',date:'2026-04-23',items:[
+var CHANGELOG=[{v:'3.7.4',date:'2026-04-23',items:[
+{t:'fix',text:'Pausing a subscription no longer removes past months transactions — stores pausedAt date and preserves all pre-pause expenses'},
+{t:'fix',text:'applySubsToMonth now applies paused subs for months before the pause date, skips from pause date onward'}
+]},{v:'3.7.3',date:'2026-04-23',items:[
 {t:'feature',text:'Referral commission — permanent income source baked in alongside Akira & Mila, with distinct teal styling'},
 {t:'feature',text:'Model safety net — models shown as chips in Settings with confirmation required to remove, warning if model has data'},
 {t:'feature',text:'Referral column in earnings table, dedicated KPI card, input in all earnings modals'},
@@ -6449,8 +6460,8 @@ document.addEventListener('keydown',function(e){
   if(ctrl&&e.key==='0'){e.preventDefault();switchTab('archive',null);return;}
 });
 
-var SERAPHIM_VERSION='3.7.3';
-var _BUILD='1776930208';
+var SERAPHIM_VERSION='3.7.4';
+var _BUILD='1777000968';
 var _initDone=false;
 function init(){
   if(_initDone) return;
